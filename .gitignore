@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# MySQL / Docker
+*.sql~
+mysql-data/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Uploads locais (assinaturas, fotos)
+uploads/
