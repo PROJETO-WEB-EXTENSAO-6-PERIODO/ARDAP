@@ -1,0 +1,4 @@
+# Dependencias apenas para rodar a suite de testes. Nao vai para producao.
+-r requirements.txt
+pytest>=8
+httpx>=0.27

@@ -13,6 +13,10 @@ class TokenOut(BaseModel):
     token_type: str = "bearer"
 
 
+class LogoutOut(BaseModel):
+    msg: str
+
+
 class UserOut(BaseModel):
     id: int
     email: str
