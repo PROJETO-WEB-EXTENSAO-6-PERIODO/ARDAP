@@ -17,3 +17,4 @@ class UserOut(BaseModel):
     id: int
     email: str
     role: str
+    first_name: str
