@@ -348,7 +348,7 @@ export function Animais() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-[22px] text-gray-600">
-                    <i className="bi bi-rulers"></i>
+                    <i className="bi bi-activity"></i>
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-[#1A1A1A]">
@@ -639,7 +639,7 @@ export function Animais() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar animal"}</span>
+              <span>{saving ? "Salvando..." : "Cadastrar Animal"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}
