@@ -53,7 +53,7 @@ export function Login() {
         >
           <h2 className="text-lg font-bold">Bem-vindo!</h2>
           <p className="text-sm text-gray-500">
-            Gerencie seus formulários de forma centralizada .
+            Gerencie seus formulários de forma otimizada.
           </p>
 
           {error && (
