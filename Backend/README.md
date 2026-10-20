@@ -7,9 +7,11 @@ Backend/
   app/
     main.py        # entrypoint FastAPI
     core/          # config, database, security (JWT/bcrypt)
-    models/        # SQLAlchemy (users, animais, ...)
+    models/        # SQLAlchemy (users, animais, eutanasias, ...)
     schemas/      # Pydantic
     routers/      # endpoints (auth, animais, ...)
+  db/
+    schema_min.sql # schema inicial do MySQL
   requirements.txt
 ```
 

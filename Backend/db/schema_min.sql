@@ -54,3 +54,28 @@ CREATE TABLE IF NOT EXISTS supatas_intake (
     FOREIGN KEY (animal_id) REFERENCES animais(id),
     FOREIGN KEY (funcionario_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS eutanasias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    animal_id INT NOT NULL,
+    animal_nome VARCHAR(100),
+    animal_especie VARCHAR(50),
+    animal_raca VARCHAR(100),
+    animal_sexo ENUM('macho', 'femea'),
+    animal_idade VARCHAR(80),
+    animal_pelagem VARCHAR(100),
+    veterinario_nome VARCHAR(150),
+    veterinario_crmv VARCHAR(30),
+    responsavel_nome VARCHAR(150),
+    responsavel_rg VARCHAR(30),
+    responsavel_cpf VARCHAR(20),
+    responsavel_endereco VARCHAR(255),
+    responsavel_numero VARCHAR(20),
+    responsavel_bairro VARCHAR(100),
+    responsavel_cidade VARCHAR(100),
+    responsavel_telefone_email VARCHAR(150),
+    data_declaracao DATE,
+    assinatura_responsavel TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (animal_id) REFERENCES animais(id)
+);
