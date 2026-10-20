@@ -54,3 +54,25 @@ CREATE TABLE IF NOT EXISTS supatas_intake (
     FOREIGN KEY (animal_id) REFERENCES animais(id),
     FOREIGN KEY (funcionario_id) REFERENCES users(id)
 );
+
+-- Issue #54 (#DB0008) - entidade ADOCOES/ADOTANTES da modelagem em draw.io.
+-- As 11 colunas sao as desenhadas no diagrama; `id` e os timestamps seguem a
+-- convencao das demais tabelas (o desenho nao mostra `id` em nenhuma entidade).
+-- `nome` NOT NULL: adotante sem nome nao identifica ninguem. Os demais campos
+-- ficam opcionais porque a modelagem nao define obrigatoriedade.
+CREATE TABLE IF NOT EXISTS adotantes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    rg VARCHAR(20),
+    cpf VARCHAR(20),
+    endereco VARCHAR(255),
+    bairro VARCHAR(100),
+    cidade VARCHAR(100),
+    cep VARCHAR(10),
+    telefone VARCHAR(20),
+    whatsapp VARCHAR(20),
+    instagram VARCHAR(60),
+    profissao VARCHAR(100),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
