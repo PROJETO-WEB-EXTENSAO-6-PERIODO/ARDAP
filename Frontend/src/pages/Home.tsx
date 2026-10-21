@@ -75,6 +75,40 @@ export function Home() {
               </button>
             </div>
           </article>
+
+          <article className="group flex cursor-pointer flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 transition-all duration-150 hover:shadow-md">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-xl text-[#DC3545] transition-colors duration-200 group-hover:bg-[#FDECEA]">
+                  <i className="bi bi-heart-pulse"></i>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-[#FDECEA] px-2 py-0.5 text-xs font-medium text-[#DC3545]">
+                  Resgate &amp; Entrada
+                </span>
+              </div>
+              <div>
+                <h3 className="font-bold">
+                  SUPATAS
+                  <span className="ml-2 inline-flex items-center rounded-full bg-[#FFD900] px-2 py-0.5 align-middle text-xs font-semibold text-[#1A1A1A]">
+                    URGENTE
+                  </span>
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Registro de resgates e entrada de animais.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between border-t pt-4">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <span className="h-2 w-2 rounded-full bg-[#DC3545]"></span>
+                3 resgates em fila
+              </div>
+              <button className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 active:scale-95">
+                <span>Acessar</span>
+                <i className="bi bi-arrow-right text-[18px] transition-transform group-hover:translate-x-0.5"></i>
+              </button>
+            </div>
+          </article>
         </div>
       </main>
     </div>
