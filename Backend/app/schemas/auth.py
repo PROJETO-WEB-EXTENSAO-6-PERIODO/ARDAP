@@ -11,10 +11,3 @@ class LoginIn(BaseModel):
 class TokenOut(BaseModel):
     access_token: str
     token_type: str = "bearer"
-
-
-class UserOut(BaseModel):
-    id: int
-    email: str
-    role: str
-    first_name: str

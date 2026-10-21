@@ -4,6 +4,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Animais } from "./pages/Animais";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
+import { NovoUsuario } from "./pages/NovoUsuario";
 
 export default function App() {
   return (
@@ -24,6 +25,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Animais />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/usuarios/novo"
+            element={
+              <ProtectedRoute role="admin">
+                <NovoUsuario />
               </ProtectedRoute>
             }
           />

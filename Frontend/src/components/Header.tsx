@@ -14,7 +14,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+      <div className="flex w-full items-center justify-between px-4 py-3 md:px-6">
         <button
           onClick={() => navigate("/home")}
           className="flex items-center gap-3"
@@ -34,6 +34,14 @@ export function Header() {
           </span>
         </button>
         <div className="flex items-center gap-4">
+          {user?.role === "admin" && (
+            <button
+              onClick={() => navigate("/usuarios/novo")}
+              className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600"
+            >
+              Novo Usuário
+            </button>
+          )}
           <div className="flex items-center gap-2 border-l border-gray-200 pl-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A1A1A] text-xs font-bold text-white">
               {initials}

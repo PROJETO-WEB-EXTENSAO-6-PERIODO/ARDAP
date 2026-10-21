@@ -8,7 +8,8 @@ from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.security import create_access_token, verify_password
 from app.models.user import User
-from app.schemas.auth import LoginIn, TokenOut, UserOut
+from app.schemas.auth import LoginIn, TokenOut
+from app.schemas.user import UserOut
 
 router = APIRouter(tags=["auth"])
 
@@ -27,5 +28,5 @@ def login(data: LoginIn, db: Session = Depends(get_db)):
 def me(user: User = Depends(get_current_user)):
     return UserOut(
         id=user.id, email=user.email, role=user.role,
-        first_name=user.first_name,
+        first_name=user.first_name, second_name=user.second_name,
     )
