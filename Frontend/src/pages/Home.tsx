@@ -103,7 +103,10 @@ export function Home() {
                 <span className="h-2 w-2 rounded-full bg-[#DC3545]"></span>
                 3 resgates em fila
               </div>
-              <button className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 active:scale-95">
+              <button
+                onClick={() => navigate("/supatas")}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 active:scale-95"
+              >
                 <span>Acessar</span>
                 <i className="bi bi-arrow-right text-[18px] transition-transform group-hover:translate-x-0.5"></i>
               </button>

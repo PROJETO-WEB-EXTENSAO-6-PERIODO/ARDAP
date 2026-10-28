@@ -1,11 +1,8 @@
 """Cadastro e listagem de animais (RF03 + RF10 parcial).
 
-POST cria o animal + o registro de entrada (intake) na mesma transacao:
-funcionario logado, data de hoje e situacao 'outros'/'Cadastro via
-formulario' — provisório até a tela dedicada do SUPATAS.
+POST cria apenas o cadastro do animal. Registros de entrada via SUPATAS
+devem ser feitos pelo endpoint dedicado /supatas.
 """
-
-from datetime import date
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy import or_, select
@@ -14,7 +11,6 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.animal import Animal
-from app.models.intake import SupatasIntake
 from app.models.user import User
 from app.schemas.animal import AnimalIn, AnimalOut
 
@@ -60,17 +56,6 @@ def create_animal(
         observacoes=data.observacoes,
     )
     db.add(animal)
-    db.flush()
-    db.add(
-        SupatasIntake(
-            animal_id=animal.id,
-            funcionario_id=user.id,
-            data_encaminhamento=date.today(),
-            situacao_animal="outros",
-            situacao_animal_outros_desc="Cadastro via formulario",
-            local_recolhimento=data.origem_resgate,
-        )
-    )
     db.commit()
     db.refresh(animal)
     return _to_out(animal)

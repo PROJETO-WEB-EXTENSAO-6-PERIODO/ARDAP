@@ -14,8 +14,8 @@ class SupatasIntake(Base):
     __tablename__ = "supatas_intake"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    animal_id: Mapped[int] = mapped_column(nullable=False)
-    funcionario_id: Mapped[int] = mapped_column(nullable=False)
+    animal_id: Mapped[int | None] = mapped_column(nullable=True)
+    funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
     orgao_solicitante: Mapped[str | None] = mapped_column(
         String(150), nullable=True
     )

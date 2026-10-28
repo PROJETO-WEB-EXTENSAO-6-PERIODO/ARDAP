@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import animais, auth, users
+from app.routers import animais, auth, supatas, users
 
 app = FastAPI(title="ARDAP API", version="0.1.0")
 
@@ -24,4 +24,5 @@ def health():
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(supatas.router)
 app.include_router(animais.router)

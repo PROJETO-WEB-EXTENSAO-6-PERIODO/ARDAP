@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS animais (
 
 CREATE TABLE IF NOT EXISTS supatas_intake (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    animal_id INT NOT NULL,
-    funcionario_id INT NOT NULL,
+    animal_id INT,
+    funcionario_id INT,
     orgao_solicitante VARCHAR(150),
     nome_responsavel_encaminhamento VARCHAR(150),
     data_encaminhamento DATE,
