@@ -5,6 +5,7 @@ import { Animais } from "./pages/Animais";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NovoUsuario } from "./pages/NovoUsuario";
+import { Supatas } from "./pages/Supatas";
 
 export default function App() {
   return (
@@ -33,6 +34,14 @@ export default function App() {
             element={
               <ProtectedRoute role="admin">
                 <NovoUsuario />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supatas"
+            element={
+              <ProtectedRoute>
+                <Supatas />
               </ProtectedRoute>
             }
           />
