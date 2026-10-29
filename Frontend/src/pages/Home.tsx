@@ -112,6 +112,38 @@ export function Home() {
               </button>
             </div>
           </article>
+
+          <article className="group flex cursor-pointer flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 transition-all duration-150 hover:shadow-md">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-gray-100 text-xl text-[#1A1A1A] transition-colors duration-200 group-hover:bg-[#FFD900]">
+                  <i className="bi bi-heart"></i>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+                  Guarda Responsável
+                </span>
+              </div>
+              <div>
+                <h3 className="font-bold">Adoções</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Questionários, termos de adoção e declarações.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between border-t pt-4">
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <span className="h-2 w-2 rounded-full bg-[#6F5D00]"></span>
+                5 termos aguardando
+              </div>
+              <button
+                onClick={() => navigate("/adocoes")}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 active:scale-95"
+              >
+                <span>Acessar</span>
+                <i className="bi bi-arrow-right text-[18px] transition-transform group-hover:translate-x-0.5"></i>
+              </button>
+            </div>
+          </article>
         </div>
       </main>
     </div>
