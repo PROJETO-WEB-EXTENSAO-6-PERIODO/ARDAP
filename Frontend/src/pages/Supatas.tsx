@@ -253,7 +253,7 @@ export function Supatas() {
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+              <span className="inline-flex items-center rounded-full bg-[#FFD900] px-2.5 py-1 text-xs font-medium text-[#1A1A1A]">
                 Encaminhamento Municipal
               </span>
             </div>
@@ -306,9 +306,6 @@ export function Supatas() {
                     Campo obrigatório
                   </p>
                 )}
-                <span className="font-body-sm text-secondary">
-                  Servidor ou agente municipal que entregou o animal.
-                </span>
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -334,9 +331,6 @@ export function Supatas() {
                     Campo obrigatório
                   </p>
                 )}
-                <span className="font-body-sm text-secondary">
-                  Conforme data carimbada na guia SUPATAS.
-                </span>
               </div>
             </div>
           </article>
@@ -357,7 +351,7 @@ export function Supatas() {
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center rounded-full bg-[#fdecea] px-2 py-0.5 text-xs font-medium text-[#dc2626]">
+              <span className="inline-flex items-center rounded-full bg-[#FFD900] px-2.5 py-1 text-xs font-medium text-[#1A1A1A]">
                 Campos Obrigatórios *
               </span>
             </div>
@@ -455,9 +449,6 @@ export function Supatas() {
                     Campo obrigatório
                   </p>
                 )}
-                <span className="font-body-sm text-secondary">
-                  Conforme visualização inicial ou ficha física.
-                </span>
               </div>
             </div>
 
@@ -548,9 +539,6 @@ export function Supatas() {
                     Campo obrigatório
                   </p>
                 )}
-                <span className="font-body-sm text-secondary">
-                  Ponto de referência de Paulo Afonso informado na ficha.
-                </span>
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -567,9 +555,6 @@ export function Supatas() {
                   placeholder="Nome do cidadão ou voluntário que realizou o resgate"
                   className={inputCls}
                 />
-                <span className="font-body-sm text-secondary">
-                  Preencher apenas se diferente do servidor SUPATAS.
-                </span>
               </div>
             </div>
           </article>
@@ -590,7 +575,10 @@ export function Supatas() {
                   </p>
                 </div>
               </div>
-              <span className="material-symbols-outlined">gavel</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFD900] px-2.5 py-1 text-xs font-medium text-[#1A1A1A]">
+                <i className="bi bi-file-earmark-text"></i>
+                Termo Oficial
+              </span>
             </div>
 
             <div className="p-4 rounded-xl bg-[#f8f9ff] text-[#1A1A1A] flex flex-col gap-2.5 shadow-inner">
@@ -626,10 +614,6 @@ export function Supatas() {
                 placeholder="Descreva aqui o parecer inicial, condições visíveis do animal no ato da entrega e observações pertinentes..."
                 className={inputCls}
               />
-              <span className="font-body-sm text-secondary">
-                Transcrever qualquer anotação manuscrita presente no verso da
-                folha de encaminhamento.
-              </span>
             </div>
           </article>
 
@@ -649,7 +633,7 @@ export function Supatas() {
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+              <span className="inline-flex items-center rounded-full bg-[#FFD900] px-2.5 py-1 text-xs font-medium text-[#1A1A1A]">
                 Órgão Emissor
               </span>
             </div>
@@ -711,7 +695,7 @@ export function Supatas() {
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center rounded-full bg-[#FFD900] px-2 py-0.5 text-xs font-medium text-[#1A1A1A]">
+              <span className="inline-flex items-center rounded-full bg-[#FFD900] px-2.5 py-1 text-xs font-medium text-[#1A1A1A]">
                 Colaborador Conectado
               </span>
             </div>
@@ -785,7 +769,7 @@ export function Supatas() {
                   onClick={() => setAssinaturaArdap("")}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-secondary hover:text-error hover:bg-red-50 text-label-md font-label-md transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[16px]">backspace</span>
+                  <i className="bi bi-eraser text-[16px]"></i>
                   Limpar Assinatura
                 </button>
               </div>
