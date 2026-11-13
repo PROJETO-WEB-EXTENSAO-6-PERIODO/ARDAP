@@ -13,6 +13,10 @@ const SITUACOES = [
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
 
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export function Supatas() {
   // Seção 1 – Órgão solicitante
   const orgaoSolicitante =
@@ -59,14 +63,14 @@ export function Supatas() {
         setRecebidoPor("Colaborador ARDAP");
       }
     }
-    const hoje = new Date().toISOString().slice(0, 10);
+    const hoje = todayISO();
     setDataEncaminhamento(hoje);
     setDataRecebimento(hoje);
   }, []);
 
   function resetForm() {
     setResponsavel("");
-    setDataEncaminhamento("");
+    setDataEncaminhamento(todayISO());
     setEspecie("");
     setEspecieOutro("");
     setSexo("");
@@ -78,7 +82,10 @@ export function Supatas() {
     setRelatorio("");
     setCpfResponsavel("");
     setAssinaturaSupatas("");
+    setAssinaturaArdap("");
+    setDataRecebimento(todayISO());
     setTriedSubmit(false);
+    setFormError("");
   }
 
   function maskCPF(v: string) {
@@ -143,12 +150,23 @@ export function Supatas() {
         orgao_solicitante: orgaoSolicitante,
         nome_responsavel_encaminhamento: responsavel.trim(),
         data_encaminhamento: dataEncaminhamento,
+        especie: especie,
+        especie_outro: especie === "outro" ? especieOutro.trim() || null : null,
+        sexo: sexo,
+        nome_animal: nomeAnimal.trim() || null,
         situacao_animal: situacao,
         situacao_animal_outros_desc:
           situacao === "outros" ? situacaoOutros.trim() || null : null,
         local_recolhimento: localRecolhimento.trim() || null,
         nome_resgatista: nomeResgatista.trim() || null,
         relatorio: relatorio.trim() || null,
+        recebido_por: recebidoPor.trim() || null,
+        data_recebimento: dataRecebimento || null,
+        cpf_responsavel_supatas: cpfResponsavel.replace(/\D/g, "")
+          ? cpfResponsavel.trim()
+          : null,
+        assinatura_responsavel_supatas: assinaturaSupatas.trim() || null,
+        assinatura_recebimento_ardap: assinaturaArdap.trim() || null,
       });
       setSuccess(true);
       resetForm();
@@ -764,6 +782,7 @@ export function Supatas() {
               <div className="flex justify-end">
                 <button
                   type="button"
+                  onClick={() => setAssinaturaArdap("")}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-secondary hover:text-error hover:bg-red-50 text-label-md font-label-md transition-colors"
                 >
                   <span className="material-symbols-outlined text-[16px]">backspace</span>

@@ -23,6 +23,17 @@ class SupatasIntake(Base):
         String(150), nullable=True
     )
     data_encaminhamento: Mapped[date | None] = mapped_column(Date, nullable=True)
+    especie: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    especie_outro: Mapped[str | None] = mapped_column(
+        String(100), nullable=True
+    )
+    sexo: Mapped[str | None] = mapped_column(
+        Enum("macho", "femea", name="sexo_intake_enum"),
+        nullable=True,
+    )
+    nome_animal: Mapped[str | None] = mapped_column(
+        String(100), nullable=True
+    )
     situacao_animal: Mapped[str | None] = mapped_column(
         Enum("acidentado", "doente", "castracao", "outros",
              name="situacao_enum"),
@@ -38,4 +49,19 @@ class SupatasIntake(Base):
         String(150), nullable=True
     )
     relatorio: Mapped[str | None] = mapped_column(Text, nullable=True)
+    recebido_por: Mapped[str | None] = mapped_column(
+        String(150), nullable=True
+    )
+    data_recebimento: Mapped[date | None] = mapped_column(
+        Date, nullable=True
+    )
+    cpf_responsavel_supatas: Mapped[str | None] = mapped_column(
+        String(20), nullable=True
+    )
+    assinatura_responsavel_supatas: Mapped[str | None] = mapped_column(
+        Text, nullable=True
+    )
+    assinatura_recebimento_ardap: Mapped[str | None] = mapped_column(
+        Text, nullable=True
+    )
     created_at = mapped_column(DateTime, server_default=func.now())
