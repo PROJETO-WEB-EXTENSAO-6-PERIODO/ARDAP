@@ -1,0 +1,266 @@
+{
+  "configuracao": {
+    "semente": 42,
+    "janela_dias": 30,
+    "features": [
+      "especie",
+      "sexo",
+      "esterilizado",
+      "idade_dias",
+      "idade_ausente",
+      "raca_principal",
+      "misto",
+      "cor_principal",
+      "tipo_entrada",
+      "condicao_entrada",
+      "mes_entrada"
+    ]
+  },
+  "base": {
+    "linhas": 173341,
+    "positivos": 55754,
+    "taxa_positivos": 0.32164346576978325,
+    "descartados": 471,
+    "periodo": "10/2013 a 05/2025",
+    "divisao": "121.338 treino / 26.001 validacao / 26.002 teste"
+  },
+  "validacao": {
+    "Baseline (classe majoritaria)": {
+      "threshold": 0.5,
+      "acuracia": 0.678358524672128,
+      "precisao": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "f1_macro": 0.40417974747359015,
+      "roc_auc": 0.5,
+      "pr_auc": 0.321641475327872,
+      "matriz_confusao": [
+        [
+          17638,
+          0
+        ],
+        [
+          8363,
+          0
+        ]
+      ],
+      "n": 26001,
+      "positivos": 8363
+    },
+    "Regressao Logistica": {
+      "threshold": 0.5,
+      "acuracia": 0.6531671858774662,
+      "precisao": 0.47486762335968075,
+      "recall": 0.739925863924429,
+      "f1": 0.5784799476488736,
+      "f1_macro": 0.6419255462238095,
+      "roc_auc": 0.7442989362224716,
+      "pr_auc": 0.5270310150784439,
+      "matriz_confusao": [
+        [
+          10795,
+          6843
+        ],
+        [
+          2175,
+          6188
+        ]
+      ],
+      "n": 26001,
+      "positivos": 8363
+    },
+    "Random Forest": {
+      "threshold": 0.5,
+      "acuracia": 0.7046267451251875,
+      "precisao": 0.5264913505546506,
+      "recall": 0.8115508788712185,
+      "f1": 0.6386562529406229,
+      "f1_macro": 0.6944419550120052,
+      "roc_auc": 0.8036504320613627,
+      "pr_auc": 0.6273151963427401,
+      "matriz_confusao": [
+        [
+          11534,
+          6104
+        ],
+        [
+          1576,
+          6787
+        ]
+      ],
+      "n": 26001,
+      "positivos": 8363
+    },
+    "Gradient Boosting": {
+      "threshold": 0.5,
+      "acuracia": 0.7117033960232299,
+      "precisao": 0.5339973335424673,
+      "recall": 0.8141815138108335,
+      "f1": 0.6449748981718291,
+      "f1_macro": 0.7011458277442932,
+      "roc_auc": 0.8147514612126424,
+      "pr_auc": 0.6421968811592641,
+      "matriz_confusao": [
+        [
+          11696,
+          5942
+        ],
+        [
+          1554,
+          6809
+        ]
+      ],
+      "n": 26001,
+      "positivos": 8363
+    }
+  },
+  "teste": {
+    "Baseline (classe majoritaria)": {
+      "threshold": 0.5,
+      "acuracia": 0.6783708945465733,
+      "precisao": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "f1_macro": 0.40418413876858916,
+      "roc_auc": 0.5,
+      "pr_auc": 0.32162910545342666,
+      "matriz_confusao": [
+        [
+          17639,
+          0
+        ],
+        [
+          8363,
+          0
+        ]
+      ],
+      "n": 26002,
+      "positivos": 8363
+    },
+    "Regressao Logistica": {
+      "threshold": 0.5,
+      "acuracia": 0.6510653026690255,
+      "precisao": 0.4729914790018259,
+      "recall": 0.7433935190721033,
+      "f1": 0.5781373506300275,
+      "f1_macro": 0.6403163390196405,
+      "roc_auc": 0.7445008372947566,
+      "pr_auc": 0.5308649322654899,
+      "matriz_confusao": [
+        [
+          10712,
+          6927
+        ],
+        [
+          2146,
+          6217
+        ]
+      ],
+      "n": 26002,
+      "positivos": 8363
+    },
+    "Random Forest": {
+      "threshold": 0.5,
+      "acuracia": 0.702869010076148,
+      "precisao": 0.5245245245245245,
+      "recall": 0.8145402367571446,
+      "f1": 0.6381264637002342,
+      "f1_macro": 0.6930437890367811,
+      "roc_auc": 0.8025705589976208,
+      "pr_auc": 0.6192934034937388,
+      "matriz_confusao": [
+        [
+          11464,
+          6175
+        ],
+        [
+          1551,
+          6812
+        ]
+      ],
+      "n": 26002,
+      "positivos": 8363
+    },
+    "Gradient Boosting": {
+      "threshold": 0.49000000000000005,
+      "acuracia": 0.7060995308053226,
+      "precisao": 0.527580139239538,
+      "recall": 0.8245844792538563,
+      "f1": 0.6434636558738452,
+      "f1_macro": 0.6967400058891634,
+      "roc_auc": 0.8150415316868513,
+      "pr_auc": 0.6475467235585693,
+      "matriz_confusao": [
+        [
+          11464,
+          6175
+        ],
+        [
+          1467,
+          6896
+        ]
+      ],
+      "n": 26002,
+      "positivos": 8363
+    }
+  },
+  "melhor_modelo": "Gradient Boosting",
+  "threshold": 0.49000000000000005,
+  "importancia": [
+    {
+      "feature": "idade_dias",
+      "importancia_media": 0.15861570540991768,
+      "desvio": 0.005358694875148889
+    },
+    {
+      "feature": "tipo_entrada",
+      "importancia_media": 0.04959834279708508,
+      "desvio": 0.005331853018922914
+    },
+    {
+      "feature": "sexo",
+      "importancia_media": 0.033856310252940294,
+      "desvio": 0.00311049776262171
+    },
+    {
+      "feature": "raca_principal",
+      "importancia_media": 0.030222938785570475,
+      "desvio": 0.0035503074688648024
+    },
+    {
+      "feature": "condicao_entrada",
+      "importancia_media": 0.029007241979063503,
+      "desvio": 0.002477745041227695
+    },
+    {
+      "feature": "especie",
+      "importancia_media": 0.01247866586678208,
+      "desvio": 0.0011889754083786836
+    },
+    {
+      "feature": "esterilizado",
+      "importancia_media": 0.007184429221833111,
+      "desvio": 0.0014966012492153898
+    },
+    {
+      "feature": "mes_entrada",
+      "importancia_media": 0.004146727681124984,
+      "desvio": 0.001532021723970499
+    },
+    {
+      "feature": "misto",
+      "importancia_media": 0.00031446047314105386,
+      "desvio": 0.00027342157064441696
+    },
+    {
+      "feature": "idade_ausente",
+      "importancia_media": 0.0,
+      "desvio": 0.0
+    },
+    {
+      "feature": "cor_principal",
+      "importancia_media": -4.115685645322831e-05,
+      "desvio": 0.0006025020078436037
+    }
+  ]
+}
