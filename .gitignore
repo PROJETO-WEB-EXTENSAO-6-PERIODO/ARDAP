@@ -26,3 +26,9 @@ Thumbs.db
 
 # Uploads locais (assinaturas, fotos)
 uploads/
+
+# Dados brutos da IA (baixados por ai-model/scripts/baixar_dados.py)
+datasets/raw/
+
+# Jupyter
+.ipynb_checkpoints/
