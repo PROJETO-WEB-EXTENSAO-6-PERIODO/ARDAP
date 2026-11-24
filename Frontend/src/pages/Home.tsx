@@ -10,6 +10,8 @@ export function Home() {
   const [totalAnimais, setTotalAnimais] = useState<number | null>(null);
   const [totalSupatas, setTotalSupatas] = useState<number | null>(null);
   const [totalAdocoes, setTotalAdocoes] = useState<number | null>(null);
+  const [totalCastracoes, setTotalCastracoes] = useState<number | null>(null);
+  const [totalCirurgias, setTotalCirurgias] = useState<number | null>(null);
 
   useEffect(() => {
     api
@@ -26,6 +28,16 @@ export function Home() {
       .get("/adocoes/contagem")
       .then(({ data }) => setTotalAdocoes(data.total))
       .catch(() => setTotalAdocoes(null));
+
+    api
+      .get("/castracoes/contagem")
+      .then(({ data }) => setTotalCastracoes(data.total))
+      .catch(() => setTotalCastracoes(null));
+
+    api
+      .get("/cirurgias/contagem")
+      .then(({ data }) => setTotalCirurgias(data.total))
+      .catch(() => setTotalCirurgias(null));
   }, []);
 
   return (
@@ -185,7 +197,11 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                8 agendadas este mês
+                {totalCastracoes === null
+                  ? "Carregando..."
+                  : totalCastracoes === 0
+                    ? "Nenhum registro ainda"
+                    : `${totalCastracoes} registro${totalCastracoes === 1 ? "" : "s"}`}
               </div>
               <button
                 onClick={() => navigate("/castracoes")}
@@ -217,7 +233,11 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-[#6F5D00]"></span>
-                2 termos pendentes
+                {totalCirurgias === null
+                  ? "Carregando..."
+                  : totalCirurgias === 0
+                    ? "Nenhum registro ainda"
+                    : `${totalCirurgias} registro${totalCirurgias === 1 ? "" : "s"}`}
               </div>
               <button
                 onClick={() => navigate("/cirurgias")}

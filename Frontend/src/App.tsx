@@ -6,6 +6,7 @@ import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NovoUsuario } from "./pages/NovoUsuario";
 import { Supatas } from "./pages/Supatas";
+import { Adocao } from "./pages/Adocao";
 
 export default function App() {
   return (
@@ -42,6 +43,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Supatas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/adocoes"
+            element={
+              <ProtectedRoute>
+                <Adocao />
               </ProtectedRoute>
             }
           />

@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS termo_adocao (
     local_na_casa VARCHAR(255),
 
     -- Questionario de adocao (p.1)
-    especie_adocao ENUM('canino', 'felino') NOT NULL,
+    especie_adocao ENUM('canino', 'felino'),
     outros_animais BOOLEAN NOT NULL DEFAULT FALSE,
     quantos_animais INT,
     espaco_casa BOOLEAN NOT NULL DEFAULT FALSE,
