@@ -4,7 +4,7 @@ POST cria apenas o cadastro do animal. Registros de entrada via SUPATAS
 devem ser feitos pelo endpoint dedicado /supatas.
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
@@ -20,12 +20,14 @@ router = APIRouter(tags=["animais"])
 def _to_out(a: Animal) -> AnimalOut:
     return AnimalOut(
         id=a.id, nome=a.nome, especie=a.especie, raca=a.raca, sexo=a.sexo,
+        data_nascimento_estimada=a.data_nascimento_estimada,
+        idade_estimada=a.idade_estimada,
         porte=a.porte, cor_pelo=a.cor_pelo, peso=a.peso,
         castrado=bool(a.castrado), vermifugado=bool(a.vermifugado),
         vacinado=bool(a.vacinado), temperamento=a.temperamento,
         medicacao_necessaria=bool(a.medicacao_necessaria),
         medicacao_desc=a.medicacao_desc, origem_resgate=a.origem_resgate,
-        observacoes=a.observacoes,
+        observacoes=a.observacoes, created_at=a.created_at,
     )
 
 
@@ -77,3 +79,18 @@ def list_animais(
             or_(Animal.nome.like(like), Animal.cor_pelo.like(like))
         )
     return [_to_out(a) for a in db.scalars(stmt).all()]
+
+
+@router.get("/animais/{animal_id}", response_model=AnimalOut)
+def get_animal(
+    animal_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    animal = db.get(Animal, animal_id)
+    if animal is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Animal não encontrado.",
+        )
+    return _to_out(animal)

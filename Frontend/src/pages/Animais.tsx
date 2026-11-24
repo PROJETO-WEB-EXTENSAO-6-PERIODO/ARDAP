@@ -1,16 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
-
-interface AnimalRow {
-  id: number;
-  nome: string | null;
-  especie: string;
-  sexo: string;
-  porte: string | null;
-  castrado: boolean;
-}
 
 const ESPECIES = [
   { value: "", label: "Selecione a espécie..." },
@@ -70,6 +61,7 @@ function Toggle({
 }
 
 export function Animais() {
+  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [especie, setEspecie] = useState("");
   const [raca, setRaca] = useState("");
@@ -89,39 +81,12 @@ export function Animais() {
   const [observacoes, setObservacoes] = useState("");
 
   const [formError, setFormError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   const [triedSubmit, setTriedSubmit] = useState(false);
-
-  const [rows, setRows] = useState<AnimalRow[]>([]);
-  const [filtroEspecie, setFiltroEspecie] = useState("");
-  const [busca, setBusca] = useState("");
-
-  const load = useCallback(async () => {
-    const params: Record<string, string> = {};
-    if (filtroEspecie) params.especie = filtroEspecie;
-    if (busca.trim()) params.search = busca.trim();
-    const { data } = await api.get("/animais", { params });
-    setRows(data);
-  }, [filtroEspecie, busca]);
-
-  useEffect(() => {
-    load().catch(() => {});
-  }, [load]);
-
-  function resetForm() {
-    setNome(""); setEspecie(""); setRaca(""); setSexo("");
-    setNascimento(""); setIdade(""); setPorte(""); setCor("");
-    setPeso(""); setCastrado(false); setVermifugado(false);
-    setVacinado(false); setMedicacao(false); setMedicacaoDesc("");
-    setOrigem(""); setTemperamento(""); setObservacoes("");
-    setTriedSubmit(false);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
-    setSuccess(false);
     setTriedSubmit(true);
     if (!especie || !sexo) {
       setFormError("Preencha os campos obrigatórios (Espécie e Sexo).");
@@ -129,7 +94,7 @@ export function Animais() {
     }
     setSaving(true);
     try {
-      await api.post("/animais", {
+      const { data } = await api.post<{ id: number }>("/animais", {
         nome: nome.trim() || null,
         especie,
         raca: raca.trim() || null,
@@ -146,10 +111,11 @@ export function Animais() {
         origem_resgate: origem.trim() || null,
         observacoes: observacoes.trim() || null,
       });
-      setSuccess(true);
-      resetForm();
-      await load();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // replace: o botão voltar não reabre o formulário já enviado
+      navigate(`/animais/${data.id}`, {
+        replace: true,
+        state: { cadastrado: true },
+      });
     } catch {
       setFormError("Não foi possível salvar. Confira os dados e tente de novo.");
     } finally {
@@ -190,26 +156,6 @@ export function Animais() {
             obrigatórios.
           </p>
         </section>
-
-        {success && (
-          <div className="flex items-center justify-between rounded-xl border border-green-300 bg-green-100 p-4 text-green-800 shadow-sm">
-            <div className="flex items-center gap-2.5">
-              <i className="bi bi-check-circle text-[22px]"></i>
-              <span className="text-sm font-medium">
-                Animal cadastrado com sucesso! Os dados foram registrados no
-                sistema.
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSuccess(false)}
-              className="p-1 hover:text-green-900"
-              aria-label="Fechar aviso"
-            >
-              <i className="bi bi-x text-[18px]"></i>
-            </button>
-          </div>
-        )}
 
         {formError && (
           <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm font-medium text-[#DC2626]">
@@ -646,75 +592,6 @@ export function Animais() {
             </button>
           </div>
         </form>
-
-        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-[#1A1A1A]">
-                Animais cadastrados
-              </h2>
-              <p className="text-sm text-gray-500">
-                {rows.length === 0
-                  ? "Nenhum registro ainda."
-                  : `${rows.length} registro(s).`}
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <select
-                value={filtroEspecie}
-                onChange={(e) => setFiltroEspecie(e.target.value)}
-                className={`${inputCls} cursor-pointer sm:w-44`}
-                aria-label="Filtrar por espécie"
-              >
-                <option value="">Todas as espécies</option>
-                <option value="cao">Cão</option>
-                <option value="gato">Gato</option>
-                <option value="outro">Outro</option>
-              </select>
-              <input
-                type="text"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar por nome..."
-                className={`${inputCls} sm:w-56`}
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b text-gray-500">
-                  <th className="py-2 pr-4 font-semibold">Nome</th>
-                  <th className="py-2 pr-4 font-semibold">Espécie</th>
-                  <th className="py-2 pr-4 font-semibold">Sexo</th>
-                  <th className="py-2 pr-4 font-semibold">Porte</th>
-                  <th className="py-2 font-semibold">Castrado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id} className="border-b last:border-0">
-                    <td className="py-2 pr-4 font-medium">
-                      {r.nome || "—"}
-                    </td>
-                    <td className="py-2 pr-4 capitalize">{r.especie}</td>
-                    <td className="py-2 pr-4 capitalize">{r.sexo}</td>
-                    <td className="py-2 pr-4 capitalize">{r.porte || "—"}</td>
-                    <td className="py-2">{r.castrado ? "Sim" : "Não"}</td>
-                  </tr>
-                ))}
-                {rows.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="py-4 text-center text-gray-500">
-                      Nada por aqui ainda — cadastre o primeiro animal acima.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
       </main>
 
       <footer className="mt-auto w-full border-t bg-white">
