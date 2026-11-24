@@ -37,3 +37,12 @@ def contar_hipossuficiencias(
 ):
     total = db.execute(text("SELECT COUNT(*) FROM hipossuficiencia")).scalar_one()
     return ContagemOut(total=total)
+
+
+@router.get("/eutanasias/contagem", response_model=ContagemOut)
+def contar_eutanasias(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    total = db.execute(text("SELECT COUNT(*) FROM eutanasia")).scalar_one()
+    return ContagemOut(total=total)
