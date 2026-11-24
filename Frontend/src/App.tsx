@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Animais } from "./pages/Animais";
 import { Castracao } from "./pages/Castracao";
+import { Cirurgia } from "./pages/Cirurgia";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NovoUsuario } from "./pages/NovoUsuario";
@@ -36,6 +37,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Castracao />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cirurgias"
+            element={
+              <ProtectedRoute>
+                <Cirurgia />
               </ProtectedRoute>
             }
           />

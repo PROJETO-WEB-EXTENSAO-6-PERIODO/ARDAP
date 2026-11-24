@@ -300,7 +300,7 @@ export function Castracao() {
                 <input
                   type="text"
                   value={numero}
-                  onChange={(e) => setNumero(e.target.value)}
+                  onChange={(e) => setNumero(onlyDigits(e.target.value, 10))}
                   className={inputCls}
                 />
               </div>
