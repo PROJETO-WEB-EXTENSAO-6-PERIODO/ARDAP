@@ -4,6 +4,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Animais } from "./pages/Animais";
 import { Castracao } from "./pages/Castracao";
 import { Cirurgia } from "./pages/Cirurgia";
+import { Hipossuficiencia } from "./pages/Hipossuficiencia";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NovoUsuario } from "./pages/NovoUsuario";
@@ -45,6 +46,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Cirurgia />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hipossuficiencias"
+            element={
+              <ProtectedRoute>
+                <Hipossuficiencia />
               </ProtectedRoute>
             }
           />
