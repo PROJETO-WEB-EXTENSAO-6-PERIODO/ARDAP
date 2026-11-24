@@ -14,42 +14,18 @@ export function Home() {
   const [totalCirurgias, setTotalCirurgias] = useState<number | null>(null);
   const [totalHipossuficiencia, setTotalHipossuficiencia] = useState<number | null>(null);
   const [totalEutanasia, setTotalEutanasia] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    api
-      .get("/animais")
-      .then(({ data }) => setTotalAnimais(data.length))
-      .catch(() => setTotalAnimais(null));
-
-    api
-      .get("/supatas")
-      .then(({ data }) => setTotalSupatas(data.length))
-      .catch(() => setTotalSupatas(null));
-
-    api
-      .get("/adocoes/contagem")
-      .then(({ data }) => setTotalAdocoes(data.total))
-      .catch(() => setTotalAdocoes(null));
-
-    api
-      .get("/castracoes/contagem")
-      .then(({ data }) => setTotalCastracoes(data.total))
-      .catch(() => setTotalCastracoes(null));
-
-    api
-      .get("/cirurgias/contagem")
-      .then(({ data }) => setTotalCirurgias(data.total))
-      .catch(() => setTotalCirurgias(null));
-
-    api
-      .get("/hipossuficiencias/contagem")
-      .then(({ data }) => setTotalHipossuficiencia(data.total))
-      .catch(() => setTotalHipossuficiencia(null));
-
-    api
-      .get("/eutanasias/contagem")
-      .then(({ data }) => setTotalEutanasia(data.total))
-      .catch(() => setTotalEutanasia(null));
+    Promise.allSettled([
+      api.get("/animais").then(({ data }) => setTotalAnimais(data.length)).catch(() => setTotalAnimais(null)),
+      api.get("/supatas").then(({ data }) => setTotalSupatas(data.length)).catch(() => setTotalSupatas(null)),
+      api.get("/adocoes/contagem").then(({ data }) => setTotalAdocoes(data.total)).catch(() => setTotalAdocoes(null)),
+      api.get("/castracoes/contagem").then(({ data }) => setTotalCastracoes(data.total)).catch(() => setTotalCastracoes(null)),
+      api.get("/cirurgias/contagem").then(({ data }) => setTotalCirurgias(data.total)).catch(() => setTotalCirurgias(null)),
+      api.get("/hipossuficiencias/contagem").then(({ data }) => setTotalHipossuficiencia(data.total)).catch(() => setTotalHipossuficiencia(null)),
+      api.get("/eutanasias/contagem").then(({ data }) => setTotalEutanasia(data.total)).catch(() => setTotalEutanasia(null)),
+    ]).finally(() => setLoaded(true));
   }, []);
 
   return (
@@ -96,9 +72,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                {totalAnimais === null
+                {!loaded
                   ? "Carregando..."
-                  : totalAnimais === 0
+                  : totalAnimais === null || totalAnimais === 0
                     ? "Nenhum registro ainda"
                     : `${totalAnimais} registro${totalAnimais === 1 ? "" : "s"} ativo${totalAnimais === 1 ? "" : "s"}`}
               </div>
@@ -137,9 +113,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-[#DC3545]"></span>
-                {totalSupatas === null
+                {!loaded
                   ? "Carregando..."
-                  : totalSupatas === 0
+                  : totalSupatas === null || totalSupatas === 0
                     ? "Nenhum registro ainda"
                     : `${totalSupatas} registro${totalSupatas === 1 ? "" : "s"}`}
               </div>
@@ -173,9 +149,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                {totalAdocoes === null
+                {!loaded
                   ? "Carregando..."
-                  : totalAdocoes === 0
+                  : totalAdocoes === null || totalAdocoes === 0
                     ? "Nenhum registro ainda"
                     : `${totalAdocoes} registro${totalAdocoes === 1 ? "" : "s"}`}
               </div>
@@ -209,9 +185,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                {totalCastracoes === null
+                {!loaded
                   ? "Carregando..."
-                  : totalCastracoes === 0
+                  : totalCastracoes === null || totalCastracoes === 0
                     ? "Nenhum registro ainda"
                     : `${totalCastracoes} registro${totalCastracoes === 1 ? "" : "s"}`}
               </div>
@@ -245,9 +221,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-[#6F5D00]"></span>
-                {totalCirurgias === null
+                {!loaded
                   ? "Carregando..."
-                  : totalCirurgias === 0
+                  : totalCirurgias === null || totalCirurgias === 0
                     ? "Nenhum registro ainda"
                     : `${totalCirurgias} registro${totalCirurgias === 1 ? "" : "s"}`}
               </div>
@@ -281,9 +257,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                {totalHipossuficiencia === null
+                {!loaded
                   ? "Carregando..."
-                  : totalHipossuficiencia === 0
+                  : totalHipossuficiencia === null || totalHipossuficiencia === 0
                     ? "Nenhum registro ainda"
                     : `${totalHipossuficiencia} registro${totalHipossuficiencia === 1 ? "" : "s"}`}
               </div>
@@ -317,9 +293,9 @@ export function Home() {
             <div className="mt-4 flex items-center justify-between border-t pt-4">
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-2 w-2 rounded-full bg-green-600"></span>
-                {totalEutanasia === null
+                {!loaded
                   ? "Carregando..."
-                  : totalEutanasia === 0
+                  : totalEutanasia === null || totalEutanasia === 0
                     ? "Nenhum registro ainda"
                     : `${totalEutanasia} registro${totalEutanasia === 1 ? "" : "s"}`}
               </div>
