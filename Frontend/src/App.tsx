@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Animais } from "./pages/Animais";
+import { Castracao } from "./pages/Castracao";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { NovoUsuario } from "./pages/NovoUsuario";
@@ -27,6 +28,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Animais />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/castracoes"
+            element={
+              <ProtectedRoute>
+                <Castracao />
               </ProtectedRoute>
             }
           />
