@@ -470,22 +470,22 @@ export function Eutanasia() {
             </div>
           </article>
 
-          <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              onClick={resetForm}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-[#1A1A1A] transition-all duration-150 hover:bg-gray-50 active:scale-95"
+          <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
+            <Link
+              to="/home"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
-              <i className="bi bi-arrow-counterclockwise"></i>
-              <span>Limpar</span>
-            </button>
+              Cancelar
+            </Link>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 active:scale-95 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <i className="bi bi-check-lg"></i>
-              <span>{saving ? "Salvando..." : "Salvar termo"}</span>
+              <span>{saving ? "Salvando..." : "Salvar Termo de Eutanásia"}</span>
+              {!saving && (
+                <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
+              )}
             </button>
           </div>
         </form>
