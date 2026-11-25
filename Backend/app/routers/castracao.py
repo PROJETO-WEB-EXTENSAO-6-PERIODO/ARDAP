@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
-from app.core.animal_vinculo import validar_animal
+from app.core.animal_vinculo import marcar_castrado, validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.edicao import editar_registro
@@ -48,6 +48,7 @@ def create_castracao(
         local_assinatura=data.local_assinatura,
         data_assinatura=data.data_assinatura,
     )
+    marcar_castrado(db, data.animal_id, user)
     db.add(castracao)
     db.commit()
     db.refresh(castracao)
@@ -83,4 +84,7 @@ def update_castracao(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    return editar_registro(db, get_castracao(castracao_id, db, user), data, user)
+    castracao = get_castracao(castracao_id, db, user)
+    # so vale com o commit de editar_registro, que antes valida o vinculo
+    marcar_castrado(db, data.animal_id, user)
+    return editar_registro(db, castracao, data, user)

@@ -5,6 +5,7 @@ Rodar, dentro de Backend/:  python -m app.seeders.castracao
 
 from sqlalchemy.orm import Session
 
+from app.models.animal import Animal
 from app.models.castracao import Castracao
 from app.seeders.comum import executar
 from app.seeders.procedimentos import semear_procedimentos
@@ -23,7 +24,12 @@ REGISTROS = [
 
 
 def semear_castracoes(db: Session) -> int:
-    return semear_procedimentos(db, Castracao, REGISTROS)
+    criados = semear_procedimentos(db, Castracao, REGISTROS)
+    # como na API: o termo marca o animal como castrado
+    for termo in db.query(Castracao).filter(Castracao.animal_id.is_not(None)):
+        db.get(Animal, termo.animal_id).castrado = True
+    db.flush()
+    return criados
 
 
 if __name__ == "__main__":

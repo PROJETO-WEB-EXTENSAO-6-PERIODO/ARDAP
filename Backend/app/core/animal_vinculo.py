@@ -5,7 +5,9 @@ from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
 from app.models.animal import Animal
+from app.models.castracao import Castracao
 from app.models.eutanasia import Eutanasia
+from app.models.user import User
 
 
 def animal_eutanasiado():
@@ -29,3 +31,20 @@ def validar_animal(db: Session, animal_id: int | None) -> None:
             status_code=409,
             detail="Este animal já passou por eutanásia e não pode ser vinculado.",
         )
+
+
+def animal_com_termo_castracao():
+    """Condicao SQL: o animal tem um termo de castracao vinculado."""
+    return exists().where(Castracao.animal_id == Animal.id)
+
+
+def marcar_castrado(db: Session, animal_id: int | None, user: User) -> None:
+    """Marca o animal do termo como castrado, sem fazer commit.
+
+    Desvincular ou trocar o animal depois nao desfaz a marcacao: ele pode ter
+    sido castrado de qualquer forma.
+    """
+    animal = db.get(Animal, animal_id) if animal_id is not None else None
+    if animal is not None and not animal.castrado:
+        animal.castrado = True
+        animal.alterado_por_id = user.id
