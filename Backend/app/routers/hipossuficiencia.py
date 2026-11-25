@@ -10,6 +10,7 @@ from app.core import armazenamento
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.edicao import editar_registro
+from app.core.exclusao import excluir_registro
 from app.models.hipossuficiencia import Hipossuficiencia
 from app.models.hipossuficiencia_anexo import HipossuficienciaAnexo
 from app.models.user import User
@@ -179,3 +180,17 @@ def get_anexo(
             "X-Content-Type-Options": "nosniff",
         },
     )
+
+
+@router.delete("/hipossuficiencias/{hipossuficiencia_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_hipossuficiencia(
+    hipossuficiencia_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    h = get_hipossuficiencia(hipossuficiencia_id, db, user)
+    paths = [a.path for a in h.anexos]
+    excluir_registro(db, h)
+    # so apaga os arquivos depois que a exclusao esta garantida no banco
+    for path in paths:
+        armazenamento.apagar(path)

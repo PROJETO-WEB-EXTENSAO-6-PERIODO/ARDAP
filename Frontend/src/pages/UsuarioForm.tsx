@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { BotaoExcluir } from "../components/BotaoExcluir";
 import { Header } from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -385,6 +386,18 @@ export function UsuarioForm() {
                   <i className="bi bi-arrow-left"></i>
                   Cancelar
                 </button>
+                {id && !proprioUsuario && (
+                  <div className="sm:ml-auto">
+                    <BotaoExcluir
+                      rota="users"
+                      id={id}
+                      nome={`o usuário ${firstName} ${lastName}`}
+                      voltarPara="/usuarios"
+                      aviso="Usuário excluído com sucesso!"
+                      disabled={loading}
+                    />
+                  </div>
+                )}
                 <button
                   type="submit"
                   disabled={loading}

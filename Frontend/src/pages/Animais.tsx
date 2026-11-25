@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { BotaoExcluir } from "../components/BotaoExcluir";
 import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
@@ -790,13 +791,26 @@ export function Animais() {
             </article>
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
+          <div className={`grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm ${
+              editando ? "sm:grid-cols-3" : "sm:grid-cols-2"
+            }`}>
             <Link
               to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
             </Link>
+            {idEdicao && (
+              <BotaoExcluir
+                rota="animais"
+                id={idEdicao}
+                nome={`o animal nº ${idEdicao}`}
+                voltarPara="/animais/cadastrados"
+                descricao="Todos os registros deste animal nos módulos também serão excluídos."
+                aviso="Animal excluído com sucesso!"
+                disabled={saving}
+              />
+            )}
             <button
               type="submit"
               disabled={saving}

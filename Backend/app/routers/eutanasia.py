@@ -8,6 +8,7 @@ from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.edicao import editar_registro
+from app.core.exclusao import excluir_registro
 from app.models.eutanasia import Eutanasia
 from app.models.user import User
 from app.schemas.eutanasia import EutanasiaIn, EutanasiaOut
@@ -84,3 +85,12 @@ def update_eutanasia(
     user: User = Depends(get_current_user),
 ):
     return editar_registro(db, get_eutanasia(eutanasia_id, db, user), data, user)
+
+
+@router.delete("/eutanasias/{eutanasia_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_eutanasia(
+    eutanasia_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    excluir_registro(db, get_eutanasia(eutanasia_id, db, user))

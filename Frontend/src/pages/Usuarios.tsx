@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Autoria, type Autor } from "../components/Autoria";
+import { AvisoSucesso } from "../components/AvisoSucesso";
 import { Header } from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -33,12 +34,10 @@ function normalizar(texto: string) {
 
 export function Usuarios() {
   const { user } = useAuth();
-  const location = useLocation();
   const [usuarios, setUsuarios] = useState<Usuario[] | null>(null);
   const [erro, setErro] = useState(false);
   const [busca, setBusca] = useState("");
   const [papel, setPapel] = useState("");
-  const [aviso, setAviso] = useState<string>(location.state?.aviso ?? "");
 
   const carregar = useCallback(async () => {
     setErro(false);
@@ -66,25 +65,7 @@ export function Usuarios() {
       <Header />
 
       <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-6 px-4 py-6 md:px-8 md:py-8">
-        {aviso && (
-          <div
-            role="status"
-            className="flex items-center justify-between rounded-xl border border-green-300 bg-green-100 p-4 text-sm font-medium text-green-800"
-          >
-            <span>
-              <i aria-hidden="true" className="bi bi-check-circle mr-2"></i>
-              {aviso}
-            </span>
-            <button
-              type="button"
-              onClick={() => setAviso("")}
-              aria-label="Fechar aviso"
-              className="cursor-pointer p-1"
-            >
-              <i aria-hidden="true" className="bi bi-x text-lg"></i>
-            </button>
-          </div>
-        )}
+        <AvisoSucesso />
 
         <section className="flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
