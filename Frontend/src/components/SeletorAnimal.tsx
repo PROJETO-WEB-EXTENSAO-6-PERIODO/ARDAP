@@ -70,9 +70,13 @@ function Miniatura({ animal }: { animal: AnimalVinculado }) {
 export function SeletorAnimal({
   animal,
   onChange,
+  obrigatorio = false,
+  invalido = false,
 }: {
   animal: AnimalVinculado | null;
   onChange: (animal: AnimalVinculado | null) => void;
+  obrigatorio?: boolean;
+  invalido?: boolean;
 }) {
   const [animais, setAnimais] = useState<AnimalVinculado[] | null>(null);
   const [erro, setErro] = useState(false);
@@ -163,7 +167,11 @@ export function SeletorAnimal({
     <div className="flex flex-col gap-1.5">
       <span id={`${idBase}-rotulo`} className="text-sm font-semibold text-[#1A1A1A]">
         Vincular animal cadastrado{" "}
-        <span className="text-xs font-normal text-gray-500">(opcional)</span>
+        {obrigatorio ? (
+          <span className="font-bold text-[#DC2626]">*</span>
+        ) : (
+          <span className="text-xs font-normal text-gray-500">(opcional)</span>
+        )}
       </span>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -306,6 +314,7 @@ export function SeletorAnimal({
           </div>
         )}
       </div>
+      {invalido && <p className="text-xs text-[#DC2626]">Campo obrigatório</p>}
     </div>
   );
 }

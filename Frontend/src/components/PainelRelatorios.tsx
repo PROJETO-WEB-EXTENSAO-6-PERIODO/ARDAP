@@ -50,7 +50,6 @@ interface Resumo {
     porRaca: Record<string, number>;
     porCidade: Record<string, number>;
     porCorPelo: Record<string, number>;
-    srd: Record<string, number>;
     castrados: Record<string, number>;
     vermifugados: Record<string, number>;
     taxaCastracao: number;
@@ -1031,7 +1030,7 @@ export function PainelRelatorios() {
           itens={[
             { rotulo: "Espécie adotada", dados: adocoes.porEspecie, cores: VERDE },
             { rotulo: "Sexo", dados: adocoes.porSexo, cores: VERDE },
-            { rotulo: "Vermifugação (3 meses)", dados: adocoes.vermifugados, cores: VERDE },
+            { rotulo: "Vermifugação", dados: adocoes.vermifugados, cores: VERDE },
           ]}
         />
       </section>

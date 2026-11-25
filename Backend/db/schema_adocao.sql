@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS termo_adocao (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
     -- Vinculos
-    animal_id INT,
+    animal_id INT,  -- dados do animal ficam em animais
     funcionario_id INT,
 
     -- Dados do adotante (Termo, p.2 + Questionario, p.1)
@@ -27,20 +27,6 @@ CREATE TABLE IF NOT EXISTS termo_adocao (
     telefone VARCHAR(20),
     instagram VARCHAR(100),
 
-    -- Dados do animal (Termo, p.2)
-    nome_animal VARCHAR(100),
-    especie ENUM('cao', 'gato'),
-    sexo ENUM('macho', 'femea'),
-    idade VARCHAR(50),
-    raca VARCHAR(100),
-    srd BOOLEAN NOT NULL DEFAULT FALSE,
-    onde_resgatou_tutor VARCHAR(255),
-    cor_pelo VARCHAR(100),
-    porte ENUM('pequeno', 'medio', 'grande'),
-    peso DECIMAL(5,2),
-    castrado BOOLEAN,
-    vermifugado_3meses ENUM('sim', 'nao', 'sem_informacao'),
-    medicamento_diario BOOLEAN NOT NULL DEFAULT FALSE,
     mais_animais_em_casa BOOLEAN NOT NULL DEFAULT FALSE,
     quantos_mais_animais INT,
     endereco_ficara_animal ENUM('mesmo', 'outro') NOT NULL DEFAULT 'mesmo',
