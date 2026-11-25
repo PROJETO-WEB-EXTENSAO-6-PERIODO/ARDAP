@@ -123,12 +123,32 @@ interface Destaque {
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 const AZUL = ["#2563EB", "#60A5FA", "#93C5FD", "#BFDBFE", "#DBEAFE"];
-const VERDE = ["#16A34A", "#22C55E", "#4ADE80", "#86EFAC", "#BBF7D0"];
 const AMBAR = ["#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FDE68A"];
 const MARROM = ["#92400E", "#B45309", "#D97706", "#F59E0B", "#FCD34D"];
 const VERMELHO = ["#EF4444", "#F87171", "#F59E0B", "#FBBF24", "#FDE68A"];
 const SLATE = ["#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1"];
 const VIOLETA = ["#7C3AED", "#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE"];
+
+// A cor acompanha a categoria, não a posição: cão é sempre verde, mesmo quando
+// há mais gatos. As três barras usam o mesmo par, conferido para daltonismo.
+const COR_PRIMARIA = "#047857";
+const COR_SECUNDARIA = "#F59E0B";
+const CORES_CATEGORIA: Record<string, string> = {
+  Cão: COR_PRIMARIA,
+  Canino: COR_PRIMARIA,
+  Gato: COR_SECUNDARIA,
+  Felino: COR_SECUNDARIA,
+  Outro: "#6366F1",
+  Macho: COR_PRIMARIA,
+  Fêmea: COR_SECUNDARIA,
+  Sim: COR_PRIMARIA,
+  Não: COR_SECUNDARIA,
+};
+const COR_SEM_CATEGORIA = "#CBD5E1";
+
+function corDaCategoria(rotulo: string) {
+  return CORES_CATEGORIA[rotulo] ?? COR_SEM_CATEGORIA;
+}
 
 const TILE: Record<Tom, string> = {
   verde: "bg-gradient-to-br from-emerald-200 to-emerald-50 text-emerald-600",
@@ -531,7 +551,7 @@ function DonutVertical({
 function Distribuicoes({
   itens,
 }: {
-  itens: Array<{ rotulo: string; dados: Record<string, number>; cores: string[] }>;
+  itens: Array<{ rotulo: string; dados: Record<string, number> }>;
 }) {
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -553,25 +573,25 @@ function Distribuicoes({
                 <p className="text-xs text-gray-400 sm:col-span-2">Sem dados</p>
               ) : (
                 <>
-                  <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-[#F1F1EE]">
-                    {entries.map(([rotulo, valor], indice) => (
+                  <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-[#F1F1EE]">
+                    {entries.map(([rotulo, valor]) => (
                       <div
                         key={rotulo}
                         className="h-full transition-all duration-700"
                         style={{
                           width: `${(valor / total) * 100}%`,
-                          backgroundColor: item.cores[indice % item.cores.length],
+                          backgroundColor: corDaCategoria(rotulo),
                         }}
                         title={`${rotulo}: ${numero(valor)}`}
                       ></div>
                     ))}
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                    {entries.map(([rotulo, valor], indice) => (
+                    {entries.map(([rotulo, valor]) => (
                       <span key={rotulo} className="flex items-center gap-1.5 text-[11px]">
                         <span
                           className="h-2 w-2 shrink-0 rounded-sm"
-                          style={{ backgroundColor: item.cores[indice % item.cores.length] }}
+                          style={{ backgroundColor: corDaCategoria(rotulo) }}
                         ></span>
                         <span className="text-gray-600">{rotulo}</span>
                         <span className="font-bold text-[#1A1A1A]">{numero(valor)}</span>
@@ -1026,9 +1046,9 @@ export function PainelRelatorios() {
         </div>
         <Distribuicoes
           itens={[
-            { rotulo: "Espécie adotada", dados: adocoes.porEspecie, cores: VERDE },
-            { rotulo: "Sexo", dados: adocoes.porSexo, cores: VERDE },
-            { rotulo: "Vermifugação", dados: adocoes.vermifugados, cores: VERDE },
+            { rotulo: "Espécie adotada", dados: adocoes.porEspecie },
+            { rotulo: "Sexo", dados: adocoes.porSexo },
+            { rotulo: "Vermifugação", dados: adocoes.vermifugados },
           ]}
         />
       </section>
