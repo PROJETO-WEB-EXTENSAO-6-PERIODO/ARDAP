@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { AnimaisCastrados } from "../components/AnimaisCastrados";
 import { Autorias } from "../components/Autoria";
 import { FotoRegistro } from "../components/FotoRegistro";
 import { Header } from "../components/Header";
@@ -107,6 +108,10 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
   const [erro, setErro] = useState(false);
   const [busca, setBusca] = useState("");
   const [especie, setEspecie] = useState("");
+  // Na URL, para o botão voltar devolver à mesma aba.
+  const [parametros, setParametros] = useSearchParams();
+  const temAbas = modulo.rota === "castracoes";
+  const abaCastrados = temAbas && parametros.get("aba") === "castrados";
 
   const carregar = useCallback(async () => {
     setErro(false);
@@ -153,7 +158,9 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
                 {modulo.titulo}
               </h1>
               <p aria-live="polite" className="mt-1 text-sm text-gray-500">
-                {registros
+                {abaCastrados
+                  ? "Animais que já constam como castrados no cadastro"
+                  : registros
                   ? `Mostrando ${visiveis.length} de ${registros.length} ${registros.length === 1 ? modulo.singular : modulo.plural}`
                   : "Registros do sistema"}
               </p>
@@ -167,6 +174,35 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
             </Link>
           </div>
 
+          {temAbas && (
+            <div
+              role="group"
+              aria-label="Exibir"
+              className="flex gap-6 border-b border-gray-200"
+            >
+              {[
+                { rotulo: "Termos", castrados: false },
+                { rotulo: "Animais já castrados", castrados: true },
+              ].map((aba) => (
+                <button
+                  key={aba.rotulo}
+                  type="button"
+                  aria-pressed={abaCastrados === aba.castrados}
+                  onClick={() =>
+                    setParametros(aba.castrados ? { aba: "castrados" } : {}, { replace: true })
+                  }
+                  className={`-mb-px cursor-pointer border-b-2 pb-2.5 text-sm font-semibold transition-colors ${
+                    abaCastrados === aba.castrados
+                      ? "border-[#1A1A1A] text-[#1A1A1A]"
+                      : "border-transparent text-gray-500 hover:text-[#1A1A1A]"
+                  }`}
+                >
+                  {aba.rotulo}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <div className="relative flex-1">
               <i
@@ -179,7 +215,9 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
                 onChange={(e) => setBusca(e.target.value)}
                 aria-label={`Buscar em ${modulo.titulo}`}
                 placeholder={
-                  modulo.temAnimal
+                  abaCastrados
+                    ? "Buscar por nome, raça, cor ou nº do animal..."
+                    : modulo.temAnimal
                     ? "Buscar por animal, responsável ou nº do registro..."
                     : "Buscar por nome ou nº do registro..."
                 }
@@ -212,7 +250,11 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
           </div>
         </section>
 
-        {erro && (
+        {abaCastrados && (
+          <AnimaisCastrados busca={busca} especie={especie} normalizar={normalizar} />
+        )}
+
+        {!abaCastrados && erro && (
           <div
             role="alert"
             className="flex flex-col items-center gap-4 rounded-2xl border border-red-200 bg-red-50 p-10 text-center"
@@ -230,7 +272,7 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
           </div>
         )}
 
-        {!registros && !erro && (
+        {!abaCastrados && !registros && !erro && (
           <div
             role="status"
             className="flex items-center justify-center gap-3 py-16 text-gray-500"
@@ -240,7 +282,7 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
           </div>
         )}
 
-        {registros && visiveis.length === 0 && (
+        {!abaCastrados && registros && visiveis.length === 0 && (
           <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center">
             <i aria-hidden="true" className={`bi ${modulo.icone} text-4xl text-gray-400`}></i>
             <p className="mt-3 font-bold text-[#1A1A1A]">
@@ -256,7 +298,7 @@ export function ListaRegistros({ modulo }: { modulo: ModuloRegistro }) {
           </div>
         )}
 
-        {visiveis.length > 0 && (
+        {!abaCastrados && visiveis.length > 0 && (
           <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {visiveis.map((registro) => (
               <li key={registro.id} className="min-w-0">
