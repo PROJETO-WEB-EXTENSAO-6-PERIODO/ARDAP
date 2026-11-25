@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+@page relatorio {
+  size: A4;
+  margin: 14mm 14mm 16mm;
+
+  @bottom-left {
+    content: "ARDAP – Relatório de atividades";
+    font-size: 8pt;
+    color: #6b7280;
+  }
+
+  @bottom-right {
+    content: "Página " counter(page) " de " counter(pages);
+    font-size: 8pt;
+    color: #6b7280;
+  }
+}
+
 body {
   font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 }

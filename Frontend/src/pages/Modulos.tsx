@@ -311,7 +311,7 @@ export function Modulos() {
               <div>
                 <h3 className="font-bold">Relatórios</h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Relatórios mensais e estatísticas do sistema.
+                  Prestação de contas por período, em PDF e Excel.
                 </p>
               </div>
             </div>
@@ -321,7 +321,7 @@ export function Modulos() {
                 Relatórios disponíveis
               </div>
               <button
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/relatorios")}
                 className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 active:scale-95"
               >
                 <span>Acessar</span>
