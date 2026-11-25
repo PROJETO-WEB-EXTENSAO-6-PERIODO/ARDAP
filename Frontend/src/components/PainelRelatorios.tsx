@@ -54,7 +54,6 @@ interface Resumo {
     vermifugados: Record<string, number>;
     taxaCastracao: number;
     cidadesDistintas: number;
-    adotantesUnicos: number;
     mediaPorMes: number;
     perfilAdotante: Record<string, number>;
   };
@@ -72,7 +71,6 @@ interface Resumo {
     porSexo: Record<string, number>;
     porCidade: Record<string, number>;
     porBairro: Record<string, number>;
-    comAceite: number;
     cidadesDistintas: number;
   };
   procedimentos: {
@@ -1014,8 +1012,8 @@ export function PainelRelatorios() {
           />
           <StatCard
             tom="verde"
-            valor={numero(adocoes.adotantesUnicos)}
-            rotulo="Adotantes únicos"
+            valor={numero(ultimos30Dias.adocoes ?? 0)}
+            rotulo="Últimos 30 dias"
           />
           <StatCard
             tom="verde"
@@ -1073,7 +1071,10 @@ export function PainelRelatorios() {
             valor={numero(hipossuficiencia.total)}
             rotulo="Declarações"
           />
-          <StatCard valor={numero(hipossuficiencia.comAnexos)} rotulo="Com anexos" />
+          <StatCard
+            valor={numero(hipossuficiencia.total - hipossuficiencia.comAnexos)}
+            rotulo="Sem anexos"
+          />
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-0 md:divide-x md:divide-gray-100">
@@ -1118,7 +1119,7 @@ export function PainelRelatorios() {
         />
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatCard valor={numero(eutanasia.total)} rotulo="Termos" />
-          <StatCard valor={numero(eutanasia.comAceite)} rotulo="Com aceite" />
+          <StatCard valor={numero(ultimos30Dias.eutanasia ?? 0)} rotulo="Últimos 30 dias" />
           <StatCard valor={numero(eutanasia.cidadesDistintas)} rotulo="Cidades atendidas" />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">

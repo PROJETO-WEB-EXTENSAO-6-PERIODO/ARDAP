@@ -28,7 +28,8 @@ class EutanasiaIn(BaseModel):
     cidade: str | None = Field(default=None, max_length=100)
     telefone_email: str | None = Field(default=None, max_length=150)
 
-    declaracao_aceite: bool = False
+    # sem o aceite, o termo nao tem validade
+    declaracao_aceite: Literal[True]
     local_declaracao: str | None = Field(default=None, max_length=100)
     data_declaracao: date | None = None
     assinatura_responsavel: str | None = None
