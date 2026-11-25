@@ -16,6 +16,7 @@ interface AuthContextValue {
   user: SessionUser | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  recarregarUsuario: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -35,6 +36,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(email: string, password: string) {
     const { data } = await api.post("/auth/login", { email, password });
     localStorage.setItem("ardap_token", data.access_token);
+    await recarregarUsuario();
+  }
+
+  async function recarregarUsuario() {
     const me = await api.get("/users/me");
     const session: SessionUser = {
       email: me.data.email,
@@ -52,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, recarregarUsuario }}>
       {children}
     </AuthContext.Provider>
   );

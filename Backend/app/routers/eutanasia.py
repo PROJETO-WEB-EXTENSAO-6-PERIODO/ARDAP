@@ -4,8 +4,10 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.edicao import editar_registro
 from app.models.eutanasia import Eutanasia
 from app.models.user import User
 from app.schemas.eutanasia import EutanasiaIn, EutanasiaOut
@@ -23,6 +25,7 @@ def create_eutanasia(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    validar_animal(db, data.animal_id)
     eutanasia = Eutanasia(
         animal_id=data.animal_id,
         funcionario_id=user.id,
@@ -71,3 +74,13 @@ def get_eutanasia(
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Termo de eutanasia nao encontrado.")
     return eutanasia
+
+
+@router.put("/eutanasias/{eutanasia_id}", response_model=EutanasiaOut)
+def update_eutanasia(
+    eutanasia_id: int,
+    data: EutanasiaIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return editar_registro(db, get_eutanasia(eutanasia_id, db, user), data, user)

@@ -1,10 +1,18 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "../components/Header";
+import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 
-export function NovoUsuario() {
+// Sem :id na rota cria um usuário; com :id, edita.
+export function UsuarioForm() {
+  const { id } = useParams();
+  const editando = id !== undefined;
   const navigate = useNavigate();
+  const { user, recarregarUsuario } = useAuth();
+  const [emailOriginal, setEmailOriginal] = useState("");
+  const [carregado, setCarregado] = useState(!editando);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,6 +24,36 @@ export function NovoUsuario() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!id) return;
+    let ativo = true;
+    api
+      .get(`/users/${id}`)
+      .then(({ data }) => {
+        if (!ativo) return;
+        setFirstName(data.first_name);
+        setLastName(data.second_name);
+        setEmail(data.email);
+        setEmailOriginal(data.email);
+        setRole(data.role);
+        setCarregado(true);
+      })
+      .catch((e) => {
+        if (!ativo) return;
+        setError(
+          isAxiosError(e) && e.response?.status === 404
+            ? "Usuário não encontrado."
+            : "Não foi possível carregar o usuário.",
+        );
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [id]);
+
+  // Ninguém remove a própria permissão de administrador.
+  const proprioUsuario = editando && carregado && emailOriginal === user?.email;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -25,19 +63,34 @@ export function NovoUsuario() {
     }
     setLoading(true);
     try {
-      await api.post("/users", {
+      const dados = {
         first_name: firstName.trim(),
         second_name: lastName.trim(),
         email: email.trim(),
-        password,
         role,
+      };
+      if (editando) {
+        await api.put(`/users/${id}`, { ...dados, password: password || null });
+        // Reflete no header a mudança do próprio nome; falhar aqui não desfaz a edição.
+        if (proprioUsuario) await recarregarUsuario().catch(() => {});
+      } else {
+        await api.post("/users", { ...dados, password });
+      }
+      navigate("/usuarios", {
+        replace: true,
+        state: {
+          aviso: editando
+            ? "Usuário atualizado com sucesso!"
+            : "Usuário criado com sucesso!",
+        },
       });
-      navigate("/home", { replace: true });
     } catch (err: unknown) {
-      const detail =
-        (err as { response?: { data?: { detail?: string } } }).response?.data
-          ?.detail;
-      setError(detail ?? "Não foi possível criar o usuário.");
+      const detail = isAxiosError(err) ? err.response?.data?.detail : null;
+      setError(
+        typeof detail === "string"
+          ? detail
+          : "Não foi possível salvar. Confira os dados e tente de novo.",
+      );
     } finally {
       setLoading(false);
     }
@@ -61,9 +114,16 @@ export function NovoUsuario() {
               Início
             </button>
             <span>/</span>
-            <span>Usuários</span>
+            <button
+              onClick={() => navigate("/usuarios")}
+              className="hover:text-gray-800"
+            >
+              Usuários
+            </button>
             <span>/</span>
-            <span className="font-medium text-gray-800">Novo usuário</span>
+            <span className="font-medium text-gray-800">
+              {editando ? "Editar usuário" : "Novo usuário"}
+            </span>
           </nav>
 
           <div className="rounded-xl border-t-4 border-[#FFD900] bg-white p-6 shadow-sm md:p-8">
@@ -74,11 +134,12 @@ export function NovoUsuario() {
                 </span>
                 <div>
                   <h1 className="text-xl font-bold tracking-tight">
-                    Cadastrar Novo Colaborador
+                    {editando ? "Editar Colaborador" : "Cadastrar Novo Colaborador"}
                   </h1>
                   <p className="mt-1 text-sm text-gray-500">
-                    Preencha as credenciais e defina as permissões de acesso ao
-                    sistema ARDAP.
+                    {editando
+                      ? "Altere os dados, a senha ou a permissão de acesso ao sistema ARDAP."
+                      : "Preencha as credenciais e defina as permissões de acesso ao sistema ARDAP."}
                   </p>
                 </div>
               </div>
@@ -94,6 +155,13 @@ export function NovoUsuario() {
               </p>
             )}
 
+            {!carregado && !error && (
+              <p role="status" className="mt-6 text-sm text-gray-500">
+                Carregando...
+              </p>
+            )}
+
+            {carregado && (
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               <fieldset>
                 <legend className="mb-2 text-sm font-semibold">
@@ -160,18 +228,26 @@ export function NovoUsuario() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
                   <span className="mb-1 block text-sm font-semibold">
-                    Senha Provisória{" "}
-                    <span className="text-[#DC2626]">*</span>
+                    {editando ? "Nova senha" : "Senha Provisória"}{" "}
+                    {editando ? (
+                      <span className="text-xs font-normal text-gray-500">(opcional)</span>
+                    ) : (
+                      <span className="text-[#DC2626]">*</span>
+                    )}
                   </span>
                   <span className={inputClass}>
                     <i className="bi bi-lock"></i>
                     <input
                       type={showPassword ? "text" : "password"}
-                      required
+                      required={!editando || password !== ""}
                       minLength={6}
+                      maxLength={72}
+                      autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder={
+                        editando ? "Em branco mantém a atual" : "Mínimo 6 caracteres"
+                      }
                       className="w-full bg-transparent outline-none placeholder:text-gray-400"
                     />
                     <button
@@ -193,14 +269,16 @@ export function NovoUsuario() {
                 <label className="block">
                   <span className="mb-1 block text-sm font-semibold">
                     Confirmar Senha{" "}
-                    <span className="text-[#DC2626]">*</span>
+                    {!editando && <span className="text-[#DC2626]">*</span>}
                   </span>
                   <span className={inputClass}>
                     <i className="bi bi-shield-lock"></i>
                     <input
                       type={showConfirm ? "text" : "password"}
-                      required
+                      required={!editando || password !== ""}
                       minLength={6}
+                      maxLength={72}
+                      autoComplete="new-password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repita a senha"
@@ -231,7 +309,9 @@ export function NovoUsuario() {
                 </legend>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label
-                    className={`relative flex cursor-pointer flex-col gap-3 rounded-xl border-2 p-4 transition-colors ${
+                    className={`relative flex flex-col gap-3 rounded-xl border-2 p-4 transition-colors ${
+                      proprioUsuario ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+                    } ${
                       role === "funcionario"
                         ? "border-[#1A1A1A] bg-white"
                         : "border-gray-200 bg-gray-50"
@@ -242,6 +322,7 @@ export function NovoUsuario() {
                       name="role"
                       className="sr-only"
                       checked={role === "funcionario"}
+                      disabled={proprioUsuario}
                       onChange={() => setRole("funcionario")}
                     />
                     <div className="flex items-center justify-between">
@@ -288,12 +369,17 @@ export function NovoUsuario() {
                     </p>
                   </label>
                 </div>
+                {proprioUsuario && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    Você não pode remover a sua própria permissão de administrador.
+                  </p>
+                )}
               </fieldset>
 
               <div className="flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:justify-between">
                 <button
                   type="button"
-                  onClick={() => navigate("/home")}
+                  onClick={() => navigate("/usuarios")}
                   className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   <i className="bi bi-arrow-left"></i>
@@ -307,17 +393,18 @@ export function NovoUsuario() {
                   {loading ? (
                     <>
                       <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-                      Criando...
+                      Salvando...
                     </>
                   ) : (
                     <>
-                      <span>Criar Usuário</span>
+                      <span>{editando ? "Salvar alterações" : "Criar Usuário"}</span>
                       <i className="bi bi-arrow-right text-[#FFD900]"></i>
                     </>
                   )}
                 </button>
               </div>
             </form>
+            )}
 
             <div className="mt-6 flex flex-col gap-1 border-t pt-4 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
               <span className="flex items-center gap-1.5">

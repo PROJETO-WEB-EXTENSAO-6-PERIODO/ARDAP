@@ -1,14 +1,16 @@
 """Formatos de entrada/saida de termos de adocao (RF03 parcial)."""
 
-from datetime import date
-from decimal import Decimal
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.schemas.animal import AnimalResumoOut
+from app.schemas.user import AutorOut
+
 
 class AdocaoIn(BaseModel):
-    animal_id: int | None = None
+    animal_id: int
     especie_adocao: Literal["canino", "felino"] | None = None
 
     nome_adotante: str = Field(min_length=1, max_length=150)
@@ -21,19 +23,6 @@ class AdocaoIn(BaseModel):
     telefone: str | None = Field(default=None, max_length=20)
     instagram: str | None = Field(default=None, max_length=100)
 
-    nome_animal: str | None = Field(default=None, max_length=100)
-    especie: Literal["cao", "gato"] | None = None
-    sexo: Literal["macho", "femea"] | None = None
-    idade: str | None = Field(default=None, max_length=50)
-    raca: str | None = Field(default=None, max_length=100)
-    srd: bool = False
-    onde_resgatou_tutor: str | None = Field(default=None, max_length=255)
-    cor_pelo: str | None = Field(default=None, max_length=100)
-    porte: Literal["pequeno", "medio", "grande"] | None = None
-    peso: Decimal | None = Field(default=None, gt=0)
-    castrado: bool | None = None
-    vermifugado_3meses: Literal["sim", "nao", "sem_informacao"] | None = None
-    medicamento_diario: bool = False
     mais_animais_em_casa: bool = False
     quantos_mais_animais: int | None = Field(default=None, ge=0)
     endereco_ficara_animal: Literal["mesmo", "outro"] = "mesmo"
@@ -65,6 +54,11 @@ class AdocaoIn(BaseModel):
 class AdocaoOut(BaseModel):
     id: int
     animal_id: int | None
+    animal: AnimalResumoOut | None
+    funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
+    created_at: datetime | None
     especie_adocao: str | None
     nome_adotante: str
     rg: str | None
@@ -75,19 +69,6 @@ class AdocaoOut(BaseModel):
     cep: str | None
     telefone: str | None
     instagram: str | None
-    nome_animal: str | None
-    especie: str | None
-    sexo: str | None
-    idade: str | None
-    raca: str | None
-    srd: bool
-    onde_resgatou_tutor: str | None
-    cor_pelo: str | None
-    porte: str | None
-    peso: Decimal | None
-    castrado: bool | None
-    vermifugado_3meses: str | None
-    medicamento_diario: bool
     mais_animais_em_casa: bool
     quantos_mais_animais: int | None
     endereco_ficara_animal: str

@@ -159,22 +159,22 @@ def resumo_geral(
     sup_especie = _group(db, "SELECT especie, COUNT(*) FROM supatas_intake GROUP BY especie", ESPECIE)
     sup_sexo = _group(db, "SELECT sexo, COUNT(*) FROM supatas_intake GROUP BY sexo", SEXO)
 
-    adocao_especie = _group(db, "SELECT especie, COUNT(*) FROM termo_adocao GROUP BY especie", ESPECIE)
-    adocao_sexo = _group(db, "SELECT sexo, COUNT(*) FROM termo_adocao GROUP BY sexo", SEXO)
-    adocao_raca = _group(db, "SELECT raca, COUNT(*) FROM termo_adocao GROUP BY raca")
+    # Os dados do animal adotado vêm do cadastro, pelo animal_id do termo.
+    def adocao_por(coluna: str, rotulos: dict | None = None) -> dict:
+        return _group(
+            db,
+            f"SELECT a.{coluna}, COUNT(*) FROM termo_adocao t "
+            f"LEFT JOIN animais a ON a.id = t.animal_id GROUP BY a.{coluna}",
+            rotulos,
+        )
+
+    adocao_especie = adocao_por("especie", ESPECIE)
+    adocao_sexo = adocao_por("sexo", SEXO)
+    adocao_raca = adocao_por("raca")
+    adocao_cor = adocao_por("cor_pelo")
+    adocao_castrado = adocao_por("castrado", BOOLEANO)
+    adocao_vermifugado = adocao_por("vermifugado", BOOLEANO)
     adocao_cidade = _group(db, "SELECT cidade, COUNT(*) FROM termo_adocao GROUP BY cidade")
-    adocao_cor = _group(db, "SELECT cor_pelo, COUNT(*) FROM termo_adocao GROUP BY cor_pelo")
-    adocao_srd = _group(
-        db, "SELECT srd, COUNT(*) FROM termo_adocao GROUP BY srd", {"1": "SRD", "0": "Raça definida"}
-    )
-    adocao_castrado = _group(
-        db, "SELECT castrado, COUNT(*) FROM termo_adocao GROUP BY castrado", BOOLEANO
-    )
-    adocao_vermifugado = _group(
-        db,
-        "SELECT vermifugado_3meses, COUNT(*) FROM termo_adocao GROUP BY vermifugado_3meses",
-        {"sim": "Sim", "nao": "Não", "sem_informacao": "Sem informação"},
-    )
 
     def conta_onde(condicao: str) -> int:
         return _conta(db, "termo_adocao", condicao)
@@ -187,7 +187,6 @@ def resumo_geral(
         "outrosAnimais": conta_onde("outros_animais = 1 OR mais_animais_em_casa = 1"),
         "familiaCiente": conta_onde("familia_sabe_adocao = 1"),
         "alguemAlergia": conta_onde("alguem_alergia = 1"),
-        "medicamentoDiario": conta_onde("medicamento_diario = 1"),
     }
 
     cidades_distintas = int(
@@ -385,7 +384,6 @@ def resumo_geral(
             "porRaca": adocao_raca,
             "porCidade": adocao_cidade,
             "porCorPelo": adocao_cor,
-            "srd": adocao_srd,
             "castrados": adocao_castrado,
             "vermifugados": adocao_vermifugado,
             "taxaCastracao": _taxa(sim_castrados_adocao, totais["adocoes"]),

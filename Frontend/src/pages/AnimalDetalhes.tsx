@@ -1,6 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { Autorias, type Autor } from "../components/Autoria";
+import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
 
@@ -23,7 +25,11 @@ interface Animal {
   medicacao_desc: string | null;
   origem_resgate: string | null;
   observacoes: string | null;
+  tem_foto: boolean;
   created_at: string | null;
+  funcionario: Autor | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
 }
 
 const LABELS: Record<string, string> = {
@@ -116,19 +122,32 @@ function Detalhes({ animal }: { animal: Animal }) {
   return (
     <>
       <section className="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
+        {animal.tem_foto && (
+          <FotoAnimal
+            id={animal.id}
+            alt={`Foto de ${animal.nome || "animal sem nome"}`}
+            className="h-48 w-full shrink-0 rounded-xl object-cover sm:h-40 sm:w-40"
+          />
+        )}
+        <div className="min-w-0 flex-1">
           <h1 className="break-words text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
             {animal.nome || "Animal sem nome"}
           </h1>
           <p className="text-sm text-gray-500 md:text-base">
             Registro nº {animal.id}
-            {animal.created_at &&
-              ` • Cadastrado em ${formatarData(animal.created_at)}`}
           </p>
+          <Autorias registro={animal} />
         </div>
         <span className="inline-flex shrink-0 items-center self-start rounded-full bg-[#FFD900] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] sm:self-auto">
           {rotulo(animal.especie)} • {rotulo(animal.sexo)}
         </span>
+        <Link
+          to={`/animais/${animal.id}/editar`}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#FFD900] px-5 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:opacity-90 active:scale-95"
+        >
+          <i aria-hidden="true" className="bi bi-pencil"></i>
+          Editar
+        </Link>
       </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -237,7 +256,7 @@ export function AnimalDetalhes() {
             <span>Início</span>
           </Link>
           <span className="font-normal text-gray-400">&gt;</span>
-          <Link to="/animais" className="transition-colors hover:text-[#1A1A1A]">
+          <Link to="/animais/cadastrados" className="transition-colors hover:text-[#1A1A1A]">
             Animais
           </Link>
           <span className="font-normal text-gray-400">&gt;</span>

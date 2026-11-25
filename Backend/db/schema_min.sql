@@ -8,8 +8,12 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,          -- sempre hash bcrypt, nunca texto puro
     role ENUM('admin', 'funcionario') NOT NULL DEFAULT 'funcionario',
+    funcionario_id INT,                      -- quem cadastrou
+    alterado_por_id INT,                     -- quem alterou por ultimo
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS animais (
@@ -31,14 +35,20 @@ CREATE TABLE IF NOT EXISTS animais (
     medicacao_desc TEXT, 
     origem_resgate VARCHAR(255),
     observacoes TEXT,
+    foto_path VARCHAR(255),
+    funcionario_id INT,
+    alterado_por_id INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS supatas_intake (
     id INT AUTO_INCREMENT PRIMARY KEY,
     animal_id INT,
     funcionario_id INT,
+    alterado_por_id INT,
     orgao_solicitante VARCHAR(150),
     nome_responsavel_encaminhamento VARCHAR(150),
     data_encaminhamento DATE,
@@ -57,6 +67,8 @@ CREATE TABLE IF NOT EXISTS supatas_intake (
     assinatura_responsavel_supatas TEXT,
     assinatura_recebimento_ardap TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (animal_id) REFERENCES animais(id),
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );

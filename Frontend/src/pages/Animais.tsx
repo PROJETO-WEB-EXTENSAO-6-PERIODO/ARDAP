@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
+import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 import { api } from "../services/api";
 
 const ESPECIES = [
@@ -9,6 +13,65 @@ const ESPECIES = [
   { value: "gato", label: "Gato" },
   { value: "outro", label: "Outro" },
 ];
+
+// SRD e "Outra" valem para qualquer espécie e são acrescentadas no select.
+const RACAS: Record<string, string[]> = {
+  cao: [
+    "Akita",
+    "American Bully",
+    "Basset Hound",
+    "Beagle",
+    "Border Collie",
+    "Boxer",
+    "Buldogue Francês",
+    "Buldogue Inglês",
+    "Bull Terrier",
+    "Chihuahua",
+    "Chow Chow",
+    "Cocker Spaniel",
+    "Dachshund (Salsicha)",
+    "Dálmata",
+    "Doberman",
+    "Dogo Argentino",
+    "Fila Brasileiro",
+    "Golden Retriever",
+    "Husky Siberiano",
+    "Labrador Retriever",
+    "Lhasa Apso",
+    "Maltês",
+    "Pastor Alemão",
+    "Pastor Belga",
+    "Pinscher",
+    "Pit Bull",
+    "Poodle",
+    "Pug",
+    "Rottweiler",
+    "São Bernardo",
+    "Schnauzer",
+    "Shar-pei",
+    "Shih Tzu",
+    "Spitz Alemão (Lulu da Pomerânia)",
+    "Yorkshire Terrier",
+  ],
+  gato: [
+    "Abissínio",
+    "Angorá",
+    "Azul Russo",
+    "Bengal",
+    "British Shorthair",
+    "Exótico",
+    "Himalaio",
+    "Maine Coon",
+    "Norueguês da Floresta",
+    "Persa",
+    "Ragdoll",
+    "Sagrado da Birmânia",
+    "Scottish Fold",
+    "Siamês",
+    "Sphynx",
+  ],
+  outro: [],
+};
 
 const PORTES = [
   { value: "", label: "Selecione..." },
@@ -24,6 +87,19 @@ const TEMPERAMENTOS = [
   { value: "arisco", label: "Arisco" },
   { value: "agressivo", label: "Agressivo" },
 ];
+
+const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
+const FOTO_MAX_BYTES = 5 * 1024 * 1024;
+
+function lerBase64(arquivo: File) {
+  return new Promise<string>((resolve, reject) => {
+    const leitor = new FileReader();
+    // Remove o prefixo "data:image/...;base64,"
+    leitor.onload = () => resolve(String(leitor.result).split(",")[1]);
+    leitor.onerror = () => reject(leitor.error);
+    leitor.readAsDataURL(arquivo);
+  });
+}
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -80,21 +156,89 @@ export function Animais() {
   const [temperamento, setTemperamento] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
+  const [foto, setFoto] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [temFoto, setTemFoto] = useState(false);
+  const [fotoErro, setFotoErro] = useState("");
+  const fotoInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!foto) return;
+    const url = URL.createObjectURL(foto);
+    setFotoPreview(url);
+    return () => {
+      setFotoPreview(null);
+      URL.revokeObjectURL(url);
+    };
+  }, [foto]);
+
+  function removerFoto() {
+    setFoto(null);
+    setFotoErro("");
+    if (fotoInput.current) fotoInput.current.value = "";
+  }
+
+  function escolherFoto(arquivo: File | undefined) {
+    if (!arquivo) return;
+    // Só limpa o campo se o arquivo for recusado: limpá-lo com um arquivo
+    // válido faria o navegador tratá-lo como não preenchido.
+    if (!FOTO_TIPOS.includes(arquivo.type)) {
+      removerFoto();
+      setFotoErro("Escolha uma imagem JPG, PNG ou WebP.");
+    } else if (arquivo.size > FOTO_MAX_BYTES) {
+      removerFoto();
+      setFotoErro("A foto deve ter no máximo 5 MB.");
+    } else {
+      setFotoErro("");
+      setFoto(arquivo);
+    }
+  }
+
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
   const [triedSubmit, setTriedSubmit] = useState(false);
+
+  function preencher(d: DadosRegistro) {
+    setNome(d.nome ?? "");
+    setEspecie(d.especie ?? "");
+    setRaca(d.raca ?? "");
+    setSexo(d.sexo ?? "");
+    setNascimento(d.data_nascimento_estimada ?? "");
+    setIdade(d.idade_estimada == null ? "" : String(d.idade_estimada));
+    setPorte(d.porte ?? "");
+    setCor(d.cor_pelo ?? "");
+    setPeso(d.peso == null ? "" : String(d.peso));
+    setCastrado(d.castrado === true);
+    setVermifugado(d.vermifugado === true);
+    setVacinado(d.vacinado === true);
+    setMedicacao(d.medicacao_necessaria === true);
+    setMedicacaoDesc(d.medicacao_desc ?? "");
+    setOrigem(d.origem_resgate ?? "");
+    setTemperamento(d.temperamento === "desconhecido" ? "" : d.temperamento);
+    setObservacoes(d.observacoes ?? "");
+    setTemFoto(d.tem_foto === true);
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "animais",
+    preencher,
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
     setTriedSubmit(true);
-    if (!especie || !sexo) {
-      setFormError("Preencha os campos obrigatórios (Espécie e Sexo).");
+    // Na edição, sem foto nova a atual é mantida.
+    if ((!foto && !editando) || !especie || !sexo) {
+      setFormError(editando
+          ? "Preencha os campos obrigatórios (Espécie e Sexo)."
+          : "Preencha os campos obrigatórios (Foto, Espécie e Sexo).",
+     );
       return;
     }
     setSaving(true);
     try {
-      const { data } = await api.post<{ id: number }>("/animais", {
+      const dados = {
         nome: nome.trim() || null,
         especie,
         raca: raca.trim() || null,
@@ -110,17 +254,32 @@ export function Animais() {
         medicacao_desc: medicacaoDesc.trim() || null,
         origem_resgate: origem.trim() || null,
         observacoes: observacoes.trim() || null,
-      });
+        foto: foto ? await lerBase64(foto) : null,
+      };
+      if (editando) {
+        await salvar(dados);
+        return;
+      }
+      const { data } = await api.post<{ id: number }>("/animais", dados);
       // replace: o botão voltar não reabre o formulário já enviado
       navigate(`/animais/${data.id}`, {
         replace: true,
         state: { cadastrado: true },
       });
-    } catch {
-      setFormError("Não foi possível salvar. Confira os dados e tente de novo.");
+    } catch (e) {
+      const detalhe = isAxiosError(e) ? e.response?.data?.detail : null;
+      setFormError(
+        typeof detalhe === "string"
+          ? detalhe
+          : "Não foi possível salvar. Confira os dados e tente de novo.",
+      );
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -144,12 +303,14 @@ export function Animais() {
             Animais
           </Link>
           <span className="font-normal text-gray-400">&gt;</span>
-          <span className="font-medium text-[#1A1A1A]">Novo animal</span>
+          <span className="font-medium text-[#1A1A1A]">
+            {editando ? "Editar animal" : "Novo animal"}
+          </span>
         </nav>
 
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
-            Cadastro de Animal
+            {editando ? `Editar Animal nº ${idEdicao}` : "Cadastro de Animal"}
           </h1>
           <p className="text-sm text-gray-500 md:text-base">
             Preencha os dados do animal acolhido. Campos com * são
@@ -189,6 +350,69 @@ export function Animais() {
                 <div className="flex items-center justify-between">
                   <label
                     className="text-sm font-semibold text-[#1A1A1A]"
+                    htmlFor="animal_photo"
+                  >
+                    Foto do animal{" "}
+                    {!editando && <span className="font-bold text-[#DC2626]">*</span>}
+                  </label>
+                </div>
+                <div className="flex items-center gap-4 rounded-xl border border-dashed border-gray-300 p-4">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-3xl text-gray-400">
+                    {fotoPreview ? (
+                      <img
+                        src={fotoPreview}
+                        alt="Prévia da foto do animal"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : editando && temFoto ? (
+                      <FotoAnimal
+                        id={Number(idEdicao)}
+                        alt="Foto atual do animal"
+                        className="h-full w-full object-cover"
+                        fallback={<i aria-hidden="true" className="bi bi-camera"></i>}
+                      />
+                    ) : (
+                      <i aria-hidden="true" className="bi bi-camera"></i>
+                    )}
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
+                    <input
+                      ref={fotoInput}
+                      id="animal_photo"
+                      type="file"
+                      required={!editando && !foto}
+                      accept={FOTO_TIPOS.join(",")}
+                      onChange={(e) => escolherFoto(e.target.files?.[0])}
+                      aria-describedby="animal_photo_help"
+                      className="w-full cursor-pointer text-sm text-gray-500 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[#1A1A1A] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                    />
+                    <p id="animal_photo_help" className="text-xs text-gray-500">
+                      JPG, PNG ou WebP, até 5 MB.
+                      {editando && " Sem escolher uma nova, a atual é mantida."}
+                    </p>
+                    {fotoErro && (
+                      <p role="alert" className="text-xs font-medium text-[#DC2626]">
+                        {fotoErro}
+                      </p>
+                    )}
+                    {foto && (
+                      <button
+                        type="button"
+                        onClick={removerFoto}
+                        className="inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#DC2626] hover:underline"
+                      >
+                        <i aria-hidden="true" className="bi bi-trash"></i>
+                        Remover foto
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label
+                    className="text-sm font-semibold text-[#1A1A1A]"
                     htmlFor="animal_name"
                   >
                     Nome do Animal
@@ -218,7 +442,11 @@ export function Animais() {
                       id="animal_species"
                       required
                       value={especie}
-                      onChange={(e) => setEspecie(e.target.value)}
+                      onChange={(e) => {
+                        setEspecie(e.target.value);
+                        // As raças dependem da espécie.
+                        setRaca("");
+                      }}
                       className={`${inputCls} cursor-pointer appearance-none pr-9`}
                     >
                       {ESPECIES.map((o) => (
@@ -240,14 +468,36 @@ export function Animais() {
                     </label>
                     <span className="text-xs text-gray-500">(opcional)</span>
                   </div>
-                  <input
-                    id="animal_breed"
-                    type="text"
-                    value={raca}
-                    onChange={(e) => setRaca(e.target.value)}
-                    placeholder="Ex: SRD, Poodle..."
-                    className={inputCls}
-                  />
+                  <div className="relative">
+                    <select
+                      id="animal_breed"
+                      value={raca}
+                      onChange={(e) => setRaca(e.target.value)}
+                      disabled={!especie}
+                      className={`${inputCls} cursor-pointer appearance-none pr-9 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500`}
+                    >
+                      <option value="">
+                        {especie ? "Selecione a raça..." : "Escolha a espécie primeiro"}
+                      </option>
+                      {especie && (
+                        <>
+                          <option value="SRD">SRD (sem raça definida)</option>
+                          {(RACAS[especie] ?? []).map((r) => (
+                            <option key={r} value={r}>
+                              {r}
+                            </option>
+                          ))}
+                          <option value="Outra">Outra</option>
+                          {/* Raça antiga, fora da lista: mantém como opção. */}
+                          {raca &&
+                            !["SRD", "Outra", ...(RACAS[especie] ?? [])].includes(raca) && (
+                              <option value={raca}>{raca}</option>
+                            )}
+                        </>
+                      )}
+                    </select>
+                    <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
+                  </div>
                 </div>
               </div>
 
@@ -575,7 +825,7 @@ export function Animais() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -585,7 +835,7 @@ export function Animais() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Cadastrar Animal"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar Animal"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

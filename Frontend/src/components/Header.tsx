@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { MenuRegistros } from "./MenuRegistros";
 import { useAuth } from "../context/AuthContext";
 
 export function Header() {
@@ -14,34 +15,68 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-      <div className="flex w-full items-center justify-between px-4 py-3 md:px-6">
+      <div className="flex w-full items-center px-4 py-3 md:px-6">
         <button
           onClick={() => navigate("/home")}
-          className="flex items-center gap-3"
+          className="flex items-center w-1/10"
         >
           <img
             src="/logo-ardap.png"
             alt="ARDAP"
             className="h-10 w-10 rounded-lg object-cover"
           />
-          <span className="text-left">
+          {/* <span className="text-left">
             <span className="block text-lg font-bold tracking-tight">
               ARDAP | Gestão Interna
             </span>
             <span className="-mt-1 hidden text-xs text-gray-500 sm:block">
               Recanto dos Animais em Perigo • Paulo Afonso/BA
             </span>
-          </span>
+          </span> */}
         </button>
-        <div className="flex items-center gap-4">
+
+        <div className="flex justify-center gap-4 w-8/10">
+          <button
+            onClick={() => navigate("/home")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Início
+          </button>
+
+          <button
+            onClick={() => navigate("/modulos")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Módulos
+          </button>
+
+          <button
+            onClick={() => navigate("/animais/cadastrados")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Animais
+          </button>
+
+          <button
+            onClick={() => navigate("/adocoes/registradas")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Adoções
+          </button>
+
+          <MenuRegistros />
+
           {user?.role === "admin" && (
             <button
-              onClick={() => navigate("/usuarios/novo")}
-              className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600"
+              onClick={() => navigate("/usuarios")}
+              className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
             >
-              Novo Usuário
+              Usuários
             </button>
           )}
+        </div>
+
+        <div className="flex items-center gap-4 w-1/10">
           <div className="flex items-center gap-2 border-l border-gray-200 pl-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1A1A1A] text-xs font-bold text-white">
               {initials}

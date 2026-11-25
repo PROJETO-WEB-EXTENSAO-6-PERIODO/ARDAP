@@ -4,11 +4,12 @@ from datetime import date
 from decimal import Decimal
 
 from sqlalchemy import Boolean, Date, Enum, Numeric, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import DateTime
 
 from app.core.database import Base
+from app.models.user import User
 
 
 class Animal(Base):
@@ -46,4 +47,26 @@ class Animal(Base):
         String(255), nullable=True
     )
     observacoes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # caminho relativo a Backend/uploads, ex.: animais/<uuid>.jpg
+    foto_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: a autoria e gravada por funcionario_id
+    funcionario: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Animal.funcionario_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
+    alterado_por_id: Mapped[int | None] = mapped_column(nullable=True)
+    alterado_por: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Animal.alterado_por_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
     created_at = mapped_column(DateTime, server_default=func.now())
+    updated_at = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
+
+    @property
+    def tem_foto(self) -> bool:
+        return self.foto_path is not None

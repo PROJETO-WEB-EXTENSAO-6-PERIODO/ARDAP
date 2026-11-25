@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
-import { api } from "../services/api";
+import { SeletorAnimal, rotuloEspecie, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -62,6 +65,7 @@ function Toggle({
 }
 
 export function Eutanasia() {
+  const [animal, setAnimal] = useState<AnimalResumo | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [especie, setEspecie] = useState("");
   const [raca, setRaca] = useState("");
@@ -93,7 +97,19 @@ export function Eutanasia() {
     setLocalDeclaracao("Paulo Afonso");
   }, []);
 
+  // Vincula o animal e preenche os campos; ao desvincular, limpa-os.
+  function vincularAnimal(a: AnimalVinculado | null) {
+    setAnimal(a);
+    setNomeAnimal(a?.nome ?? "");
+    setIdade(a?.idade_estimada?.toString() ?? "");
+    setEspecie(a ? rotuloEspecie(a.especie) : "");
+    setRaca(a?.raca ?? "");
+    setPelagem(a?.cor_pelo ?? "");
+    setSexo(a?.sexo ?? "");
+  }
+
   function resetForm() {
+    setAnimal(null);
     setNomeAnimal("");
     setEspecie("");
     setRaca("");
@@ -116,6 +132,33 @@ export function Eutanasia() {
     setFormError("");
   }
 
+  function preencher(d: DadosRegistro) {
+    setAnimal(d.animal);
+    setNomeAnimal(d.nome_animal ?? "");
+    setEspecie(d.especie ?? "");
+    setRaca(d.raca ?? "");
+    setSexo(d.sexo ?? "");
+    setIdade(d.idade ?? "");
+    setPelagem(d.pelagem ?? "");
+    setCrmv(d.crmv_veterinario ?? "");
+    setNomeResponsavel(d.nome_responsavel ?? "");
+    setRg(d.rg ?? "");
+    setCpf(maskCPF(d.cpf ?? ""));
+    setEndereco(d.endereco ?? "");
+    setBairro(d.bairro ?? "");
+    setCidade(d.cidade ?? "");
+    setTelefoneEmail(d.telefone_email ?? "");
+    setDeclaracaoAceite(d.declaracao_aceite === true);
+    setLocalDeclaracao(d.local_declaracao ?? "");
+    setDataDeclaracao(d.data_declaracao ?? "");
+    setAssinatura(d.assinatura_responsavel ?? "");
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "eutanasias",
+    preencher,
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -137,7 +180,8 @@ export function Eutanasia() {
 
     setSaving(true);
     try {
-      await api.post("/eutanasias", {
+      const editado = await salvar({
+        animal_id: animal?.id ?? null,
         nome_animal: nomeAnimal.trim() || null,
         especie: especie.trim() || null,
         raca: raca.trim() || null,
@@ -157,14 +201,24 @@ export function Eutanasia() {
         data_declaracao: dataDeclaracao || null,
         assinatura_responsavel: assinatura.trim() || null,
       });
+      if (editado) return;
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setFormError("Não foi possível salvar. Confira os dados e tente de novo.");
+    } catch (e) {
+      const detalhe = isAxiosError(e) ? e.response?.data?.detail : null;
+      setFormError(
+        typeof detalhe === "string"
+          ? detalhe
+          : "Não foi possível salvar. Confira os dados e tente de novo.",
+      );
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -185,6 +239,11 @@ export function Eutanasia() {
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
               Termo de Consentimento para Eutanásia
             </h1>
+            {editando && (
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">
+                Editando o registro nº {idEdicao}
+              </p>
+            )}
             <p className="mt-1 text-sm text-[#6f5d00] font-semibold">
               ARDAP – Associação Recanto dos Animais em Perigo
             </p>
@@ -212,6 +271,8 @@ export function Eutanasia() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
+
           {/* Seção 1 – Dados do Animal */}
           <article className="flex h-full flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between">
@@ -472,7 +533,7 @@ export function Eutanasia() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -482,7 +543,7 @@ export function Eutanasia() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar Termo de Eutanásia"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar Termo de Eutanásia"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

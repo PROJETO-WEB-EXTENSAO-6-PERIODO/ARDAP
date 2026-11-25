@@ -4,8 +4,10 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.edicao import editar_registro
 from app.models.adocao import Adocao
 from app.models.user import User
 from app.schemas.adocao import AdocaoIn, AdocaoOut, ContagemOut
@@ -32,6 +34,7 @@ def create_adocao(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    validar_animal(db, data.animal_id)
     adocao = Adocao(
         animal_id=data.animal_id,
         funcionario_id=user.id,
@@ -45,19 +48,6 @@ def create_adocao(
         cep=data.cep,
         telefone=data.telefone,
         instagram=data.instagram,
-        nome_animal=data.nome_animal,
-        especie=data.especie,
-        sexo=data.sexo,
-        idade=data.idade,
-        raca=data.raca,
-        srd=data.srd,
-        onde_resgatou_tutor=data.onde_resgatou_tutor,
-        cor_pelo=data.cor_pelo,
-        porte=data.porte,
-        peso=data.peso,
-        castrado=data.castrado,
-        vermifugado_3meses=data.vermifugado_3meses,
-        medicamento_diario=data.medicamento_diario,
         mais_animais_em_casa=data.mais_animais_em_casa,
         quantos_mais_animais=data.quantos_mais_animais,
         endereco_ficara_animal=data.endereco_ficara_animal,
@@ -109,3 +99,13 @@ def get_adocao(
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Termo de adocao nao encontrado.")
     return adocao
+
+
+@router.put("/adocoes/{adocao_id}", response_model=AdocaoOut)
+def update_adocao(
+    adocao_id: int,
+    data: AdocaoIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return editar_registro(db, get_adocao(adocao_id, db, user), data, user)

@@ -26,9 +26,11 @@ CREATE TABLE IF NOT EXISTS hipossuficiencia (
     anexo_documentos TEXT,
 
     funcionario_id INT,
+    alterado_por_id INT,
 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );

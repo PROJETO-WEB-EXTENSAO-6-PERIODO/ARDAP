@@ -3,12 +3,14 @@
 from datetime import date
 
 from sqlalchemy import (
-    Boolean, Date, DateTime, Enum, Numeric, String, Text,
+    Boolean, Date, DateTime, Enum, String, Text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
+from app.models.animal import Animal
+from app.models.user import User
 
 
 class Adocao(Base):
@@ -17,7 +19,25 @@ class Adocao(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     animal_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: o vinculo e gravado por animal_id
+    animal: Mapped[Animal | None] = relationship(
+        primaryjoin=lambda: foreign(Adocao.animal_id) == Animal.id,
+        viewonly=True,
+        lazy="joined",
+    )
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: a autoria e gravada por funcionario_id
+    funcionario: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Adocao.funcionario_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
+    alterado_por_id: Mapped[int | None] = mapped_column(nullable=True)
+    alterado_por: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Adocao.alterado_por_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     nome_adotante: Mapped[str] = mapped_column(String(150), nullable=False)
     rg: Mapped[str | None] = mapped_column(String(30), nullable=True)
@@ -29,28 +49,6 @@ class Adocao(Base):
     telefone: Mapped[str | None] = mapped_column(String(20), nullable=True)
     instagram: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
-    nome_animal: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    especie: Mapped[str | None] = mapped_column(
-        Enum("cao", "gato", name="especie_adocao_enum"), nullable=True
-    )
-    sexo: Mapped[str | None] = mapped_column(
-        Enum("macho", "femea", name="sexo_adocao_enum"), nullable=True
-    )
-    idade: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    raca: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    srd: Mapped[bool] = mapped_column(Boolean, default=False)
-    onde_resgatou_tutor: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    cor_pelo: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    porte: Mapped[str | None] = mapped_column(
-        Enum("pequeno", "medio", "grande", name="porte_adocao_enum"), nullable=True
-    )
-    peso: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
-    castrado: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
-    vermifugado_3meses: Mapped[str | None] = mapped_column(
-        Enum("sim", "nao", "sem_informacao", name="vermifugado_adocao_enum"),
-        nullable=True,
-    )
-    medicamento_diario: Mapped[bool] = mapped_column(Boolean, default=False)
     mais_animais_em_casa: Mapped[bool] = mapped_column(Boolean, default=False)
     quantos_mais_animais: Mapped[int | None] = mapped_column(nullable=True)
     endereco_ficara_animal: Mapped[str] = mapped_column(

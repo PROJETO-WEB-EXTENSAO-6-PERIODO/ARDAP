@@ -1,9 +1,13 @@
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
+from app.schemas.animal import AnimalResumoOut
+from app.schemas.user import AutorOut
+
 
 class SupatasIntakeIn(BaseModel):
+    animal_id: int | None = None
     orgao_solicitante: str = Field(default="SUPATAS", max_length=150)
     nome_responsavel_encaminhamento: str = Field(
         ..., min_length=1, max_length=150
@@ -33,6 +37,12 @@ class SupatasIntakeIn(BaseModel):
 
 class SupatasIntakeOut(BaseModel):
     id: int
+    animal_id: int | None
+    animal: AnimalResumoOut | None
+    funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
+    created_at: datetime | None
     orgao_solicitante: str | None
     nome_responsavel_encaminhamento: str | None
     data_encaminhamento: date | None

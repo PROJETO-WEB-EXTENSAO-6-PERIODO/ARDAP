@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
-import { api } from "../services/api";
+import { SeletorAnimal, type AnimalResumo } from "../components/SeletorAnimal";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -61,24 +63,12 @@ export function Adocao() {
   const [instagram, setInstagram] = useState("");
   const [especieAdocao, setEspecieAdocao] = useState("");
 
-  // Seção 2 - Dados do animal
-  const [nomeAnimal, setNomeAnimal] = useState("");
-  const [especie, setEspecie] = useState("");
-  const [sexo, setSexo] = useState("");
-  const [idade, setIdade] = useState("");
-  const [raca, setRaca] = useState("");
-  const [srd, setSrd] = useState(false);
-  const [ondeResgatou, setOndeResgatou] = useState("");
-  const [corPelo, setCorPelo] = useState("");
-  const [porte, setPorte] = useState("");
-  const [peso, setPeso] = useState("");
-  const [castrado, setCastrado] = useState<boolean | null>(null);
-  const [vermifugado, setVermifugado] = useState("");
-  const [medicamentoDiario, setMedicamentoDiario] = useState(false);
+  // Animal vinculado
+  const [animal, setAnimal] = useState<AnimalResumo | null>(null);
   const [maisAnimaisCasa, setMaisAnimaisCasa] = useState(false);
   const [quantosMaisAnimais, setQuantosMaisAnimais] = useState("");
 
-  // Seção 3 - Questionário
+  // Seção 2 - Questionário
   const [outrosAnimais, setOutrosAnimais] = useState(false);
   const [quantosAnimais, setQuantosAnimais] = useState("");
   const [espacoCasa, setEspacoCasa] = useState(false);
@@ -93,12 +83,12 @@ export function Adocao() {
   const [acessoRua, setAcessoRua] = useState(false);
   const [cienciaVacinacao, setCienciaVacinacao] = useState(false);
 
-  // Seção 4 - Endereço onde ficará
+  // Seção 3 - Endereço onde ficará
   const [enderecoFicara, setEnderecoFicara] = useState("mesmo");
   const [enderecoFicaraOutro, setEnderecoFicaraOutro] = useState("");
   const [localNaCasa, setLocalNaCasa] = useState("");
 
-  // Seção 5 - Declarações e assinatura
+  // Seção 4 - Declarações e assinatura
   const [aceiteDeclaracao, setAceiteDeclaracao] = useState(false);
   const [aceiteTermo, setAceiteTermo] = useState(false);
   const [assinaturaAdotante, setAssinaturaAdotante] = useState("");
@@ -113,6 +103,7 @@ export function Adocao() {
 
   const missingRequired: string[] = [];
   if (triedSubmit) {
+    if (!animal) missingRequired.push("Animal adotado");
     if (!nomeAdotante.trim()) missingRequired.push("Nome do adotante");
     if (!enderecoResidencial.trim()) missingRequired.push("Endereço residencial");
     if (!assinaturaAdotante.trim()) missingRequired.push("Assinatura do adotante");
@@ -127,6 +118,7 @@ export function Adocao() {
   }, []);
 
   function resetForm() {
+    setAnimal(null);
     setNomeAdotante("");
     setRg("");
     setCpf("");
@@ -137,19 +129,6 @@ export function Adocao() {
     setTelefone("");
     setInstagram("");
     setEspecieAdocao("");
-    setNomeAnimal("");
-    setEspecie("");
-    setSexo("");
-    setIdade("");
-    setRaca("");
-    setSrd(false);
-    setOndeResgatou("");
-    setCorPelo("");
-    setPorte("");
-    setPeso("");
-    setCastrado(null);
-    setVermifugado("");
-    setMedicamentoDiario(false);
     setMaisAnimaisCasa(false);
     setQuantosMaisAnimais("");
     setOutrosAnimais(false);
@@ -192,10 +171,6 @@ export function Adocao() {
     return n;
   }
 
-  function onlyLetters(v: string) {
-    return v.replace(/[0-9]/g, "");
-  }
-
   function maskCEP(v: string) {
     let n = v.replace(/\D/g, "");
     if (n.length > 8) n = n.slice(0, 8);
@@ -216,12 +191,57 @@ export function Adocao() {
     return n;
   }
 
+  function preencher(d: DadosRegistro) {
+    setAnimal(d.animal);
+    setNomeAdotante(d.nome_adotante ?? "");
+    setRg(d.rg ?? "");
+    setCpf(maskCPF(d.cpf ?? ""));
+    setEnderecoResidencial(d.endereco_residencial ?? "");
+    setBairro(d.bairro ?? "");
+    setCidade(d.cidade ?? "");
+    setCep(maskCEP(d.cep ?? ""));
+    setTelefone(d.telefone ?? "");
+    setInstagram(d.instagram ?? "");
+    setEspecieAdocao(d.especie_adocao ?? "");
+    setMaisAnimaisCasa(d.mais_animais_em_casa === true);
+    setQuantosMaisAnimais(d.quantos_mais_animais == null ? "" : String(d.quantos_mais_animais));
+    setEspacoCasa(d.espaco_casa === true);
+    setCasaMurada(d.casa_murada === true);
+    setEspacoCoberto(d.espaco_coberto_quintal === true);
+    setMoraAluguel(d.mora_aluguel === true);
+    setProprietarioPermite(d.proprietario_permite_animais);
+    setViajarQuem(d.viajar_quem_cuidara ?? "");
+    setFamiliaSabe(d.familia_sabe_adocao === true);
+    setAlguemAlergia(d.alguem_alergia === true);
+    setAlimentacao(d.alimentacao ?? "");
+    setAcessoRua(d.acesso_rua === true);
+    setCienciaVacinacao(d.ciencia_vacinacao === true);
+    setEnderecoFicara(d.endereco_ficara_animal ?? "");
+    setEnderecoFicaraOutro(d.endereco_ficara_animal_outro ?? "");
+    setLocalNaCasa(d.local_na_casa ?? "");
+    setAceiteDeclaracao(d.aceite_declaracao === true);
+    setAceiteTermo(d.aceite_termo === true);
+    setAssinaturaAdotante(d.assinatura_adotante ?? "");
+    setAssinaturaArdap(d.assinatura_ardap ?? "");
+    setLocalAssinatura(d.local_assinatura ?? "");
+    setDataAssinatura(d.data_assinatura ?? "");
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "adocoes",
+    preencher,
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
     setSuccess(false);
     setTriedSubmit(true);
 
+    if (!animal) {
+      setFormError("Selecione o animal que será adotado.");
+      return;
+    }
     if (!nomeAdotante.trim()) {
       setFormError("Informe o nome do adotante.");
       return;
@@ -245,7 +265,8 @@ export function Adocao() {
 
     setSaving(true);
     try {
-      await api.post("/adocoes", {
+      const editado = await salvar({
+        animal_id: animal.id,
         especie_adocao: especieAdocao || null,
         nome_adotante: nomeAdotante.trim(),
         rg: rg.trim() || null,
@@ -256,19 +277,6 @@ export function Adocao() {
         cep: cep.replace(/\D/g, "") || null,
         telefone: telefone.trim() || null,
         instagram: instagram.trim() || null,
-        nome_animal: nomeAnimal.trim() || null,
-        especie: especie || null,
-        sexo: sexo || null,
-        idade: idade.trim() || null,
-        raca: raca.trim() || null,
-        srd,
-        onde_resgatou_tutor: ondeResgatou.trim() || null,
-        cor_pelo: corPelo.trim() || null,
-        porte: porte || null,
-        peso: peso ? Number(peso) : null,
-        castrado,
-        vermifugado_3meses: vermifugado || null,
-        medicamento_diario: medicamentoDiario,
         mais_animais_em_casa: maisAnimaisCasa,
         quantos_mais_animais: quantosMaisAnimais ? Number(quantosMaisAnimais) : null,
         endereco_ficara_animal: enderecoFicara,
@@ -294,6 +302,7 @@ export function Adocao() {
         local_assinatura: localAssinatura.trim() || null,
         data_assinatura: dataAssinatura || null,
       });
+      if (editado) return;
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -307,6 +316,10 @@ export function Adocao() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -328,6 +341,11 @@ export function Adocao() {
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
               Termo de Adoção Responsável
             </h1>
+            {editando && (
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">
+                Editando o registro nº {idEdicao}
+              </p>
+            )}
             <p className="mt-1 text-sm text-[#6f5d00] font-semibold">
               ARDAP – Associação Recanto dos Animais em Perigo
             </p>
@@ -362,6 +380,13 @@ export function Adocao() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <SeletorAnimal
+            animal={animal}
+            onChange={setAnimal}
+            obrigatorio
+            invalido={triedSubmit && !animal}
+          />
+
           {/* Seção 1 - Dados do Adotante */}
           <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between">
@@ -449,131 +474,7 @@ export function Adocao() {
             </div>
           </article>
 
-          {/* Seção 2 - Dados do Animal */}
-          <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-[22px] text-gray-600">
-                  <i className="bi bi-heart"></i>
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-[#1A1A1A]">Dados do Animal</h2>
-                  <p className="text-xs text-gray-500 md:text-sm">Identificação e condições</p>
-                </div>
-              </div>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                Dados do Animal
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Nome do animal</label>
-                <input type="text" value={nomeAnimal} onChange={(e) => setNomeAnimal(e.target.value)} className={inputCls} />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Espécie</label>
-                <div className="relative">
-                  <select value={especie} onChange={(e) => setEspecie(e.target.value)} className={`${inputCls} cursor-pointer appearance-none pr-9`}>
-                    <option value="">Selecione...</option>
-                    <option value="cao">Cão</option>
-                    <option value="gato">Gato</option>
-                  </select>
-                  <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Sexo</label>
-                <div className="relative">
-                  <select value={sexo} onChange={(e) => setSexo(e.target.value)} className={`${inputCls} cursor-pointer appearance-none pr-9`}>
-                    <option value="">Selecione...</option>
-                    <option value="macho">Macho</option>
-                    <option value="femea">Fêmea</option>
-                  </select>
-                  <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Idade</label>
-                <input type="text" value={idade} onChange={(e) => setIdade(onlyDigits(e.target.value, 3))} placeholder="Ex: 2" className={inputCls} />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Raça</label>
-                <input type="text" value={raca} onChange={(e) => setRaca(onlyLetters(e.target.value))} className={inputCls} />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">SRD</label>
-                <select value={srd ? "sim" : "nao"} onChange={(e) => setSrd(e.target.value === "sim")} className={inputCls}>
-                  <option value="nao">Não</option>
-                  <option value="sim">Sim</option>
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-1.5 sm:col-span-2 lg:col-span-3">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Onde foi resgatado / tutor</label>
-                <input type="text" value={ondeResgatou} onChange={(e) => setOndeResgatou(e.target.value)} className={inputCls} />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Cor do pelo</label>
-                <input type="text" value={corPelo} onChange={(e) => setCorPelo(onlyLetters(e.target.value))} className={inputCls} />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Porte</label>
-                <div className="relative">
-                  <select value={porte} onChange={(e) => setPorte(e.target.value)} className={`${inputCls} cursor-pointer appearance-none pr-9`}>
-                    <option value="">Selecione...</option>
-                    <option value="pequeno">Pequeno</option>
-                    <option value="medio">Médio</option>
-                    <option value="grande">Grande</option>
-                  </select>
-                  <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Peso (kg)</label>
-                <input type="text" inputMode="decimal" value={peso} onChange={(e) => setPeso(e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1"))} placeholder="Ex: 12.5" className={inputCls} />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Castrado</label>
-                <div className="relative">
-                  <select value={castrado === null ? "" : castrado ? "sim" : "nao"} onChange={(e) => setCastrado(e.target.value === "" ? null : e.target.value === "sim")} className={`${inputCls} cursor-pointer appearance-none pr-9`}>
-                    <option value="">Selecione...</option>
-                    <option value="sim">Sim</option>
-                    <option value="nao">Não</option>
-                  </select>
-                  <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Vermifugado (últ. 3 meses)</label>
-                <div className="relative">
-                  <select value={vermifugado} onChange={(e) => setVermifugado(e.target.value)} className={`${inputCls} cursor-pointer appearance-none pr-9`}>
-                    <option value="">Selecione...</option>
-                    <option value="sim">Sim</option>
-                    <option value="nao">Não</option>
-                    <option value="sem_informacao">Sem informação</option>
-                  </select>
-                  <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
-                </div>
-              </div>
-
-              <div className="sm:col-span-2 lg:col-span-3">
-                <Toggle checked={medicamentoDiario} onChange={setMedicamentoDiario} label="Necessita de medicamento diariamente" />
-              </div>
-            </div>
-          </article>
-
-          {/* Seção 3 - Questionário */}
+          {/* Seção 2 - Questionário */}
           <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
@@ -640,7 +541,7 @@ export function Adocao() {
             </div>
           </article>
 
-          {/* Seção 4 - Endereço onde ficará */}
+          {/* Seção 3 - Endereço onde ficará */}
           <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
@@ -693,7 +594,7 @@ export function Adocao() {
             </div>
           </article>
 
-          {/* Seção 5 - Declarações e assinatura */}
+          {/* Seção 4 - Declarações e assinatura */}
           <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
@@ -779,7 +680,7 @@ export function Adocao() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -789,7 +690,7 @@ export function Adocao() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar Termo de Adoção"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar Termo de Adoção"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

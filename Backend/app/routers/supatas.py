@@ -1,11 +1,13 @@
 """Registro de entrada SUPATAS (encaminhamento municipal)."""
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.edicao import editar_registro
 from app.models.intake import SupatasIntake
 from app.models.user import User
 from app.schemas.intake import SupatasIntakeIn, SupatasIntakeOut
@@ -23,7 +25,9 @@ def create_supatas_intake(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    validar_animal(db, data.animal_id)
     intake = SupatasIntake(
+        animal_id=data.animal_id,
         orgao_solicitante=data.orgao_solicitante,
         nome_responsavel_encaminhamento=data.nome_responsavel_encaminhamento,
         data_encaminhamento=data.data_encaminhamento,
@@ -56,3 +60,27 @@ def list_supatas_intakes(
 ):
     stmt = select(SupatasIntake).order_by(SupatasIntake.id.desc())
     return db.scalars(stmt).all()
+
+
+@router.get("/supatas/{intake_id}", response_model=SupatasIntakeOut)
+def get_supatas_intake(
+    intake_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    intake = db.get(SupatasIntake, intake_id)
+    if intake is None:
+        raise HTTPException(
+            status_code=404, detail="Solicitação SUPATAS não encontrada."
+        )
+    return intake
+
+
+@router.put("/supatas/{intake_id}", response_model=SupatasIntakeOut)
+def update_supatas(
+    intake_id: int,
+    data: SupatasIntakeIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return editar_registro(db, get_supatas_intake(intake_id, db, user), data, user)
