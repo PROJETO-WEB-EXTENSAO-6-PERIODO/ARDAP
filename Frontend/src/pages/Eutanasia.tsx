@@ -5,13 +5,10 @@ import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { SeletorAnimal, rotuloEspecie, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
+import { hojeISO } from "../services/datas";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 function maskCPF(v: string) {
   let n = v.replace(/\D/g, "");
@@ -93,7 +90,7 @@ export function Eutanasia() {
   const [triedSubmit, setTriedSubmit] = useState(false);
 
   useEffect(() => {
-    setDataDeclaracao(todayISO());
+    setDataDeclaracao(hojeISO());
     setLocalDeclaracao("Paulo Afonso");
   }, []);
 
@@ -126,7 +123,7 @@ export function Eutanasia() {
     setTelefoneEmail("");
     setDeclaracaoAceite(false);
     setLocalDeclaracao("Paulo Afonso");
-    setDataDeclaracao(todayISO());
+    setDataDeclaracao(hojeISO());
     setAssinatura("");
     setTriedSubmit(false);
     setFormError("");

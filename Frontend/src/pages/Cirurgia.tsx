@@ -5,6 +5,7 @@ import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { SeletorAnimal, rotuloEspecie, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
+import { hojeISO } from "../services/datas";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -39,10 +40,6 @@ function Toggle({
       </button>
     </div>
   );
-}
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function maskCPF(v: string) {
@@ -108,7 +105,7 @@ export function Cirurgia() {
   const [triedSubmit, setTriedSubmit] = useState(false);
 
   useEffect(() => {
-    setDataAssinatura(todayISO());
+    setDataAssinatura(hojeISO());
     setLocalAssinatura("Paulo Afonso");
   }, []);
 
@@ -142,7 +139,7 @@ export function Cirurgia() {
     setProcedimento("");
     setAceite(false);
     setAssinatura("");
-    setDataAssinatura(todayISO());
+    setDataAssinatura(hojeISO());
     setTriedSubmit(false);
     setFormError("");
   }

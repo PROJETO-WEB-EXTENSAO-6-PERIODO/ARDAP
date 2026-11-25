@@ -1,24 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import type { Anexo } from "../components/AnexosHipossuficiencia";
 import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
+import { ARQUIVO_MAX_BYTES, lerBase64 } from "../services/arquivos";
+import { hojeISO } from "../services/datas";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 function onlyDigits(v: string, max: number) {
   let n = v.replace(/\D/g, "");
   if (n.length > max) n = n.slice(0, max);
   return n;
-}
-
-function onlyLetters(v: string) {
-  return v.replace(/[0-9]/g, "");
 }
 
 function Toggle({
@@ -53,6 +48,9 @@ function Toggle({
   );
 }
 
+const MAX_ANEXOS = 4;
+const ANEXO_TIPOS = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+
 const TIPOS_DOC = [
   { value: "", label: "Selecione..." },
   { value: "rg", label: "RG" },
@@ -86,8 +84,11 @@ export function Hipossuficiencia() {
   const [localDeclaracao, setLocalDeclaracao] = useState("");
   const [dataDeclaracao, setDataDeclaracao] = useState("");
   const [assinatura, setAssinatura] = useState("");
-  const [anexosSalvos, setAnexosSalvos] = useState("");
+  const [anexosSalvos, setAnexosSalvos] = useState<Anexo[]>([]);
   const [anexoFiles, setAnexoFiles] = useState<File[]>([]);
+  const [anexoErro, setAnexoErro] = useState("");
+  const anexoInput = useRef<HTMLInputElement>(null);
+  const totalAnexos = anexosSalvos.length + anexoFiles.length;
 
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -95,7 +96,7 @@ export function Hipossuficiencia() {
   const [triedSubmit, setTriedSubmit] = useState(false);
 
   useEffect(() => {
-    setDataDeclaracao(todayISO());
+    setDataDeclaracao(hojeISO());
     setLocalDeclaracao("Paulo Afonso");
   }, []);
 
@@ -113,10 +114,11 @@ export function Hipossuficiencia() {
     setRendaMeioSalario(false);
     setOutroMotivo("");
     setLocalDeclaracao("Paulo Afonso");
-    setDataDeclaracao(todayISO());
+    setDataDeclaracao(hojeISO());
     setAssinatura("");
-    setAnexosSalvos("");
+    setAnexosSalvos([]);
     setAnexoFiles([]);
+    setAnexoErro("");
     setTriedSubmit(false);
     setFormError("");
   }
@@ -137,13 +139,29 @@ export function Hipossuficiencia() {
     setLocalDeclaracao(d.local_declaracao ?? "");
     setDataDeclaracao(d.data_declaracao ?? "");
     setAssinatura(d.assinatura_representante ?? "");
-    setAnexosSalvos(d.anexo_documentos ?? "");
+    setAnexosSalvos(d.anexos ?? []);
   }
 
   const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
     "hipossuficiencias",
     preencher,
   );
+
+  function escolherAnexos(arquivos: File[]) {
+    // Limpa o campo para permitir escolher o mesmo arquivo de novo.
+    if (anexoInput.current) anexoInput.current.value = "";
+    setAnexoErro("");
+    const recusado = arquivos.find(
+      (f) => !ANEXO_TIPOS.includes(f.type) || f.size > ARQUIVO_MAX_BYTES,
+    );
+    if (recusado) {
+      setAnexoErro(`${recusado.name}: envie PDF, JPG, PNG ou WebP de até 5 MB.`);
+    } else if (totalAnexos + arquivos.length > MAX_ANEXOS) {
+      setAnexoErro(`São permitidos no máximo ${MAX_ANEXOS} documentos.`);
+    } else {
+      setAnexoFiles((atuais) => [...atuais, ...arquivos]);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -161,10 +179,6 @@ export function Hipossuficiencia() {
     }
     if (!assinatura.trim()) {
       setFormError("Informe a assinatura do representante.");
-      return;
-    }
-    if (anexoFiles.length > 4) {
-      setFormError("Selecione no máximo 4 documentos para anexar.");
       return;
     }
 
@@ -186,7 +200,10 @@ export function Hipossuficiencia() {
         local_declaracao: localDeclaracao.trim() || null,
         data_declaracao: dataDeclaracao || null,
         assinatura_representante: assinatura.trim() || null,
-        anexo_documentos: anexoFiles.length > 0 ? anexoFiles.map((f) => f.name).join(", ") : anexosSalvos || null,
+        anexos_novos: await Promise.all(
+          anexoFiles.map(async (f) => ({ nome: f.name, conteudo: await lerBase64(f) })),
+        ),
+        ...(editando && { anexos_mantidos: anexosSalvos.map((a) => a.id) }),
       });
       if (editado) return;
       setSuccess(true);
@@ -426,27 +443,56 @@ export function Hipossuficiencia() {
               </div>
 
               <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label className="text-sm font-semibold text-[#1A1A1A]">Anexo de documentos</label>
+                <label htmlFor="anexos" className="text-sm font-semibold text-[#1A1A1A]">
+                  Anexo de documentos
+                </label>
                 <input
+                  id="anexos"
+                  ref={anexoInput}
                   type="file"
                   multiple
-                  onChange={(e) => setAnexoFiles(Array.from(e.target.files || []))}
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] file:mr-3 file:rounded-md file:border-0 file:bg-[#1A1A1A] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-[#333]"
+                  accept={ANEXO_TIPOS.join(",")}
+                  disabled={totalAnexos >= MAX_ANEXOS}
+                  onChange={(e) => escolherAnexos(Array.from(e.target.files ?? []))}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-transparent file:mr-3 file:rounded-md file:border-0 file:bg-[#1A1A1A] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-[#333] disabled:opacity-60"
                 />
-                {anexosSalvos && anexoFiles.length === 0 && (
-                  <p className="text-xs text-gray-600">
-                    Anexos atuais: {anexosSalvos}. Escolher novos substitui a lista.
+                {anexoErro && (
+                  <p role="alert" className="text-xs font-medium text-[#DC2626]">
+                    {anexoErro}
                   </p>
                 )}
-                {anexoFiles.length > 0 && (
-                  <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-gray-600">
+                {totalAnexos > 0 && (
+                  <ul className="mt-1 flex flex-col gap-1.5 text-sm text-[#1A1A1A]">
+                    {anexosSalvos.map((a) => (
+                      <li key={a.id} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 px-3 py-2">
+                        <span className="min-w-0 break-words">{a.nome}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAnexosSalvos((atuais) => atuais.filter((x) => x.id !== a.id))}
+                          aria-label={`Remover ${a.nome}`}
+                          className="shrink-0 cursor-pointer text-xs font-semibold text-[#DC2626] hover:underline"
+                        >
+                          Remover
+                        </button>
+                      </li>
+                    ))}
                     {anexoFiles.map((f, i) => (
-                      <li key={i}>{f.name}</li>
+                      <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 px-3 py-2">
+                        <span className="min-w-0 break-words">{f.name} (novo)</span>
+                        <button
+                          type="button"
+                          onClick={() => setAnexoFiles((atuais) => atuais.filter((_, x) => x !== i))}
+                          aria-label={`Remover ${f.name}`}
+                          className="shrink-0 cursor-pointer text-xs font-semibold text-[#DC2626] hover:underline"
+                        >
+                          Remover
+                        </button>
+                      </li>
                     ))}
                   </ul>
                 )}
-                <p className={`text-xs ${anexoFiles.length <= 4 ? "text-green-600" : "text-red-500"}`}>
-                  {anexoFiles.length} arquivo(s) selecionado(s) — máximo 4.
+                <p className="text-xs text-gray-600">
+                  {totalAnexos} de {MAX_ANEXOS} documentos. PDF, JPG, PNG ou WebP de até 5 MB cada.
                 </p>
               </div>
             </div>

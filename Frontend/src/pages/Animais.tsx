@@ -6,6 +6,7 @@ import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 import { api } from "../services/api";
+import { lerBase64 } from "../services/arquivos";
 
 const ESPECIES = [
   { value: "", label: "Selecione a espécie..." },
@@ -90,16 +91,6 @@ const TEMPERAMENTOS = [
 
 const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
 const FOTO_MAX_BYTES = 5 * 1024 * 1024;
-
-function lerBase64(arquivo: File) {
-  return new Promise<string>((resolve, reject) => {
-    const leitor = new FileReader();
-    // Remove o prefixo "data:image/...;base64,"
-    leitor.onload = () => resolve(String(leitor.result).split(",")[1]);
-    leitor.onerror = () => reject(leitor.error);
-    leitor.readAsDataURL(arquivo);
-  });
-}
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";

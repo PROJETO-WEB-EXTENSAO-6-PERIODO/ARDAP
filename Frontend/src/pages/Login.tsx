@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function Login() {
-  const { login } = useAuth();
+  const { login, sessaoExpirada } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,8 +19,15 @@ export function Login() {
     try {
       await login(email.trim(), password);
       navigate("/home", { replace: true });
-    } catch {
-      setError("E-mail ou senha inválidos.");
+    } catch (e) {
+      const status = isAxiosError(e) ? e.response?.status : undefined;
+      if (status === 401) {
+        setError("E-mail ou senha inválidos.");
+      } else if (status === 429) {
+        setError("Muitas tentativas de login. Aguarde 15 minutos e tente novamente.");
+      } else {
+        setError("Não foi possível conectar ao servidor. Tente novamente em instantes.");
+      }
     } finally {
       setLoading(false);
     }
@@ -55,6 +63,15 @@ export function Login() {
           <p className="text-sm text-gray-500">
             Gerencie seus formulários de forma otimizada.
           </p>
+
+          {sessaoExpirada && !error && (
+            <p
+              role="status"
+              className="mt-4 rounded-lg bg-[#FFF9DB] px-3 py-2 text-sm font-medium text-[#6f5d00]"
+            >
+              Sua sessão expirou. Entre novamente.
+            </p>
+          )}
 
           {error && (
             <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-[#DC2626]">

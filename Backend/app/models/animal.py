@@ -47,7 +47,7 @@ class Animal(Base):
         String(255), nullable=True
     )
     observacoes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    # caminho relativo a Backend/uploads, ex.: animais/<uuid>.jpg
+    # chave no armazenamento, ex.: animais/<uuid>.jpg
     foto_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
     # somente leitura: a autoria e gravada por funcionario_id

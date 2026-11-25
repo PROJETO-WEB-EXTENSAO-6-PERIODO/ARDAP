@@ -4,14 +4,11 @@ POST cria apenas o cadastro do animal. Registros de entrada via SUPATAS
 devem ser feitos pelo endpoint dedicado /supatas.
 """
 
-from pathlib import Path
-from uuid import uuid4
-
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
+from app.core import armazenamento
 from app.core.animal_vinculo import animal_eutanasiado
 from app.core.database import get_db
 from app.core.deps import get_current_user
@@ -22,37 +19,21 @@ from app.schemas.user import AutorOut
 
 router = APIRouter(tags=["animais"])
 
-# Backend/uploads (fora do git), independente da pasta de execucao
-UPLOADS_DIR = Path(__file__).resolve().parents[2] / "uploads"
-FOTO_MAX_BYTES = 5 * 1024 * 1024
 
-
-def _extensao_foto(foto: bytes) -> str:
-    """Valida tamanho e formato pelo conteudo, nao pela extensao."""
-    if len(foto) > FOTO_MAX_BYTES:
+def _salvar_foto(foto: bytes) -> str:
+    """Valida e grava a foto; devolve a chave do arquivo."""
+    if len(foto) > armazenamento.MAX_BYTES:
         raise HTTPException(
             status_code=413,
             detail="A foto deve ter no máximo 5 MB.",
         )
-    if foto.startswith(b"\xff\xd8\xff"):
-        return ".jpg"
-    if foto.startswith(b"\x89PNG\r\n\x1a\n"):
-        return ".png"
-    if foto[:4] == b"RIFF" and foto[8:12] == b"WEBP":
-        return ".webp"
-    raise HTTPException(
-        status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        detail="A foto deve ser JPG, PNG ou WebP.",
-    )
-
-
-def _salvar_foto(foto: bytes) -> str:
-    """Grava a foto em disco e devolve o caminho relativo a UPLOADS_DIR."""
-    foto_path = f"animais/{uuid4().hex}{_extensao_foto(foto)}"
-    destino = UPLOADS_DIR / foto_path
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    destino.write_bytes(foto)
-    return foto_path
+    extensao = armazenamento.identificar(foto)
+    if extensao not in armazenamento.IMAGENS:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="A foto deve ser JPG, PNG ou WebP.",
+        )
+    return armazenamento.salvar("animais", foto, extensao)
 
 
 def _to_out(a: Animal) -> AnimalOut:
@@ -111,7 +92,7 @@ def create_animal(
         db.commit()
     except Exception:
         # sem registro no banco, o arquivo ficaria orfao
-        (UPLOADS_DIR / foto_path).unlink(missing_ok=True)
+        armazenamento.apagar(foto_path)
         raise
     db.refresh(animal)
     return _to_out(animal)
@@ -160,18 +141,22 @@ def get_foto(
     user: User = Depends(get_current_user),
 ):
     animal = db.get(Animal, animal_id)
-    arquivo = (
-        UPLOADS_DIR / animal.foto_path
+    foto = (
+        armazenamento.ler(animal.foto_path)
         if animal and animal.foto_path
         else None
     )
-    if arquivo is None or not arquivo.is_file():
+    if foto is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Foto não encontrada.",
         )
     # revalida sempre: a foto pode ser trocada na edicao
-    return FileResponse(arquivo, headers={"Cache-Control": "private, no-cache"})
+    return Response(
+        foto,
+        media_type=armazenamento.tipo_da_chave(animal.foto_path),
+        headers={"Cache-Control": "private, no-cache"},
+    )
 
 
 @router.put("/animais/{animal_id}", response_model=AnimalOut)
@@ -201,10 +186,10 @@ def update_animal(
         db.commit()
     except Exception:
         if foto_nova:
-            (UPLOADS_DIR / foto_nova).unlink(missing_ok=True)
+            armazenamento.apagar(foto_nova)
         raise
     # so apaga a antiga depois que a troca esta garantida no banco
     if foto_nova and foto_antiga:
-        (UPLOADS_DIR / foto_antiga).unlink(missing_ok=True)
+        armazenamento.apagar(foto_antiga)
     db.refresh(animal)
     return _to_out(animal)

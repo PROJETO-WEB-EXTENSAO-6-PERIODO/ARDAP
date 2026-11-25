@@ -1,0 +1,9 @@
+{
+  "name": "ardap",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // As rotas são do React: qualquer caminho abre o index.html.
+    "not_found_handling": "single-page-application"
+  }
+}

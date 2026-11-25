@@ -306,12 +306,15 @@ export const MODULOS_REGISTRO: ModuloRegistro[] = [
       },
       {
         icone: "bi-pen",
-        titulo: "Assinatura e anexos",
+        titulo: "Assinatura",
         itens: [
           campo(r, "Assinatura do representante", "assinatura_representante"),
           campo(r, "Local", "local_declaracao"),
           data(r, "Data", "data_declaracao"),
-          campo(r, "Nomes dos anexos", "anexo_documentos"),
+          // Registros antigos só têm os nomes; os arquivos não foram guardados.
+          ...(txt(r, "anexo_documentos")
+            ? [campo(r, "Anexos informados (sem arquivo)", "anexo_documentos")]
+            : []),
         ],
       },
     ],

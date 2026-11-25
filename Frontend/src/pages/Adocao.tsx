@@ -4,6 +4,7 @@ import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { SeletorAnimal, type AnimalResumo } from "../components/SeletorAnimal";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
+import { hojeISO } from "../services/datas";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -12,10 +13,6 @@ function fieldCls(hasError: boolean) {
   return hasError
     ? "w-full rounded-lg border border-red-400 bg-red-50 px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors"
     : inputCls;
-}
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function Toggle({
@@ -69,8 +66,6 @@ export function Adocao() {
   const [quantosMaisAnimais, setQuantosMaisAnimais] = useState("");
 
   // Seção 2 - Questionário
-  const [outrosAnimais, setOutrosAnimais] = useState(false);
-  const [quantosAnimais, setQuantosAnimais] = useState("");
   const [espacoCasa, setEspacoCasa] = useState(false);
   const [casaMurada, setCasaMurada] = useState(false);
   const [espacoCoberto, setEspacoCoberto] = useState(false);
@@ -112,7 +107,7 @@ export function Adocao() {
   }
 
   useEffect(() => {
-    const hoje = todayISO();
+    const hoje = hojeISO();
     setDataAssinatura(hoje);
     setLocalAssinatura("Paulo Afonso");
   }, []);
@@ -131,8 +126,6 @@ export function Adocao() {
     setEspecieAdocao("");
     setMaisAnimaisCasa(false);
     setQuantosMaisAnimais("");
-    setOutrosAnimais(false);
-    setQuantosAnimais("");
     setEspacoCasa(false);
     setCasaMurada(false);
     setEspacoCoberto(false);
@@ -151,7 +144,7 @@ export function Adocao() {
     setAceiteTermo(false);
     setAssinaturaAdotante("");
     setAssinaturaArdap("");
-    setDataAssinatura(todayISO());
+    setDataAssinatura(hojeISO());
     setTriedSubmit(false);
     setFormError("");
   }

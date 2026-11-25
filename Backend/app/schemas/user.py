@@ -1,14 +1,24 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AfterValidator, BaseModel, Field
+
+
+def _cabe_no_bcrypt(senha: str) -> str:
+    # o limite e em bytes: letras acentuadas ocupam dois
+    if len(senha.encode()) > 72:
+        raise ValueError("A senha deve ter no máximo 72 bytes.")
+    return senha
+
+
+Senha = Annotated[str, Field(min_length=6), AfterValidator(_cabe_no_bcrypt)]
 
 
 class CreateUserIn(BaseModel):
     first_name: str = Field(min_length=1, max_length=100)
     second_name: str = Field(min_length=1, max_length=100)
     email: str = Field(min_length=3, max_length=150)
-    password: str = Field(min_length=6, max_length=255)
+    password: Senha
     role: Literal["admin", "funcionario"] = "funcionario"
 
 
@@ -17,8 +27,8 @@ class UpdateUserIn(BaseModel):
     second_name: str = Field(min_length=1, max_length=100)
     email: str = Field(min_length=3, max_length=150)
     role: Literal["admin", "funcionario"]
-    # sem senha nova, a atual e mantida (72 = limite do bcrypt)
-    password: str | None = Field(default=None, min_length=6, max_length=72)
+    # sem senha nova, a atual e mantida
+    password: Senha | None = None
 
 
 class UserOut(BaseModel):

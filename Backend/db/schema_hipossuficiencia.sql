@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS hipossuficiencia (
 
     assinatura_representante TEXT,
 
-    anexo_documentos TEXT,
+    anexo_documentos TEXT,                   -- legado: so os nomes dos arquivos
 
     funcionario_id INT,
     alterado_por_id INT,
@@ -33,4 +33,14 @@ CREATE TABLE IF NOT EXISTS hipossuficiencia (
 
     FOREIGN KEY (funcionario_id) REFERENCES users(id),
     FOREIGN KEY (alterado_por_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS hipossuficiencia_anexos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hipossuficiencia_id INT NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    path VARCHAR(255) NOT NULL,              -- chave no armazenamento
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (hipossuficiencia_id) REFERENCES hipossuficiencia(id)
 );
