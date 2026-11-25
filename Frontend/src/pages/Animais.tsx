@@ -180,12 +180,16 @@ export function Animais() {
 
   function escolherFoto(arquivo: File | undefined) {
     if (!arquivo) return;
-    removerFoto();
+    // Só limpa o campo se o arquivo for recusado: limpá-lo com um arquivo
+    // válido faria o navegador tratá-lo como não preenchido.
     if (!FOTO_TIPOS.includes(arquivo.type)) {
+      removerFoto();
       setFotoErro("Escolha uma imagem JPG, PNG ou WebP.");
     } else if (arquivo.size > FOTO_MAX_BYTES) {
+      removerFoto();
       setFotoErro("A foto deve ter no máximo 5 MB.");
     } else {
+      setFotoErro("");
       setFoto(arquivo);
     }
   }
@@ -376,7 +380,7 @@ export function Animais() {
                       ref={fotoInput}
                       id="animal_photo"
                       type="file"
-                      required={!editando}
+                      required={!editando && !foto}
                       accept={FOTO_TIPOS.join(",")}
                       onChange={(e) => escolherFoto(e.target.files?.[0])}
                       aria-describedby="animal_photo_help"
