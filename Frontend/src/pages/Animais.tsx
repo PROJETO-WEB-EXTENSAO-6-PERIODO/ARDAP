@@ -133,7 +133,6 @@ export function Animais() {
   const [especie, setEspecie] = useState("");
   const [raca, setRaca] = useState("");
   const [sexo, setSexo] = useState("");
-  const [nascimento, setNascimento] = useState("");
   const [idade, setIdade] = useState("");
   const [porte, setPorte] = useState("");
   const [cor, setCor] = useState("");
@@ -194,7 +193,6 @@ export function Animais() {
     setEspecie(d.especie ?? "");
     setRaca(d.raca ?? "");
     setSexo(d.sexo ?? "");
-    setNascimento(d.data_nascimento_estimada ?? "");
     setIdade(d.idade_estimada == null ? "" : String(d.idade_estimada));
     setPorte(d.porte ?? "");
     setCor(d.cor_pelo ?? "");
@@ -234,7 +232,6 @@ export function Animais() {
         especie,
         raca: raca.trim() || null,
         sexo,
-        data_nascimento_estimada: nascimento || null,
         idade_estimada: idade === "" ? null : Number(idade),
         porte: porte || null,
         cor_pelo: cor.trim() || null,
@@ -556,24 +553,6 @@ export function Animais() {
                   <div className="flex items-center justify-between">
                     <label
                       className="text-sm font-semibold text-[#1A1A1A]"
-                      htmlFor="birth_date"
-                    >
-                      Data de nascimento estimada
-                    </label>
-                    <span className="text-xs text-gray-500">(opcional)</span>
-                  </div>
-                  <input
-                    id="birth_date"
-                    type="date"
-                    value={nascimento}
-                    onChange={(e) => setNascimento(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between">
-                    <label
-                      className="text-sm font-semibold text-[#1A1A1A]"
                       htmlFor="age_years"
                     >
                       Idade estimada
@@ -596,9 +575,6 @@ export function Animais() {
                     </span>
                   </div>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="flex flex-col gap-1.5">
                   <label
                     className="text-sm font-semibold text-[#1A1A1A]"

@@ -1,9 +1,8 @@
 """Tabela animais (espelho do banco)."""
 
-from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import Boolean, Date, Enum, Numeric, String, Text
+from sqlalchemy import Boolean, Enum, Numeric, String, Text
 from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import DateTime
@@ -21,9 +20,6 @@ class Animal(Base):
     raca: Mapped[str | None] = mapped_column(String(100), nullable=True)
     sexo: Mapped[str] = mapped_column(
         Enum("macho", "femea", name="sexo_enum")
-    )
-    data_nascimento_estimada: Mapped[date | None] = mapped_column(
-        Date, nullable=True
     )
     idade_estimada: Mapped[int | None] = mapped_column(nullable=True)
     porte: Mapped[str | None] = mapped_column(

@@ -1,6 +1,6 @@
 """Formatos de entrada/saida de animais (RF03 + RF10 parcial)."""
 
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 
@@ -14,7 +14,6 @@ class AnimalIn(BaseModel):
     especie: str = Field(min_length=1, max_length=50)
     raca: str | None = Field(default=None, max_length=100)
     sexo: Literal["macho", "femea"]
-    data_nascimento_estimada: date | None = None
     idade_estimada: int | None = Field(default=None, ge=0, le=40)
     porte: Literal["pequeno", "medio", "grande"] | None = None
     cor_pelo: str | None = Field(default=None, max_length=100)
@@ -44,7 +43,6 @@ class AnimalOut(BaseModel):
     especie: str
     raca: str | None
     sexo: str
-    data_nascimento_estimada: date | None
     idade_estimada: int | None
     porte: str | None
     cor_pelo: str | None

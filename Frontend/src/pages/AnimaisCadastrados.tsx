@@ -4,6 +4,7 @@ import { Autorias, type Autor } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
+import { formatarIdade } from "../services/idade";
 
 interface Animal {
   id: number;
@@ -11,7 +12,6 @@ interface Animal {
   especie: string;
   raca: string | null;
   sexo: string;
-  data_nascimento_estimada: string | null;
   idade_estimada: number | null;
   porte: string | null;
   cor_pelo: string | null;
@@ -81,20 +81,6 @@ function normalizar(texto: string) {
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase();
-}
-
-// Formata sem passar por Date para o fuso horário não alterar o dia.
-function formatarData(iso: string | null) {
-  return iso ? iso.slice(0, 10).split("-").reverse().join("/") : null;
-}
-
-function formatarIdade(animal: Animal) {
-  if (animal.idade_estimada !== null) {
-    if (animal.idade_estimada === 0) return "Menos de 1 ano";
-    return `${animal.idade_estimada} ${animal.idade_estimada === 1 ? "ano" : "anos"}`;
-  }
-  const nascimento = formatarData(animal.data_nascimento_estimada);
-  return nascimento ? `Nasc. ${nascimento}` : null;
 }
 
 function formatarPeso(peso: string | number | null) {
@@ -181,7 +167,7 @@ function AnimalCard({ animal }: { animal: Animal }) {
 
       <div className="flex flex-1 flex-col gap-4 p-5">
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
-          <Dado label="Idade" valor={formatarIdade(animal)} />
+          <Dado label="Idade" valor={formatarIdade(animal.idade_estimada)} />
           <Dado label="Porte" valor={rotulo(animal.porte)} />
           <Dado label="Peso" valor={formatarPeso(animal.peso)} />
           <Dado label="Cor do pelo" valor={animal.cor_pelo} />
