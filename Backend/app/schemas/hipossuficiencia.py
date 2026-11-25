@@ -2,12 +2,12 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import Base64Bytes, BaseModel, Field
 
 from app.schemas.user import AutorOut
 
 
-class HipossuficienciaIn(BaseModel):
+class HipossuficienciaCampos(BaseModel):
     nome_representante: str = Field(min_length=1, max_length=150)
     documento_representante: str | None = Field(default=None, max_length=50)
     tipo_documento_representante: str | None = Field(default=None, max_length=50)
@@ -27,7 +27,28 @@ class HipossuficienciaIn(BaseModel):
     data_declaracao: date | None = None
 
     assinatura_representante: str | None = None
-    anexo_documentos: str | None = None
+
+
+class AnexoIn(BaseModel):
+    nome: str = Field(min_length=1, max_length=255)
+    conteudo: Base64Bytes = Field(min_length=1)
+
+
+class HipossuficienciaIn(HipossuficienciaCampos):
+    anexos_novos: list[AnexoIn] = Field(default_factory=list, max_length=4)
+
+
+class HipossuficienciaUpdateIn(HipossuficienciaIn):
+    # ids dos anexos que continuam; sem a lista, todos sao mantidos
+    anexos_mantidos: list[int] | None = None
+
+
+class AnexoOut(BaseModel):
+    id: int
+    nome: str
+
+    class Config:
+        from_attributes = True
 
 
 class HipossuficienciaOut(BaseModel):
@@ -52,6 +73,7 @@ class HipossuficienciaOut(BaseModel):
     data_declaracao: date | None
     assinatura_representante: str | None
     anexo_documentos: str | None
+    anexos: list[AnexoOut]
 
     class Config:
         from_attributes = True

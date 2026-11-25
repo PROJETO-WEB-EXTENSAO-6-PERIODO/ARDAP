@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
+from app.models.hipossuficiencia_anexo import HipossuficienciaAnexo
 from app.models.user import User
 
 
@@ -55,7 +56,13 @@ class Hipossuficiencia(Base):
         Text, nullable=True
     )
 
+    # legado: registros antigos so tem os nomes dos arquivos
     anexo_documentos: Mapped[str | None] = mapped_column(Text, nullable=True)
+    anexos: Mapped[list[HipossuficienciaAnexo]] = relationship(
+        cascade="all, delete-orphan",
+        order_by=HipossuficienciaAnexo.id,
+        lazy="selectin",
+    )
 
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
     # somente leitura: a autoria e gravada por funcionario_id

@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.horario import agora
 from app.models.user import User
 
 router = APIRouter(tags=["relatorios"])
@@ -78,7 +79,7 @@ def _distintos(db: Session, tabela: str, coluna: str) -> int:
 
 
 def _meses(quantidade: int = 6) -> list[str]:
-    hoje = date.today()
+    hoje = agora().date()
     ano, mes = hoje.year, hoje.month
     meses = []
     for _ in range(quantidade):
@@ -265,7 +266,8 @@ def resumo_geral(
         "comAnexos": _conta(
             db,
             "hipossuficiencia",
-            "anexo_documentos IS NOT NULL AND anexo_documentos <> ''",
+            "EXISTS (SELECT 1 FROM hipossuficiencia_anexos x "
+            "WHERE x.hipossuficiencia_id = hipossuficiencia.id)",
         ),
     }
 
@@ -353,7 +355,7 @@ def resumo_geral(
     }
 
     return {
-        "geradoEm": datetime.now().isoformat(timespec="seconds"),
+        "geradoEm": agora().isoformat(timespec="seconds"),
         "totais": totais,
         "totalGeral": total_geral,
         "modulos": modulos,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "react-router-dom";
+import { AnexosHipossuficiencia } from "../components/AnexosHipossuficiencia";
 import { Autorias } from "../components/Autoria";
 import { FotoRegistro } from "../components/FotoRegistro";
 import { Header } from "../components/Header";
@@ -106,6 +107,8 @@ function Detalhes({ modulo, registro }: { modulo: ModuloRegistro; registro: Regi
           </article>
         ))}
       </div>
+
+      {modulo.rota === "hipossuficiencias" && <AnexosHipossuficiencia registro={registro} />}
     </>
   );
 }
