@@ -49,3 +49,7 @@ class Animal(Base):
     # caminho relativo a Backend/uploads, ex.: animais/<uuid>.jpg
     foto_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at = mapped_column(DateTime, server_default=func.now())
+
+    @property
+    def tem_foto(self) -> bool:
+        return self.foto_path is not None

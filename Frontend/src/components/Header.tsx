@@ -57,6 +57,13 @@ export function Header() {
           >
             Animais
           </button>
+
+          <button
+            onClick={() => navigate("/adocoes/registradas")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Adoções
+          </button>
         </div>
 
         <div className="flex items-center gap-4 w-1/10">

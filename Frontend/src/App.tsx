@@ -14,6 +14,8 @@ import { Modulos } from "./pages/Modulos";
 import { NovoUsuario } from "./pages/NovoUsuario";
 import { Supatas } from "./pages/Supatas";
 import { Adocao } from "./pages/Adocao";
+import { AdocaoDetalhes } from "./pages/AdocaoDetalhes";
+import { AdocoesRegistradas } from "./pages/AdocoesRegistradas";
 
 export default function App() {
   return (
@@ -115,6 +117,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Adocao />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/adocoes/registradas"
+            element={
+              <ProtectedRoute>
+                <AdocoesRegistradas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/adocoes/:id"
+            element={
+              <ProtectedRoute>
+                <AdocaoDetalhes />
               </ProtectedRoute>
             }
           />

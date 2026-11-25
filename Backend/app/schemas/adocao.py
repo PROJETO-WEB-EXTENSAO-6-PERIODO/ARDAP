@@ -1,6 +1,6 @@
 """Formatos de entrada/saida de termos de adocao (RF03 parcial)."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -48,9 +48,23 @@ class AdocaoIn(BaseModel):
     data_assinatura: date | None = None
 
 
+class AnimalAdotadoOut(BaseModel):
+    id: int
+    nome: str | None
+    especie: str
+    raca: str | None
+    sexo: str
+    tem_foto: bool
+
+    class Config:
+        from_attributes = True
+
+
 class AdocaoOut(BaseModel):
     id: int
     animal_id: int | None
+    animal: AnimalAdotadoOut | None
+    created_at: datetime | None
     especie_adocao: str | None
     nome_adotante: str
     rg: str | None
