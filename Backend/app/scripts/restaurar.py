@@ -40,6 +40,14 @@ def ler_copia(origem: str) -> bytes:
     return cliente.get_object(Bucket=bucket, Key=chave)["Body"].read()
 
 
+def sem_nomes_de_fk(estrutura: str) -> str:
+    """O TiDB repete nomes (fk_1) entre tabelas, e o MySQL nao aceita.
+
+    Sem o nome, o proprio banco gera um.
+    """
+    return re.sub(r"(?m)^(\s*)CONSTRAINT `[^`]+` FOREIGN KEY", r"\1FOREIGN KEY", estrutura)
+
+
 def restaurar_banco(copia: dict, banco: str) -> None:
     conexao = pymysql.connect(
         host=settings.DB_HOST,
@@ -59,7 +67,7 @@ def restaurar_banco(copia: dict, banco: str) -> None:
             # as tabelas referenciam umas as outras
             cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
             for tabela in copia["tabelas"]:
-                cursor.execute(tabela["estrutura"])
+                cursor.execute(sem_nomes_de_fk(tabela["estrutura"]))
             for tabela in copia["tabelas"]:
                 if not tabela["linhas"]:
                     continue
