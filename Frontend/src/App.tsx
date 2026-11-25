@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Animais } from "./pages/Animais";
+import { AnimaisCadastrados } from "./pages/AnimaisCadastrados";
 import { AnimalDetalhes } from "./pages/AnimalDetalhes";
 import { Castracao } from "./pages/Castracao";
 import { Cirurgia } from "./pages/Cirurgia";
@@ -33,6 +34,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Animais />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/animais/cadastrados"
+            element={
+              <ProtectedRoute>
+                <AnimaisCadastrados />
               </ProtectedRoute>
             }
           />

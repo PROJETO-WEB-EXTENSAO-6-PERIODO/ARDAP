@@ -237,7 +237,7 @@ export function AnimalDetalhes() {
             <span>Início</span>
           </Link>
           <span className="font-normal text-gray-400">&gt;</span>
-          <Link to="/animais" className="transition-colors hover:text-[#1A1A1A]">
+          <Link to="/animais/cadastrados" className="transition-colors hover:text-[#1A1A1A]">
             Animais
           </Link>
           <span className="font-normal text-gray-400">&gt;</span>

@@ -52,7 +52,7 @@ export function Header() {
           </button>
 
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/animais/cadastrados")}
             className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
           >
             Animais
