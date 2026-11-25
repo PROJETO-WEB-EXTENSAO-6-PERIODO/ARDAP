@@ -1,14 +1,20 @@
-# Frontend — ARDAP (React + Vite)
+# Frontend
 
-Telas da demo de quarta: Login, Home, Cadastro de Animal.
+Site do ARDAP: React 19, TypeScript, Vite e Tailwind CSS.
 
-Scaffold (Vite) será criado na task `#FEATURE` correspondente:
+A instalação completa está no [README principal](../README.md#como-rodar). Com a API
+rodando:
 
 ```
-cd Frontend
-npm create vite@latest . -- --template react-ts
-npm install react-router-dom axios
+npm install
 npm run dev
 ```
 
-Protótipos em `Docs/prototipos/`.
+| Comando | O que faz |
+|---|---|
+| `npm run dev` | Inicia em http://localhost:5173 |
+| `npm run build` | Confere os tipos e gera `dist/` |
+| `npm run lint` | Procura problemas no código |
+
+`VITE_API_URL` define o endereço da API (vazio: `http://127.0.0.1:8000`). No Cloudflare é
+obrigatória e deve usar `https://`.
