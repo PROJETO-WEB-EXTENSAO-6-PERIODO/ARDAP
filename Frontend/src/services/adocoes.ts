@@ -1,3 +1,5 @@
+import type { Autor } from "../components/Autoria";
+
 export interface AnimalAdotado {
   id: number;
   nome: string | null;
@@ -43,6 +45,7 @@ export interface TermoAdocao {
   local_assinatura: string | null;
   data_assinatura: string | null;
   created_at: string | null;
+  funcionario: Autor | null;
 }
 
 const ROTULOS: Record<string, string> = {

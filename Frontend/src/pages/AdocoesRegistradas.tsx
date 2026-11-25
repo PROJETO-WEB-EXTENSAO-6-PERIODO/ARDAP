@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { Autoria } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import {
@@ -101,6 +102,7 @@ function AdocaoCard({ adocao }: { adocao: TermoAdocao }) {
           <Linha icone="bi-telephone" label="Telefone" valor={adocao.telefone} />
           <Linha icone="bi-geo-alt" label="Bairro e cidade" valor={local || null} />
         </dl>
+        <Autoria autor={adocao.funcionario} data={adocao.created_at} />
         <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4 text-xs">
           <span className="text-gray-500">Termo nº {adocao.id}</span>
           <span className="inline-flex items-center gap-1 font-bold text-[#1A1A1A]">

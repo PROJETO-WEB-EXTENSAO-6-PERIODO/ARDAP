@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -26,3 +27,24 @@ class UserOut(BaseModel):
     second_name: str
     email: str
     role: str
+
+
+class AutorOut(BaseModel):
+    """Quem cadastrou ou alterou um registro (sem e-mail nem permissao)."""
+
+    id: int
+    first_name: str
+    second_name: str
+
+    class Config:
+        from_attributes = True
+
+
+class UserDetalheOut(UserOut):
+    funcionario: AutorOut | None
+    created_at: datetime | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
+
+    class Config:
+        from_attributes = True

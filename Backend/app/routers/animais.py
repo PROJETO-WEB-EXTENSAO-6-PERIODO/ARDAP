@@ -18,6 +18,7 @@ from app.core.deps import get_current_user
 from app.models.animal import Animal
 from app.models.user import User
 from app.schemas.animal import AnimalIn, AnimalOut
+from app.schemas.user import AutorOut
 
 router = APIRouter(tags=["animais"])
 
@@ -66,6 +67,9 @@ def _to_out(a: Animal) -> AnimalOut:
         medicacao_desc=a.medicacao_desc, origem_resgate=a.origem_resgate,
         observacoes=a.observacoes, tem_foto=a.foto_path is not None,
         created_at=a.created_at,
+        funcionario=(
+            AutorOut.model_validate(a.funcionario) if a.funcionario else None
+        ),
     )
 
 
@@ -96,6 +100,7 @@ def create_animal(
         origem_resgate=data.origem_resgate,
         observacoes=data.observacoes,
         foto_path=foto_path,
+        funcionario_id=user.id,
     )
     try:
         db.add(animal)

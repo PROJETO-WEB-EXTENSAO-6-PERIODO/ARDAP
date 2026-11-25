@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { Autoria } from "../components/Autoria";
 import { FotoRegistro } from "../components/FotoRegistro";
 import { Header } from "../components/Header";
 import { formatarData } from "../services/adocoes";
@@ -82,6 +83,7 @@ function RegistroCard({ modulo, registro }: { modulo: ModuloRegistro; registro: 
             </div>
           ))}
         </dl>
+        <Autoria autor={registro.funcionario} data={registro.created_at} />
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-100 pt-4 text-xs">
           <span className="text-gray-500">
             Registro nº {registro.id}

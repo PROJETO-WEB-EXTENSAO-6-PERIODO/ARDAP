@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { Autoria, type Autor } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -24,6 +25,7 @@ interface Animal {
   origem_resgate: string | null;
   tem_foto: boolean;
   created_at: string | null;
+  funcionario: Autor | null;
 }
 
 const LABELS: Record<string, string> = {
@@ -132,7 +134,6 @@ function Saude({ label, ativo }: { label: string; ativo: boolean }) {
 function AnimalCard({ animal }: { animal: Animal }) {
   const visual = VISUAL[grupoEspecie(animal.especie)];
   const nome = animal.nome || "Animal sem nome";
-  const cadastro = formatarData(animal.created_at);
 
   return (
     <Link
@@ -209,10 +210,11 @@ function AnimalCard({ animal }: { animal: Animal }) {
           </p>
         )}
 
+        <Autoria autor={animal.funcionario} data={animal.created_at} />
+
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-100 pt-4 text-xs">
           <span className="text-gray-500">
             Nº {animal.id}
-            {cadastro && ` • Cadastrado em ${cadastro}`}
           </span>
           <span className="inline-flex shrink-0 items-center gap-1 font-bold text-[#1A1A1A]">
             Ver ficha

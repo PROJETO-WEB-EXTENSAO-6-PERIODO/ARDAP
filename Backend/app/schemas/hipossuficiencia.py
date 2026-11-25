@@ -4,6 +4,8 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
+from app.schemas.user import AutorOut
+
 
 class HipossuficienciaIn(BaseModel):
     nome_representante: str = Field(min_length=1, max_length=150)
@@ -31,6 +33,7 @@ class HipossuficienciaIn(BaseModel):
 class HipossuficienciaOut(BaseModel):
     id: int
     created_at: datetime | None
+    funcionario: AutorOut | None
     nome_representante: str
     documento_representante: str | None
     tipo_documento_representante: str | None

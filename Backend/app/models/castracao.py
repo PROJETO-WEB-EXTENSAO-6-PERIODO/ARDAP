@@ -8,6 +8,7 @@ from sqlalchemy.sql import func
 
 from app.core.database import Base
 from app.models.animal import Animal
+from app.models.user import User
 
 
 class Castracao(Base):
@@ -23,6 +24,12 @@ class Castracao(Base):
         lazy="joined",
     )
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: a autoria e gravada por funcionario_id
+    funcionario: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Castracao.funcionario_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     proprietario_responsavel: Mapped[str] = mapped_column(
         String(150), nullable=False

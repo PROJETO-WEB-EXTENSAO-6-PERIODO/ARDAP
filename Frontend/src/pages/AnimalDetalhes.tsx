@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { Autoria, type Autor } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -26,6 +27,7 @@ interface Animal {
   observacoes: string | null;
   tem_foto: boolean;
   created_at: string | null;
+  funcionario: Autor | null;
 }
 
 const LABELS: Record<string, string> = {
@@ -131,9 +133,8 @@ function Detalhes({ animal }: { animal: Animal }) {
           </h1>
           <p className="text-sm text-gray-500 md:text-base">
             Registro nº {animal.id}
-            {animal.created_at &&
-              ` • Cadastrado em ${formatarData(animal.created_at)}`}
           </p>
+          <Autoria autor={animal.funcionario} data={animal.created_at} />
         </div>
         <span className="inline-flex shrink-0 items-center self-start rounded-full bg-[#FFD900] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] sm:self-auto">
           {rotulo(animal.especie)} • {rotulo(animal.sexo)}

@@ -9,6 +9,7 @@ from sqlalchemy import DateTime
 
 from app.core.database import Base
 from app.models.animal import Animal
+from app.models.user import User
 
 
 class SupatasIntake(Base):
@@ -23,6 +24,12 @@ class SupatasIntake(Base):
         lazy="joined",
     )
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: a autoria e gravada por funcionario_id
+    funcionario: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(SupatasIntake.funcionario_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
     orgao_solicitante: Mapped[str | None] = mapped_column(
         String(150), nullable=True
     )

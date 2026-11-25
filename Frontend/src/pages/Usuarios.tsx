@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Autoria, type Autor } from "../components/Autoria";
 import { Header } from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -10,6 +11,10 @@ interface Usuario {
   second_name: string;
   email: string;
   role: "admin" | "funcionario";
+  funcionario: Autor | null;
+  created_at: string | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
 }
 
 const FILTROS = [
@@ -189,6 +194,16 @@ export function Usuarios() {
                     <p className="truncate text-sm text-gray-500" title={u.email}>
                       {u.email}
                     </p>
+                    <div className="mt-1 flex flex-col gap-0.5">
+                      <Autoria autor={u.funcionario} data={u.created_at} />
+                      {u.alterado_por && (
+                        <Autoria
+                          acao="Alterado"
+                          autor={u.alterado_por}
+                          data={u.updated_at}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-4">

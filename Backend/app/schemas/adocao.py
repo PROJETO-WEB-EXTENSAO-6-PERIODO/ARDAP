@@ -6,6 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from app.schemas.animal import AnimalResumoOut
+from app.schemas.user import AutorOut
 
 
 class AdocaoIn(BaseModel):
@@ -54,6 +55,7 @@ class AdocaoOut(BaseModel):
     id: int
     animal_id: int | None
     animal: AnimalResumoOut | None
+    funcionario: AutorOut | None
     created_at: datetime | None
     especie_adocao: str | None
     nome_adotante: str

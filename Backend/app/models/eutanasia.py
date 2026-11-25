@@ -8,6 +8,7 @@ from sqlalchemy.sql import func
 
 from app.core.database import Base
 from app.models.animal import Animal
+from app.models.user import User
 
 
 class Eutanasia(Base):
@@ -23,6 +24,12 @@ class Eutanasia(Base):
         lazy="joined",
     )
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: a autoria e gravada por funcionario_id
+    funcionario: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Eutanasia.funcionario_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     nome_animal: Mapped[str | None] = mapped_column(String(100), nullable=True)
     especie: Mapped[str | None] = mapped_column(String(50), nullable=True)

@@ -3,6 +3,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, Field
 
 from app.schemas.animal import AnimalResumoOut
+from app.schemas.user import AutorOut
 
 
 class SupatasIntakeIn(BaseModel):
@@ -38,6 +39,7 @@ class SupatasIntakeOut(BaseModel):
     id: int
     animal_id: int | None
     animal: AnimalResumoOut | None
+    funcionario: AutorOut | None
     created_at: datetime | None
     orgao_solicitante: str | None
     nome_responsavel_encaminhamento: str | None

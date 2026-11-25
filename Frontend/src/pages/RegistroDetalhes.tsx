@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "react-router-dom";
+import { Autoria } from "../components/Autoria";
 import { FotoRegistro } from "../components/FotoRegistro";
 import { Header } from "../components/Header";
-import { formatarData } from "../services/adocoes";
 import { api } from "../services/api";
 import {
   detalhesDoAnimal,
@@ -51,7 +51,6 @@ function Detalhes({ modulo, registro }: { modulo: ModuloRegistro; registro: Regi
         <div className="min-w-0 flex-1">
           <p className="text-sm text-gray-500">
             {modulo.titulo} • Registro nº {registro.id}
-            {registro.created_at && ` • Registrado em ${formatarData(registro.created_at)}`}
           </p>
           <h1 className="mt-1 break-words text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
             {modulo.temAnimal ? nomeDoRegistro(registro) : pessoa.nome}
@@ -66,6 +65,9 @@ function Detalhes({ modulo, registro }: { modulo: ModuloRegistro; registro: Regi
           ) : (
             <p className="text-sm text-gray-600">{pessoa.label}</p>
           )}
+          <div className="mt-2">
+            <Autoria autor={registro.funcionario} data={registro.created_at} />
+          </div>
         </div>
         {registro.animal && (
           <Link

@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "react-router-dom";
+import { Autoria } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import {
@@ -88,7 +89,6 @@ function Detalhes({ adocao }: { adocao: TermoAdocao }) {
         <div className="min-w-0 flex-1">
           <p className="text-sm text-gray-500">
             Termo nº {adocao.id}
-            {adocao.created_at && ` • Registrado em ${formatarData(adocao.created_at)}`}
           </p>
           <h1 className="mt-1 break-words text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
             {nomeDoAnimal(animal)}
@@ -103,6 +103,9 @@ function Detalhes({ adocao }: { adocao: TermoAdocao }) {
           <p className="mt-2 break-words text-sm text-[#1A1A1A]">
             Adotante: <strong>{adocao.nome_adotante}</strong>
           </p>
+          <div className="mt-2">
+            <Autoria autor={adocao.funcionario} data={adocao.created_at} />
+          </div>
         </div>
         {animal && (
           <Link

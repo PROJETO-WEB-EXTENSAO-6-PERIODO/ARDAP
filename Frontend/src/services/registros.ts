@@ -1,3 +1,4 @@
+import type { Autor } from "../components/Autoria";
 import { formatarCpf, formatarData, rotulo, type AnimalAdotado } from "./adocoes";
 
 // Cada módulo tem campos próprios; a configuração abaixo diz como exibi-los.
@@ -5,6 +6,7 @@ export type Registro = {
   id: number;
   animal?: AnimalAdotado | null;
   created_at: string | null;
+  funcionario: Autor | null;
 } & Record<string, unknown>;
 
 export type Item =

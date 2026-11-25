@@ -3,10 +3,11 @@
 from datetime import date
 
 from sqlalchemy import Boolean, Date, DateTime, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
+from app.models.user import User
 
 
 class Hipossuficiencia(Base):
@@ -57,6 +58,12 @@ class Hipossuficiencia(Base):
     anexo_documentos: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: a autoria e gravada por funcionario_id
+    funcionario: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Hipossuficiencia.funcionario_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     created_at = mapped_column(DateTime, server_default=func.now())
     updated_at = mapped_column(

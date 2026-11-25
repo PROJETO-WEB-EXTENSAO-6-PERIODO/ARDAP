@@ -6,6 +6,8 @@ from typing import Literal
 
 from pydantic import Base64Bytes, BaseModel, Field
 
+from app.schemas.user import AutorOut
+
 
 class AnimalIn(BaseModel):
     nome: str | None = Field(default=None, max_length=100)
@@ -52,6 +54,7 @@ class AnimalOut(BaseModel):
     observacoes: str | None
     tem_foto: bool
     created_at: datetime | None
+    funcionario: AutorOut | None
 
 
 class AnimalResumoOut(BaseModel):

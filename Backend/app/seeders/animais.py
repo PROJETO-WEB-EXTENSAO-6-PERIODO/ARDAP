@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.models.animal import Animal
+from app.models.user import User
 
 # Identifica os registros criados por este seeder.
 MARCADOR = "[seeder]"
@@ -38,6 +39,7 @@ def semear_animais(db: Session) -> int:
     existentes = set(
         db.scalars(select(Animal.nome).where(Animal.observacoes == MARCADOR))
     )
+    funcionario_id = db.scalar(select(User.id).order_by(User.id).limit(1))
     agora = datetime.now()
     criados = 0
     for (nome, especie, raca, sexo, idade, porte, cor, peso, castrado,
@@ -51,7 +53,7 @@ def semear_animais(db: Session) -> int:
             temperamento=temperamento,
             medicacao_necessaria=medicacao is not None,
             medicacao_desc=medicacao, origem_resgate=origem,
-            observacoes=MARCADOR,
+            observacoes=MARCADOR, funcionario_id=funcionario_id,
             created_at=agora - timedelta(days=dias),
         ))
         criados += 1
