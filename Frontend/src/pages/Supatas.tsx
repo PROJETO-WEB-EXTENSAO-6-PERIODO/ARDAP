@@ -5,6 +5,7 @@ import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { SeletorAnimal, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
+import { hojeISO } from "../services/datas";
 
 const SITUACOES = [
   { value: "acidentado", label: "Acidentado", icon: "bi-emoji-angry" },
@@ -15,10 +16,6 @@ const SITUACOES = [
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export function Supatas() {
   // Seção 1 – Órgão solicitante
@@ -67,7 +64,7 @@ export function Supatas() {
         setRecebidoPor("Colaborador ARDAP");
       }
     }
-    const hoje = todayISO();
+    const hoje = hojeISO();
     setDataEncaminhamento(hoje);
     setDataRecebimento(hoje);
   }, []);
@@ -85,7 +82,7 @@ export function Supatas() {
   function resetForm() {
     setAnimal(null);
     setResponsavel("");
-    setDataEncaminhamento(todayISO());
+    setDataEncaminhamento(hojeISO());
     setEspecie("");
     setEspecieOutro("");
     setSexo("");
@@ -98,7 +95,7 @@ export function Supatas() {
     setCpfResponsavel("");
     setAssinaturaSupatas("");
     setAssinaturaArdap("");
-    setDataRecebimento(todayISO());
+    setDataRecebimento(hojeISO());
     setTriedSubmit(false);
     setFormError("");
   }
