@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import adocao, animais, auth, castracao, cirurgia, contagens, eutanasia, hipossuficiencia, relatorios, supatas, users
+from app.routers import adocao, animais, auth, castracao, cirurgia, contagens, eutanasia, hipossuficiencia, relatorio_atividades, relatorios, supatas, users
 
 # a documentacao interativa so existe em desenvolvimento
 app = FastAPI(
@@ -37,6 +37,7 @@ app.include_router(cirurgia.router)
 app.include_router(eutanasia.router)
 app.include_router(hipossuficiencia.router)
 app.include_router(relatorios.router)
+app.include_router(relatorio_atividades.router)
 app.include_router(users.router)
 app.include_router(supatas.router)
 app.include_router(animais.router)
