@@ -124,14 +124,10 @@ export function Login() {
             </button>
           </div>
 
-          <p className="mt-3 text-right text-xs font-semibold text-[#8a6d00]">
-            Esqueceu a senha?
-          </p>
-
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#1A1A1A] py-3 font-bold text-white disabled:opacity-60"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[#1A1A1A] py-3 font-bold text-white disabled:opacity-60"
           >
             {loading ? "Entrando..." : "Entrar no Sistema"}
             {!loading && (
