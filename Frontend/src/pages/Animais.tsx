@@ -11,6 +11,65 @@ const ESPECIES = [
   { value: "outro", label: "Outro" },
 ];
 
+// SRD e "Outra" valem para qualquer espécie e são acrescentadas no select.
+const RACAS: Record<string, string[]> = {
+  cao: [
+    "Akita",
+    "American Bully",
+    "Basset Hound",
+    "Beagle",
+    "Border Collie",
+    "Boxer",
+    "Buldogue Francês",
+    "Buldogue Inglês",
+    "Bull Terrier",
+    "Chihuahua",
+    "Chow Chow",
+    "Cocker Spaniel",
+    "Dachshund (Salsicha)",
+    "Dálmata",
+    "Doberman",
+    "Dogo Argentino",
+    "Fila Brasileiro",
+    "Golden Retriever",
+    "Husky Siberiano",
+    "Labrador Retriever",
+    "Lhasa Apso",
+    "Maltês",
+    "Pastor Alemão",
+    "Pastor Belga",
+    "Pinscher",
+    "Pit Bull",
+    "Poodle",
+    "Pug",
+    "Rottweiler",
+    "São Bernardo",
+    "Schnauzer",
+    "Shar-pei",
+    "Shih Tzu",
+    "Spitz Alemão (Lulu da Pomerânia)",
+    "Yorkshire Terrier",
+  ],
+  gato: [
+    "Abissínio",
+    "Angorá",
+    "Azul Russo",
+    "Bengal",
+    "British Shorthair",
+    "Exótico",
+    "Himalaio",
+    "Maine Coon",
+    "Norueguês da Floresta",
+    "Persa",
+    "Ragdoll",
+    "Sagrado da Birmânia",
+    "Scottish Fold",
+    "Siamês",
+    "Sphynx",
+  ],
+  outro: [],
+};
+
 const PORTES = [
   { value: "", label: "Selecione..." },
   { value: "pequeno", label: "Pequeno" },
@@ -326,7 +385,11 @@ export function Animais() {
                       id="animal_species"
                       required
                       value={especie}
-                      onChange={(e) => setEspecie(e.target.value)}
+                      onChange={(e) => {
+                        setEspecie(e.target.value);
+                        // As raças dependem da espécie.
+                        setRaca("");
+                      }}
                       className={`${inputCls} cursor-pointer appearance-none pr-9`}
                     >
                       {ESPECIES.map((o) => (
@@ -348,14 +411,31 @@ export function Animais() {
                     </label>
                     <span className="text-xs text-gray-500">(opcional)</span>
                   </div>
-                  <input
-                    id="animal_breed"
-                    type="text"
-                    value={raca}
-                    onChange={(e) => setRaca(e.target.value)}
-                    placeholder="Ex: SRD, Poodle..."
-                    className={inputCls}
-                  />
+                  <div className="relative">
+                    <select
+                      id="animal_breed"
+                      value={raca}
+                      onChange={(e) => setRaca(e.target.value)}
+                      disabled={!especie}
+                      className={`${inputCls} cursor-pointer appearance-none pr-9 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500`}
+                    >
+                      <option value="">
+                        {especie ? "Selecione a raça..." : "Escolha a espécie primeiro"}
+                      </option>
+                      {especie && (
+                        <>
+                          <option value="SRD">SRD (sem raça definida)</option>
+                          {RACAS[especie].map((r) => (
+                            <option key={r} value={r}>
+                              {r}
+                            </option>
+                          ))}
+                          <option value="Outra">Outra</option>
+                        </>
+                      )}
+                    </select>
+                    <i className="bi bi-chevron-down pointer-events-none absolute right-3 top-2.5 text-[20px] text-gray-400"></i>
+                  </div>
                 </div>
               </div>
 
