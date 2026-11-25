@@ -198,14 +198,6 @@ def resumo_geral(
             )
         ).scalar_one()
     )
-    adotantes_unicos = int(
-        db.execute(
-            text(
-                "SELECT COUNT(DISTINCT cpf) FROM termo_adocao "
-                "WHERE cpf IS NOT NULL AND cpf <> ''"
-            )
-        ).scalar_one()
-    )
     meses_com_adocao = int(
         db.execute(
             text(
@@ -277,7 +269,6 @@ def resumo_geral(
         "porSexo": _group(db, "SELECT sexo, COUNT(*) FROM eutanasia GROUP BY sexo", SEXO),
         "porCidade": _group(db, "SELECT cidade, COUNT(*) FROM eutanasia GROUP BY cidade"),
         "porBairro": _group(db, "SELECT bairro, COUNT(*) FROM eutanasia GROUP BY bairro"),
-        "comAceite": _conta(db, "eutanasia", "declaracao_aceite = 1"),
         "cidadesDistintas": _distintos(db, "eutanasia", "cidade"),
     }
 
@@ -390,7 +381,6 @@ def resumo_geral(
             "vermifugados": adocao_vermifugado,
             "taxaCastracao": _taxa(sim_castrados_adocao, totais["adocoes"]),
             "cidadesDistintas": cidades_distintas,
-            "adotantesUnicos": adotantes_unicos,
             "mediaPorMes": round(totais["adocoes"] / meses_com_adocao, 1) if meses_com_adocao else 0.0,
             "perfilAdotante": perfil_adotante,
         },
