@@ -20,7 +20,7 @@ export function AnimaisCastrados({
     setErro(false);
     try {
       const { data } = await api.get<Animal[]>("/animais", {
-        params: { castrados_sem_termo: true },
+        params: { castrados_sem_termo: true, disponiveis: true },
       });
       setAnimais(data);
     } catch {
