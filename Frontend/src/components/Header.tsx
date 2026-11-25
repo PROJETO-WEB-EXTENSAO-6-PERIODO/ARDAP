@@ -38,10 +38,10 @@ export function Header() {
         <div className="flex justify-center gap-4 w-8/10">
           {user?.role === "admin" && (
             <button
-              onClick={() => navigate("/usuarios/novo")}
+              onClick={() => navigate("/usuarios")}
               className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
             >
-              Novo Usuário
+              Usuários
             </button>
           )}
 

@@ -12,7 +12,8 @@ import { Hipossuficiencia } from "./pages/Hipossuficiencia";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Modulos } from "./pages/Modulos";
-import { NovoUsuario } from "./pages/NovoUsuario";
+import { UsuarioForm } from "./pages/UsuarioForm";
+import { Usuarios } from "./pages/Usuarios";
 import { Supatas } from "./pages/Supatas";
 import { ListaRegistros } from "./pages/ListaRegistros";
 import { RegistroDetalhes } from "./pages/RegistroDetalhes";
@@ -101,10 +102,26 @@ export default function App() {
             }
           />
           <Route
+            path="/usuarios"
+            element={
+              <ProtectedRoute role="admin">
+                <Usuarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/usuarios/novo"
             element={
               <ProtectedRoute role="admin">
-                <NovoUsuario />
+                <UsuarioForm key="novo" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/usuarios/:id/editar"
+            element={
+              <ProtectedRoute role="admin">
+                <UsuarioForm key="editar" />
               </ProtectedRoute>
             }
           />
