@@ -5,6 +5,7 @@ import { Autorias, type Autor } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
+import { formatarIdade } from "../services/idade";
 
 interface Animal {
   id: number;
@@ -12,7 +13,6 @@ interface Animal {
   especie: string;
   raca: string | null;
   sexo: string;
-  data_nascimento_estimada: string | null;
   idade_estimada: number | null;
   porte: string | null;
   cor_pelo: string | null;
@@ -50,16 +50,6 @@ const LABELS: Record<string, string> = {
 
 function rotulo(valor: string | null) {
   return valor ? (LABELS[valor] ?? valor) : null;
-}
-
-// Formata sem passar por Date para o fuso horário não alterar o dia.
-function formatarData(iso: string | null) {
-  return iso ? iso.slice(0, 10).split("-").reverse().join("/") : null;
-}
-
-function formatarIdade(anos: number | null) {
-  if (anos === null) return null;
-  return `${anos} ${anos === 1 ? "ano" : "anos"}`;
 }
 
 function formatarPeso(peso: string | number | null) {
@@ -162,10 +152,6 @@ function Detalhes({ animal }: { animal: Animal }) {
 
         <Cartao icone="bi-activity" titulo="Características físicas">
           <dl className="grid grid-cols-2 gap-5">
-            <Campo
-              label="Data de nascimento estimada"
-              valor={formatarData(animal.data_nascimento_estimada)}
-            />
             <Campo
               label="Idade estimada"
               valor={formatarIdade(animal.idade_estimada)}

@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS animais (
     especie VARCHAR(50) NOT NULL,
     raca VARCHAR(100),
     sexo ENUM('macho', 'femea') NOT NULL,
-    data_nascimento_estimada DATE,
     idade_estimada INT,
     porte ENUM('pequeno', 'medio', 'grande'),
     cor_pelo VARCHAR(100),

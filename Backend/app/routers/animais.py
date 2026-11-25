@@ -39,7 +39,6 @@ def _salvar_foto(foto: bytes) -> str:
 def _to_out(a: Animal) -> AnimalOut:
     return AnimalOut(
         id=a.id, nome=a.nome, especie=a.especie, raca=a.raca, sexo=a.sexo,
-        data_nascimento_estimada=a.data_nascimento_estimada,
         idade_estimada=a.idade_estimada,
         porte=a.porte, cor_pelo=a.cor_pelo, peso=a.peso,
         castrado=bool(a.castrado), vermifugado=bool(a.vermifugado),
@@ -71,7 +70,6 @@ def create_animal(
         especie=data.especie,
         raca=data.raca,
         sexo=data.sexo,
-        data_nascimento_estimada=data.data_nascimento_estimada,
         idade_estimada=data.idade_estimada,
         porte=data.porte,
         cor_pelo=data.cor_pelo,
