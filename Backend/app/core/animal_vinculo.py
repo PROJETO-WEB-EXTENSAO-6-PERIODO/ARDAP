@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
+from app.models.adocao import Adocao
 from app.models.animal import Animal
 from app.models.castracao import Castracao
 from app.models.eutanasia import Eutanasia
@@ -30,6 +31,25 @@ def validar_animal(db: Session, animal_id: int | None) -> None:
         raise HTTPException(
             status_code=409,
             detail="Este animal já passou por eutanásia e não pode ser vinculado.",
+        )
+
+
+def animal_adotado(exceto_adocao: int | None = None):
+    """Condicao SQL: o animal tem um termo de adocao vinculado."""
+    condicao = exists().where(Adocao.animal_id == Animal.id)
+    if exceto_adocao is not None:
+        condicao = condicao.where(Adocao.id != exceto_adocao)
+    return condicao
+
+
+def validar_nao_adotado(db: Session, animal_id: int) -> None:
+    """Um animal ja adotado nao pode ser vinculado a outra adocao."""
+    if db.scalar(
+        select(Animal.id).where(Animal.id == animal_id, animal_adotado())
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail="Este animal já foi adotado e não pode ser vinculado a outra adoção.",
         )
 
 

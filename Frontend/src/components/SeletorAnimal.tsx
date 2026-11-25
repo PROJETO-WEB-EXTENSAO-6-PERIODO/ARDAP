@@ -78,11 +78,16 @@ export function SeletorAnimal({
   onChange,
   obrigatorio = false,
   invalido = false,
+  naoAdotados = false,
+  exceto,
 }: {
   animal: AnimalResumo | null;
   onChange: (animal: AnimalVinculado | null) => void;
   obrigatorio?: boolean;
   invalido?: boolean;
+  // Esconde os animais já adotados, menos o do termo em edição (exceto).
+  naoAdotados?: boolean;
+  exceto?: string;
 }) {
   const [animais, setAnimais] = useState<AnimalVinculado[] | null>(null);
   const [erro, setErro] = useState(false);
@@ -97,13 +102,16 @@ export function SeletorAnimal({
     setErro(false);
     try {
       const { data } = await api.get<AnimalVinculado[]>("/animais", {
-        params: { disponiveis: true },
+        params: {
+          disponiveis: true,
+          ...(naoAdotados && { nao_adotados: true, exceto_adocao: exceto }),
+        },
       });
       setAnimais(data);
     } catch {
       setErro(true);
     }
-  }, []);
+  }, [naoAdotados, exceto]);
 
   // Fecha ao clicar ou levar o foco para fora do seletor.
   useEffect(() => {
@@ -255,7 +263,7 @@ export function SeletorAnimal({
                   {!animais
                     ? "Carregando animais..."
                     : animais.length === 0
-                      ? "Nenhum animal cadastrado ainda."
+                      ? "Nenhum animal disponível."
                       : "Nenhum animal encontrado."}
                 </p>
               )}
