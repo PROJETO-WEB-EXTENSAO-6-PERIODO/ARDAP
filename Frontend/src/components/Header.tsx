@@ -36,14 +36,12 @@ export function Header() {
         </button>
 
         <div className="flex justify-center gap-4 w-8/10">
-          {user?.role === "admin" && (
-            <button
-              onClick={() => navigate("/usuarios")}
-              className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
-            >
-              Usuários
-            </button>
-          )}
+          <button
+            onClick={() => navigate("/home")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Início
+          </button>
 
           <button
             onClick={() => navigate("/modulos")}
@@ -67,6 +65,15 @@ export function Header() {
           </button>
 
           <MenuRegistros />
+
+          {user?.role === "admin" && (
+            <button
+              onClick={() => navigate("/usuarios")}
+              className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+            >
+              Usuários
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-4 w-1/10">
