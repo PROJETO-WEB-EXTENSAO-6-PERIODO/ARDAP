@@ -3,13 +3,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import settings
 from app.routers import adocao, animais, auth, castracao, cirurgia, contagens, eutanasia, hipossuficiencia, relatorios, supatas, users
 
-app = FastAPI(title="ARDAP API", version="0.1.0")
+# a documentacao interativa so existe em desenvolvimento
+app = FastAPI(
+    title="ARDAP API",
+    version="0.1.0",
+    docs_url=None if settings.em_producao else "/docs",
+    redoc_url=None if settings.em_producao else "/redoc",
+    openapi_url=None if settings.em_producao else "/openapi.json",
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=settings.origens_cors,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
