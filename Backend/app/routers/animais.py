@@ -75,7 +75,7 @@ def create_animal(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    foto_path = _salvar_foto(data.foto) if data.foto else None
+    foto_path = _salvar_foto(data.foto)
     animal = Animal(
         nome=data.nome or None,
         especie=data.especie,
@@ -101,8 +101,7 @@ def create_animal(
         db.commit()
     except Exception:
         # sem registro no banco, o arquivo ficaria orfao
-        if foto_path:
-            (UPLOADS_DIR / foto_path).unlink(missing_ok=True)
+        (UPLOADS_DIR / foto_path).unlink(missing_ok=True)
         raise
     db.refresh(animal)
     return _to_out(animal)

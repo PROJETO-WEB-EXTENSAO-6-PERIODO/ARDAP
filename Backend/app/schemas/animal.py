@@ -28,7 +28,7 @@ class AnimalIn(BaseModel):
     medicacao_desc: str | None = None
     origem_resgate: str | None = Field(default=None, max_length=255)
     observacoes: str | None = None
-    foto: Base64Bytes | None = None
+    foto: Base64Bytes = Field(min_length=1)
 
 
 class AnimalOut(BaseModel):

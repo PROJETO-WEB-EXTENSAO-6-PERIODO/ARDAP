@@ -135,8 +135,8 @@ export function Animais() {
     e.preventDefault();
     setFormError("");
     setTriedSubmit(true);
-    if (!especie || !sexo) {
-      setFormError("Preencha os campos obrigatórios (Espécie e Sexo).");
+    if (!foto || !especie || !sexo) {
+      setFormError("Preencha os campos obrigatórios (Foto, Espécie e Sexo).");
       return;
     }
     setSaving(true);
@@ -157,7 +157,7 @@ export function Animais() {
         medicacao_desc: medicacaoDesc.trim() || null,
         origem_resgate: origem.trim() || null,
         observacoes: observacoes.trim() || null,
-        foto: foto ? await lerBase64(foto) : null,
+        foto: await lerBase64(foto),
       });
       // replace: o botão voltar não reabre o formulário já enviado
       navigate(`/animais/${data.id}`, {
@@ -244,9 +244,9 @@ export function Animais() {
                     className="text-sm font-semibold text-[#1A1A1A]"
                     htmlFor="animal_photo"
                   >
-                    Foto do animal
+                    Foto do animal{" "}
+                    <span className="font-bold text-[#DC2626]">*</span>
                   </label>
-                  <span className="text-xs text-gray-500">(opcional)</span>
                 </div>
                 <div className="flex items-center gap-4 rounded-xl border border-dashed border-gray-300 p-4">
                   <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-3xl text-gray-400">
@@ -265,6 +265,7 @@ export function Animais() {
                       ref={fotoInput}
                       id="animal_photo"
                       type="file"
+                      required
                       accept={FOTO_TIPOS.join(",")}
                       onChange={(e) => escolherFoto(e.target.files?.[0])}
                       aria-describedby="animal_photo_help"
