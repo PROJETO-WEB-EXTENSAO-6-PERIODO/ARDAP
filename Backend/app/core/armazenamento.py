@@ -47,13 +47,12 @@ def tipo_da_chave(chave: str) -> str:
     return TIPOS.get(Path(chave).suffix, "application/octet-stream")
 
 
-@lru_cache
-def _r2():
+def cliente_r2(access_key_id: str, secret_access_key: str):
     return boto3.client(
         "s3",
         endpoint_url=f"https://{settings.R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
-        aws_access_key_id=settings.R2_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.R2_SECRET_ACCESS_KEY,
+        aws_access_key_id=access_key_id,
+        aws_secret_access_key=secret_access_key,
         region_name="auto",
         config=Config(
             connect_timeout=5,
@@ -64,6 +63,11 @@ def _r2():
             response_checksum_validation="when_required",
         ),
     )
+
+
+@lru_cache
+def _r2():
+    return cliente_r2(settings.R2_ACCESS_KEY_ID, settings.R2_SECRET_ACCESS_KEY)
 
 
 def _indisponivel(erro: Exception) -> HTTPException:

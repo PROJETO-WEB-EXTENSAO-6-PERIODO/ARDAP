@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     R2_SECRET_ACCESS_KEY: str = ""
     R2_BUCKET: str = ""
 
+    # Bucket separado das copias de seguranca (so os scripts de backup usam)
+    BACKUP_R2_ACCESS_KEY_ID: str = ""
+    BACKUP_R2_SECRET_ACCESS_KEY: str = ""
+    BACKUP_R2_BUCKET: str = ""
+
     @property
     def em_producao(self) -> bool:
         return self.AMBIENTE == "producao"
