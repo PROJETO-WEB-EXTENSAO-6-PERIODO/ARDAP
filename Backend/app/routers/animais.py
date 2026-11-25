@@ -4,7 +4,11 @@ POST cria apenas o cadastro do animal. Registros de entrada via SUPATAS
 devem ser feitos pelo endpoint dedicado /supatas.
 """
 
+from pathlib import Path
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import FileResponse
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
@@ -15,6 +19,38 @@ from app.models.user import User
 from app.schemas.animal import AnimalIn, AnimalOut
 
 router = APIRouter(tags=["animais"])
+
+# Backend/uploads (fora do git), independente da pasta de execucao
+UPLOADS_DIR = Path(__file__).resolve().parents[2] / "uploads"
+FOTO_MAX_BYTES = 5 * 1024 * 1024
+
+
+def _extensao_foto(foto: bytes) -> str:
+    """Valida tamanho e formato pelo conteudo, nao pela extensao."""
+    if len(foto) > FOTO_MAX_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail="A foto deve ter no máximo 5 MB.",
+        )
+    if foto.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+    if foto.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+    if foto[:4] == b"RIFF" and foto[8:12] == b"WEBP":
+        return ".webp"
+    raise HTTPException(
+        status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        detail="A foto deve ser JPG, PNG ou WebP.",
+    )
+
+
+def _salvar_foto(foto: bytes) -> str:
+    """Grava a foto em disco e devolve o caminho relativo a UPLOADS_DIR."""
+    foto_path = f"animais/{uuid4().hex}{_extensao_foto(foto)}"
+    destino = UPLOADS_DIR / foto_path
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    destino.write_bytes(foto)
+    return foto_path
 
 
 def _to_out(a: Animal) -> AnimalOut:
@@ -27,7 +63,8 @@ def _to_out(a: Animal) -> AnimalOut:
         vacinado=bool(a.vacinado), temperamento=a.temperamento,
         medicacao_necessaria=bool(a.medicacao_necessaria),
         medicacao_desc=a.medicacao_desc, origem_resgate=a.origem_resgate,
-        observacoes=a.observacoes, created_at=a.created_at,
+        observacoes=a.observacoes, tem_foto=a.foto_path is not None,
+        created_at=a.created_at,
     )
 
 
@@ -38,6 +75,7 @@ def create_animal(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    foto_path = _salvar_foto(data.foto) if data.foto else None
     animal = Animal(
         nome=data.nome or None,
         especie=data.especie,
@@ -56,9 +94,16 @@ def create_animal(
         medicacao_desc=data.medicacao_desc,
         origem_resgate=data.origem_resgate,
         observacoes=data.observacoes,
+        foto_path=foto_path,
     )
-    db.add(animal)
-    db.commit()
+    try:
+        db.add(animal)
+        db.commit()
+    except Exception:
+        # sem registro no banco, o arquivo ficaria orfao
+        if foto_path:
+            (UPLOADS_DIR / foto_path).unlink(missing_ok=True)
+        raise
     db.refresh(animal)
     return _to_out(animal)
 
@@ -94,3 +139,23 @@ def get_animal(
             detail="Animal não encontrado.",
         )
     return _to_out(animal)
+
+
+@router.get("/animais/{animal_id}/foto")
+def get_foto(
+    animal_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    animal = db.get(Animal, animal_id)
+    arquivo = (
+        UPLOADS_DIR / animal.foto_path
+        if animal and animal.foto_path
+        else None
+    )
+    if arquivo is None or not arquivo.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Foto não encontrada.",
+        )
+    return FileResponse(arquivo)

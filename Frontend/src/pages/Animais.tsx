@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -24,6 +25,19 @@ const TEMPERAMENTOS = [
   { value: "arisco", label: "Arisco" },
   { value: "agressivo", label: "Agressivo" },
 ];
+
+const FOTO_TIPOS = ["image/jpeg", "image/png", "image/webp"];
+const FOTO_MAX_BYTES = 5 * 1024 * 1024;
+
+function lerBase64(arquivo: File) {
+  return new Promise<string>((resolve, reject) => {
+    const leitor = new FileReader();
+    // Remove o prefixo "data:image/...;base64,"
+    leitor.onload = () => resolve(String(leitor.result).split(",")[1]);
+    leitor.onerror = () => reject(leitor.error);
+    leitor.readAsDataURL(arquivo);
+  });
+}
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -80,6 +94,39 @@ export function Animais() {
   const [temperamento, setTemperamento] = useState("");
   const [observacoes, setObservacoes] = useState("");
 
+  const [foto, setFoto] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [fotoErro, setFotoErro] = useState("");
+  const fotoInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!foto) return;
+    const url = URL.createObjectURL(foto);
+    setFotoPreview(url);
+    return () => {
+      setFotoPreview(null);
+      URL.revokeObjectURL(url);
+    };
+  }, [foto]);
+
+  function removerFoto() {
+    setFoto(null);
+    setFotoErro("");
+    if (fotoInput.current) fotoInput.current.value = "";
+  }
+
+  function escolherFoto(arquivo: File | undefined) {
+    if (!arquivo) return;
+    removerFoto();
+    if (!FOTO_TIPOS.includes(arquivo.type)) {
+      setFotoErro("Escolha uma imagem JPG, PNG ou WebP.");
+    } else if (arquivo.size > FOTO_MAX_BYTES) {
+      setFotoErro("A foto deve ter no máximo 5 MB.");
+    } else {
+      setFoto(arquivo);
+    }
+  }
+
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
   const [triedSubmit, setTriedSubmit] = useState(false);
@@ -110,14 +157,20 @@ export function Animais() {
         medicacao_desc: medicacaoDesc.trim() || null,
         origem_resgate: origem.trim() || null,
         observacoes: observacoes.trim() || null,
+        foto: foto ? await lerBase64(foto) : null,
       });
       // replace: o botão voltar não reabre o formulário já enviado
       navigate(`/animais/${data.id}`, {
         replace: true,
         state: { cadastrado: true },
       });
-    } catch {
-      setFormError("Não foi possível salvar. Confira os dados e tente de novo.");
+    } catch (e) {
+      const detalhe = isAxiosError(e) ? e.response?.data?.detail : null;
+      setFormError(
+        typeof detalhe === "string"
+          ? detalhe
+          : "Não foi possível salvar. Confira os dados e tente de novo.",
+      );
     } finally {
       setSaving(false);
     }
@@ -183,6 +236,60 @@ export function Animais() {
                 <span className="inline-flex items-center rounded-full bg-[#FFD900] px-2.5 py-1 text-xs font-medium text-[#1A1A1A]">
                   Obrigatório
                 </span>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label
+                    className="text-sm font-semibold text-[#1A1A1A]"
+                    htmlFor="animal_photo"
+                  >
+                    Foto do animal
+                  </label>
+                  <span className="text-xs text-gray-500">(opcional)</span>
+                </div>
+                <div className="flex items-center gap-4 rounded-xl border border-dashed border-gray-300 p-4">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-3xl text-gray-400">
+                    {fotoPreview ? (
+                      <img
+                        src={fotoPreview}
+                        alt="Prévia da foto do animal"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <i aria-hidden="true" className="bi bi-camera"></i>
+                    )}
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
+                    <input
+                      ref={fotoInput}
+                      id="animal_photo"
+                      type="file"
+                      accept={FOTO_TIPOS.join(",")}
+                      onChange={(e) => escolherFoto(e.target.files?.[0])}
+                      aria-describedby="animal_photo_help"
+                      className="w-full cursor-pointer text-sm text-gray-500 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[#1A1A1A] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                    />
+                    <p id="animal_photo_help" className="text-xs text-gray-500">
+                      JPG, PNG ou WebP, até 5 MB.
+                    </p>
+                    {fotoErro && (
+                      <p role="alert" className="text-xs font-medium text-[#DC2626]">
+                        {fotoErro}
+                      </p>
+                    )}
+                    {foto && (
+                      <button
+                        type="button"
+                        onClick={removerFoto}
+                        className="inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#DC2626] hover:underline"
+                      >
+                        <i aria-hidden="true" className="bi bi-trash"></i>
+                        Remover foto
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col gap-1.5">

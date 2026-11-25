@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS animais (
     medicacao_desc TEXT, 
     origem_resgate VARCHAR(255),
     observacoes TEXT,
+    foto_path VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

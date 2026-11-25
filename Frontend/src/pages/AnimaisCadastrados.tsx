@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
 
@@ -21,6 +22,7 @@ interface Animal {
   medicacao_necessaria: boolean;
   medicacao_desc: string | null;
   origem_resgate: string | null;
+  tem_foto: boolean;
   created_at: string | null;
 }
 
@@ -140,9 +142,18 @@ function AnimalCard({ animal }: { animal: Animal }) {
       <div className={`flex items-center gap-4 p-5 ${visual.fundo}`}>
         <span
           aria-hidden="true"
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-4xl shadow-sm transition-transform duration-200 group-hover:scale-105"
+          className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-4xl shadow-sm transition-transform duration-200 group-hover:scale-105"
         >
-          {visual.emoji}
+          {animal.tem_foto ? (
+            <FotoAnimal
+              id={animal.id}
+              alt=""
+              className="h-full w-full object-cover"
+              fallback={visual.emoji}
+            />
+          ) : (
+            visual.emoji
+          )}
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-lg font-bold text-[#1A1A1A]" title={nome}>

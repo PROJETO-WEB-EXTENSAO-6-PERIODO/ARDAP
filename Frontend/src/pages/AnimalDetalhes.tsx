@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
 
@@ -23,6 +24,7 @@ interface Animal {
   medicacao_desc: string | null;
   origem_resgate: string | null;
   observacoes: string | null;
+  tem_foto: boolean;
   created_at: string | null;
 }
 
@@ -116,7 +118,14 @@ function Detalhes({ animal }: { animal: Animal }) {
   return (
     <>
       <section className="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
+        {animal.tem_foto && (
+          <FotoAnimal
+            id={animal.id}
+            alt={`Foto de ${animal.nome || "animal sem nome"}`}
+            className="h-48 w-full shrink-0 rounded-xl object-cover sm:h-40 sm:w-40"
+          />
+        )}
+        <div className="min-w-0 flex-1">
           <h1 className="break-words text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
             {animal.nome || "Animal sem nome"}
           </h1>
