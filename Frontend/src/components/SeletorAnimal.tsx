@@ -90,16 +90,14 @@ export function SeletorAnimal({
   const carregar = useCallback(async () => {
     setErro(false);
     try {
-      const { data } = await api.get<AnimalVinculado[]>("/animais");
+      const { data } = await api.get<AnimalVinculado[]>("/animais", {
+        params: { disponiveis: true },
+      });
       setAnimais(data);
     } catch {
       setErro(true);
     }
   }, []);
-
-  useEffect(() => {
-    void carregar();
-  }, [carregar]);
 
   // Fecha ao clicar ou levar o foco para fora do seletor.
   useEffect(() => {
@@ -134,6 +132,8 @@ export function SeletorAnimal({
     setBusca("");
     setAtivo(0);
     setAberto(true);
+    // Recarrega ao abrir: um animal pode ter deixado de estar disponível.
+    void carregar();
   }
 
   function fechar() {

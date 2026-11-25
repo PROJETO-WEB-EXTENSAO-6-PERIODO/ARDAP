@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
+from app.core.animal_vinculo import animal_eutanasiado
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.animal import Animal
@@ -111,10 +112,13 @@ def create_animal(
 def list_animais(
     especie: str | None = None,
     search: str | None = None,
+    disponiveis: bool = False,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
     stmt = select(Animal).order_by(Animal.id.desc())
+    if disponiveis:
+        stmt = stmt.where(~animal_eutanasiado())
     if especie:
         stmt = stmt.where(Animal.especie == especie)
     if search:

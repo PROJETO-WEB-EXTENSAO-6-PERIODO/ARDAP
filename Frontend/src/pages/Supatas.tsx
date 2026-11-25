@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
 import { SeletorAnimal, type AnimalVinculado } from "../components/SeletorAnimal";
@@ -185,8 +186,13 @@ export function Supatas() {
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setFormError("Não foi possível salvar. Confira os dados e tente de novo.");
+    } catch (e) {
+      const detalhe = isAxiosError(e) ? e.response?.data?.detail : null;
+      setFormError(
+        typeof detalhe === "string"
+          ? detalhe
+          : "Não foi possível salvar. Confira os dados e tente de novo.",
+      );
     } finally {
       setSaving(false);
     }
