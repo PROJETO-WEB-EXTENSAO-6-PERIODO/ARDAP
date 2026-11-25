@@ -1,6 +1,8 @@
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field
+
+from app.schemas.animal import AnimalResumoOut
 
 
 class SupatasIntakeIn(BaseModel):
@@ -35,6 +37,8 @@ class SupatasIntakeIn(BaseModel):
 class SupatasIntakeOut(BaseModel):
     id: int
     animal_id: int | None
+    animal: AnimalResumoOut | None
+    created_at: datetime | None
     orgao_solicitante: str | None
     nome_responsavel_encaminhamento: str | None
     data_encaminhamento: date | None

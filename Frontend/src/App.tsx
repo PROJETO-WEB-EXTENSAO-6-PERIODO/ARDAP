@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -13,6 +14,9 @@ import { Login } from "./pages/Login";
 import { Modulos } from "./pages/Modulos";
 import { NovoUsuario } from "./pages/NovoUsuario";
 import { Supatas } from "./pages/Supatas";
+import { ListaRegistros } from "./pages/ListaRegistros";
+import { RegistroDetalhes } from "./pages/RegistroDetalhes";
+import { MODULOS_REGISTRO } from "./services/registros";
 import { Adocao } from "./pages/Adocao";
 import { AdocaoDetalhes } from "./pages/AdocaoDetalhes";
 import { AdocoesRegistradas } from "./pages/AdocoesRegistradas";
@@ -136,6 +140,26 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          {MODULOS_REGISTRO.map((modulo) => (
+            <Fragment key={modulo.rota}>
+              <Route
+                path={`/${modulo.rota}/registros`}
+                element={
+                  <ProtectedRoute>
+                    <ListaRegistros key={modulo.rota} modulo={modulo} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path={`/${modulo.rota}/:id`}
+                element={
+                  <ProtectedRoute>
+                    <RegistroDetalhes key={modulo.rota} modulo={modulo} />
+                  </ProtectedRoute>
+                }
+              />
+            </Fragment>
+          ))}
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>

@@ -3,10 +3,11 @@
 from datetime import date
 
 from sqlalchemy import Date, DateTime, Enum, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
+from app.models.animal import Animal
 
 
 class Cirurgia(Base):
@@ -15,6 +16,12 @@ class Cirurgia(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     animal_id: Mapped[int | None] = mapped_column(nullable=True)
+    # somente leitura: o vinculo e gravado por animal_id
+    animal: Mapped[Animal | None] = relationship(
+        primaryjoin=lambda: foreign(Cirurgia.animal_id) == Animal.id,
+        viewonly=True,
+        lazy="joined",
+    )
     funcionario_id: Mapped[int | None] = mapped_column(nullable=True)
 
     proprietario_responsavel: Mapped[str] = mapped_column(

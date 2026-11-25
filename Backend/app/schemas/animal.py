@@ -52,3 +52,15 @@ class AnimalOut(BaseModel):
     observacoes: str | None
     tem_foto: bool
     created_at: datetime | None
+
+
+class AnimalResumoOut(BaseModel):
+    id: int
+    nome: str | None
+    especie: str
+    raca: str | None
+    sexo: str
+    tem_foto: bool
+
+    class Config:
+        from_attributes = True

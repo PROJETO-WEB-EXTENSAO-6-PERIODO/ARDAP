@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { MenuRegistros } from "./MenuRegistros";
 import { useAuth } from "../context/AuthContext";
 
 export function Header() {
@@ -64,6 +65,8 @@ export function Header() {
           >
             Adoções
           </button>
+
+          <MenuRegistros />
         </div>
 
         <div className="flex items-center gap-4 w-1/10">

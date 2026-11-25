@@ -1,9 +1,11 @@
 """Formatos de entrada/saida de termos de eutanasia."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
+
+from app.schemas.animal import AnimalResumoOut
 
 
 class EutanasiaIn(BaseModel):
@@ -34,6 +36,8 @@ class EutanasiaIn(BaseModel):
 class EutanasiaOut(BaseModel):
     id: int
     animal_id: int | None
+    animal: AnimalResumoOut | None
+    created_at: datetime | None
     nome_animal: str | None
     especie: str | None
     raca: str | None

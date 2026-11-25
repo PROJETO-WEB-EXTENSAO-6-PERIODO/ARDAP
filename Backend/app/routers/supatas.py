@@ -1,6 +1,6 @@
 """Registro de entrada SUPATAS (encaminhamento municipal)."""
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -59,3 +59,17 @@ def list_supatas_intakes(
 ):
     stmt = select(SupatasIntake).order_by(SupatasIntake.id.desc())
     return db.scalars(stmt).all()
+
+
+@router.get("/supatas/{intake_id}", response_model=SupatasIntakeOut)
+def get_supatas_intake(
+    intake_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    intake = db.get(SupatasIntake, intake_id)
+    if intake is None:
+        raise HTTPException(
+            status_code=404, detail="Solicitação SUPATAS não encontrada."
+        )
+    return intake

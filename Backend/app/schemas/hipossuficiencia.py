@@ -1,6 +1,6 @@
 """Formatos de entrada/saida de declaracoes de hipossuficiencia."""
 
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
@@ -30,6 +30,7 @@ class HipossuficienciaIn(BaseModel):
 
 class HipossuficienciaOut(BaseModel):
     id: int
+    created_at: datetime | None
     nome_representante: str
     documento_representante: str | None
     tipo_documento_representante: str | None

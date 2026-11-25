@@ -5,6 +5,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.schemas.animal import AnimalResumoOut
+
 
 class AdocaoIn(BaseModel):
     animal_id: int
@@ -48,22 +50,10 @@ class AdocaoIn(BaseModel):
     data_assinatura: date | None = None
 
 
-class AnimalAdotadoOut(BaseModel):
-    id: int
-    nome: str | None
-    especie: str
-    raca: str | None
-    sexo: str
-    tem_foto: bool
-
-    class Config:
-        from_attributes = True
-
-
 class AdocaoOut(BaseModel):
     id: int
     animal_id: int | None
-    animal: AnimalAdotadoOut | None
+    animal: AnimalResumoOut | None
     created_at: datetime | None
     especie_adocao: str | None
     nome_adotante: str

@@ -1,9 +1,11 @@
 """Formatos de entrada/saida de termos de cirurgia."""
 
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
+
+from app.schemas.animal import AnimalResumoOut
 
 
 class CirurgiaIn(BaseModel):
@@ -35,6 +37,8 @@ class CirurgiaIn(BaseModel):
 class CirurgiaOut(BaseModel):
     id: int
     animal_id: int | None
+    animal: AnimalResumoOut | None
+    created_at: datetime | None
     proprietario_responsavel: str
     cpf_cnpj: str | None
     endereco: str | None
