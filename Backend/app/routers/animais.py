@@ -12,6 +12,7 @@ from app.core import armazenamento
 from app.core.animal_vinculo import animal_com_termo_castracao, animal_eutanasiado
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.exclusao import excluir_animal
 from app.models.animal import Animal
 from app.models.user import User
 from app.schemas.animal import AnimalIn, AnimalOut, AnimalUpdateIn
@@ -194,3 +195,22 @@ def update_animal(
         armazenamento.apagar(foto_antiga)
     db.refresh(animal)
     return _to_out(animal)
+
+
+@router.delete("/animais/{animal_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_animal(
+    animal_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    animal = db.get(Animal, animal_id)
+    if animal is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Animal não encontrado.",
+        )
+    foto_path = animal.foto_path
+    excluir_animal(db, animal)
+    # so apaga a foto depois que a exclusao esta garantida no banco
+    if foto_path:
+        armazenamento.apagar(foto_path)

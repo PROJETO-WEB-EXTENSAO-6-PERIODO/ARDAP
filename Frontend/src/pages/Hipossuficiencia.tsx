@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Anexo } from "../components/AnexosHipossuficiencia";
+import { BotaoExcluir } from "../components/BotaoExcluir";
 import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
@@ -498,13 +499,24 @@ export function Hipossuficiencia() {
             </div>
           </article>
 
-          <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
+          <div className={`grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm ${
+              editando ? "sm:grid-cols-3" : "sm:grid-cols-2"
+            }`}>
             <Link
               to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
             </Link>
+            {idEdicao && (
+              <BotaoExcluir
+                rota="hipossuficiencias"
+                id={idEdicao}
+                nome={`o registro nº ${idEdicao}`}
+                voltarPara="/hipossuficiencias/registros"
+                disabled={saving}
+              />
+            )}
             <button
               type="submit"
               disabled={saving}

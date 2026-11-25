@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import require_admin
+from app.core.exclusao import excluir_registro, validar_exclusao_usuario
 from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import CreateUserIn, UpdateUserIn, UserDetalheOut
@@ -98,3 +99,20 @@ def create_user(
     db.commit()
     db.refresh(user)
     return _to_out(user)
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    user = _buscar(db, user_id)
+    # Garante que sempre reste um admin: ninguem exclui a si mesmo.
+    if user.id == admin.id:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Você não pode excluir o seu próprio usuário.",
+        )
+    validar_exclusao_usuario(db, user)
+    excluir_registro(db, user)

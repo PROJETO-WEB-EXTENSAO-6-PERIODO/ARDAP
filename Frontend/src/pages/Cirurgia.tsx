@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
+import { BotaoExcluir } from "../components/BotaoExcluir";
 import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
 import { SeletorAnimal, rotuloEspecie, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
@@ -601,13 +602,24 @@ export function Cirurgia() {
             </div>
           </article>
 
-          <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
+          <div className={`grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm ${
+              editando ? "sm:grid-cols-3" : "sm:grid-cols-2"
+            }`}>
             <Link
               to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
             </Link>
+            {idEdicao && (
+              <BotaoExcluir
+                rota="cirurgias"
+                id={idEdicao}
+                nome={`o registro nº ${idEdicao}`}
+                voltarPara="/cirurgias/registros"
+                disabled={saving}
+              />
+            )}
             <button
               type="submit"
               disabled={saving}

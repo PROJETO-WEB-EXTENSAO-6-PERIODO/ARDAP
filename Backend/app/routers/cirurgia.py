@@ -8,6 +8,7 @@ from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.edicao import editar_registro
+from app.core.exclusao import excluir_registro
 from app.models.cirurgia import Cirurgia
 from app.models.user import User
 from app.schemas.cirurgia import CirurgiaIn, CirurgiaOut
@@ -84,3 +85,12 @@ def update_cirurgia(
     user: User = Depends(get_current_user),
 ):
     return editar_registro(db, get_cirurgia(cirurgia_id, db, user), data, user)
+
+
+@router.delete("/cirurgias/{cirurgia_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_cirurgia(
+    cirurgia_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    excluir_registro(db, get_cirurgia(cirurgia_id, db, user))

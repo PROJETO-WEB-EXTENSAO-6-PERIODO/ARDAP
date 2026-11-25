@@ -4,10 +4,11 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
-from app.core.animal_vinculo import marcar_castrado, validar_animal
+from app.core.animal_vinculo import desmarcar_castrado, marcar_castrado, validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.edicao import editar_registro
+from app.core.exclusao import excluir_registro
 from app.models.castracao import Castracao
 from app.models.user import User
 from app.schemas.castracao import CastracaoIn, CastracaoOut
@@ -88,3 +89,15 @@ def update_castracao(
     # so vale com o commit de editar_registro, que antes valida o vinculo
     marcar_castrado(db, data.animal_id, user)
     return editar_registro(db, castracao, data, user)
+
+
+@router.delete("/castracoes/{castracao_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_castracao(
+    castracao_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    castracao = get_castracao(castracao_id, db, user)
+    # so vale com o commit de excluir_registro
+    desmarcar_castrado(db, castracao, user)
+    excluir_registro(db, castracao)
