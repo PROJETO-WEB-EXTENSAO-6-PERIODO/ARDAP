@@ -1,0 +1,49 @@
+name: Backup
+
+on:
+  schedule:
+    # 03:17 em Brasilia; fora da hora cheia, quando o GitHub atrasa menos
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+
+jobs:
+  backup:
+    # em bifurcacoes do repositorio nao ha segredos
+    if: github.repository == 'PROJETO-WEB-EXTENSAO-6-PERIODO/ARDAP'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # segredos no ambiente "backup", liberado so para a branch main
+    environment: backup
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt
+      - name: Copiar banco e arquivos
+        run: python -m app.scripts.backup
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: "4000"
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ardap
+          DB_SSL: "true"
+          # exigida pela configuracao, mas o backup nao gera tokens de login
+          SECRET_KEY: backup-nao-usa-esta-chave-0000000000
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          BACKUP_R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID }}
+          BACKUP_R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY }}
+          BACKUP_R2_BUCKET: ${{ secrets.BACKUP_R2_BUCKET }}
