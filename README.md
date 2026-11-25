@@ -54,6 +54,7 @@ Este sistema substitui o papel por uma aplicação web usada pela equipe interna
 **Regras que o sistema garante**
 
 - Um animal que passou por eutanásia não pode ser vinculado a novos formulários.
+- Um animal já adotado não pode ser vinculado a outra adoção.
 - Salvar um termo de castração marca o animal como castrado.
 - Cada registro mostra quem cadastrou e quem alterou por último.
 - Excluir um animal exclui também os formulários dele; excluir um formulário mantém o

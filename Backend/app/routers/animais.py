@@ -9,7 +9,11 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.core import armazenamento
-from app.core.animal_vinculo import animal_com_termo_castracao, animal_eutanasiado
+from app.core.animal_vinculo import (
+    animal_adotado,
+    animal_com_termo_castracao,
+    animal_eutanasiado,
+)
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.exclusao import excluir_animal
@@ -103,12 +107,17 @@ def list_animais(
     search: str | None = None,
     disponiveis: bool = False,
     castrados_sem_termo: bool = False,
+    nao_adotados: bool = False,
+    exceto_adocao: int | None = None,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
     stmt = select(Animal).order_by(Animal.id.desc())
     if disponiveis:
         stmt = stmt.where(~animal_eutanasiado())
+    if nao_adotados:
+        # exceto_adocao: ao editar um termo, o animal dele continua na busca
+        stmt = stmt.where(~animal_adotado(exceto_adocao))
     if castrados_sem_termo:
         stmt = stmt.where(Animal.castrado, ~animal_com_termo_castracao())
     if especie:

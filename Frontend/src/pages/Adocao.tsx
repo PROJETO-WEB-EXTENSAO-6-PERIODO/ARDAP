@@ -379,6 +379,8 @@ export function Adocao() {
             onChange={setAnimal}
             obrigatorio
             invalido={triedSubmit && !animal}
+            naoAdotados
+            exceto={idEdicao}
           />
 
           {/* Seção 1 - Dados do Adotante */}
