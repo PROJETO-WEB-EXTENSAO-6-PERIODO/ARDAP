@@ -16,7 +16,7 @@ export function Modulos() {
 
   useEffect(() => {
     Promise.allSettled([
-      api.get("/animais").then(({ data }) => setTotalAnimais(data.length)).catch(() => setTotalAnimais(null)),
+      api.get("/animais", { params: { disponiveis: true } }).then(({ data }) => setTotalAnimais(data.length)).catch(() => setTotalAnimais(null)),
       api.get("/supatas").then(({ data }) => setTotalSupatas(data.length)).catch(() => setTotalSupatas(null)),
       api.get("/adocoes/contagem").then(({ data }) => setTotalAdocoes(data.total)).catch(() => setTotalAdocoes(null)),
       api.get("/castracoes/contagem").then(({ data }) => setTotalCastracoes(data.total)).catch(() => setTotalCastracoes(null)),

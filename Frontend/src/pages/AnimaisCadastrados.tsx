@@ -29,7 +29,10 @@ export function AnimaisCadastrados() {
   const carregar = useCallback(async () => {
     setErro(false);
     try {
-      const { data } = await api.get<Animal[]>("/animais");
+      const { data } = await api.get<Animal[]>("/animais", {
+        // animais eutanasiados ficam só na listagem de eutanásias
+        params: { disponiveis: true },
+      });
       setAnimais(data);
     } catch {
       setErro(true);
