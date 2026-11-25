@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
+import { SeletorAnimal, rotuloEspecie, type AnimalVinculado } from "../components/SeletorAnimal";
 import { api } from "../services/api";
 
 const inputCls =
@@ -62,6 +63,7 @@ function Toggle({
 }
 
 export function Eutanasia() {
+  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [especie, setEspecie] = useState("");
   const [raca, setRaca] = useState("");
@@ -93,7 +95,19 @@ export function Eutanasia() {
     setLocalDeclaracao("Paulo Afonso");
   }, []);
 
+  // Vincula o animal e preenche os campos; ao desvincular, limpa-os.
+  function vincularAnimal(a: AnimalVinculado | null) {
+    setAnimal(a);
+    setNomeAnimal(a?.nome ?? "");
+    setIdade(a?.idade_estimada?.toString() ?? "");
+    setEspecie(a ? rotuloEspecie(a.especie) : "");
+    setRaca(a?.raca ?? "");
+    setPelagem(a?.cor_pelo ?? "");
+    setSexo(a?.sexo ?? "");
+  }
+
   function resetForm() {
+    setAnimal(null);
     setNomeAnimal("");
     setEspecie("");
     setRaca("");
@@ -138,6 +152,7 @@ export function Eutanasia() {
     setSaving(true);
     try {
       await api.post("/eutanasias", {
+        animal_id: animal?.id ?? null,
         nome_animal: nomeAnimal.trim() || null,
         especie: especie.trim() || null,
         raca: raca.trim() || null,
@@ -212,6 +227,8 @@ export function Eutanasia() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
+
           {/* Seção 1 – Dados do Animal */}
           <article className="flex h-full flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between">

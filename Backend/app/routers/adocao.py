@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.adocao import Adocao
@@ -32,6 +33,7 @@ def create_adocao(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    validar_animal(db, data.animal_id)
     adocao = Adocao(
         animal_id=data.animal_id,
         funcionario_id=user.id,

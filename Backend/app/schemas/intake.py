@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class SupatasIntakeIn(BaseModel):
+    animal_id: int | None = None
     orgao_solicitante: str = Field(default="SUPATAS", max_length=150)
     nome_responsavel_encaminhamento: str = Field(
         ..., min_length=1, max_length=150
@@ -33,6 +34,7 @@ class SupatasIntakeIn(BaseModel):
 
 class SupatasIntakeOut(BaseModel):
     id: int
+    animal_id: int | None
     orgao_solicitante: str | None
     nome_responsavel_encaminhamento: str | None
     data_encaminhamento: date | None

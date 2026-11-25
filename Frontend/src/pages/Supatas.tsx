@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
+import { SeletorAnimal, type AnimalVinculado } from "../components/SeletorAnimal";
 import { api } from "../services/api";
 
 const SITUACOES = [
@@ -28,6 +29,7 @@ export function Supatas() {
   const [especie, setEspecie] = useState("");
   const [especieOutro, setEspecieOutro] = useState("");
   const [sexo, setSexo] = useState("");
+  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [situacao, setSituacao] = useState("");
   const [situacaoOutros, setSituacaoOutros] = useState("");
@@ -68,7 +70,18 @@ export function Supatas() {
     setDataRecebimento(hoje);
   }, []);
 
+  // Vincula o animal e preenche os campos; ao desvincular, limpa-os.
+  function vincularAnimal(a: AnimalVinculado | null) {
+    setAnimal(a);
+    const conhecida = a !== null && ["cao", "gato", "outro"].includes(a.especie);
+    setNomeAnimal(a?.nome ?? "");
+    setEspecie(a ? (conhecida ? a.especie : "outro") : "");
+    setEspecieOutro(a && !conhecida ? a.especie : "");
+    setSexo(a?.sexo ?? "");
+  }
+
   function resetForm() {
+    setAnimal(null);
     setResponsavel("");
     setDataEncaminhamento(todayISO());
     setEspecie("");
@@ -147,6 +160,7 @@ export function Supatas() {
     setSaving(true);
     try {
       await api.post("/supatas", {
+        animal_id: animal?.id ?? null,
         orgao_solicitante: orgaoSolicitante,
         nome_responsavel_encaminhamento: responsavel.trim(),
         data_encaminhamento: dataEncaminhamento,
@@ -334,6 +348,8 @@ export function Supatas() {
               </div>
             </div>
           </article>
+
+          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
 
           {/* Seção 2 – Dados do Animal Encaminhado */}
           <article className="flex h-full flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
+import { SeletorAnimal, rotuloEspecie, type AnimalVinculado } from "../components/SeletorAnimal";
 import { api } from "../services/api";
 
 const inputCls =
@@ -84,6 +85,7 @@ export function Cirurgia() {
   const [telefones, setTelefones] = useState("");
   const [email, setEmail] = useState("");
 
+  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [idadeReal, setIdadeReal] = useState("");
   const [especie, setEspecie] = useState("");
@@ -108,7 +110,19 @@ export function Cirurgia() {
     setLocalAssinatura("Paulo Afonso");
   }, []);
 
+  // Vincula o animal e preenche os campos; ao desvincular, limpa-os.
+  function vincularAnimal(a: AnimalVinculado | null) {
+    setAnimal(a);
+    setNomeAnimal(a?.nome ?? "");
+    setIdadeReal(a?.idade_estimada?.toString() ?? "");
+    setEspecie(a ? rotuloEspecie(a.especie) : "");
+    setRaca(a?.raca ?? "");
+    setPelagem(a?.cor_pelo ?? "");
+    setSexo(a?.sexo ?? "");
+  }
+
   function resetForm() {
+    setAnimal(null);
     setProprietario("");
     setCpfCnpj("");
     setEndereco("");
@@ -153,6 +167,7 @@ export function Cirurgia() {
     setSaving(true);
     try {
       await api.post("/cirurgias", {
+        animal_id: animal?.id ?? null,
         proprietario_responsavel: proprietario.trim(),
         cpf_cnpj: cpfCnpj.replace(/\D/g, "") || null,
         endereco: endereco.trim() || null,
@@ -336,6 +351,8 @@ export function Cirurgia() {
               </div>
             </div>
           </article>
+
+          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
 
           {/* Seção 2 – Dados do Animal */}
           <article className="flex h-full flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">

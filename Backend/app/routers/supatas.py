@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.intake import SupatasIntake
@@ -23,7 +24,9 @@ def create_supatas_intake(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    validar_animal(db, data.animal_id)
     intake = SupatasIntake(
+        animal_id=data.animal_id,
         orgao_solicitante=data.orgao_solicitante,
         nome_responsavel_encaminhamento=data.nome_responsavel_encaminhamento,
         data_encaminhamento=data.data_encaminhamento,

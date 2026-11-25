@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
+import { SeletorAnimal, type AnimalVinculado } from "../components/SeletorAnimal";
 import { api } from "../services/api";
 
 const inputCls =
@@ -62,6 +63,7 @@ export function Adocao() {
   const [especieAdocao, setEspecieAdocao] = useState("");
 
   // Seção 2 - Dados do animal
+  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [especie, setEspecie] = useState("");
   const [sexo, setSexo] = useState("");
@@ -126,7 +128,24 @@ export function Adocao() {
     setLocalAssinatura("Paulo Afonso");
   }, []);
 
+  // Vincula o animal e preenche os campos; ao desvincular, limpa-os.
+  function vincularAnimal(a: AnimalVinculado | null) {
+    setAnimal(a);
+    setNomeAnimal(a?.nome ?? "");
+    setEspecie(a && (a.especie === "cao" || a.especie === "gato") ? a.especie : "");
+    setSexo(a?.sexo ?? "");
+    setIdade(a?.idade_estimada?.toString() ?? "");
+    setRaca(a?.raca ?? "");
+    setSrd(a?.raca?.trim().toLowerCase() === "srd");
+    setOndeResgatou(a?.origem_resgate ?? "");
+    setCorPelo(a?.cor_pelo ?? "");
+    setPorte(a?.porte ?? "");
+    setPeso(a?.peso == null ? "" : String(a.peso));
+    setCastrado(a ? a.castrado : null);
+  }
+
   function resetForm() {
+    setAnimal(null);
     setNomeAdotante("");
     setRg("");
     setCpf("");
@@ -246,6 +265,7 @@ export function Adocao() {
     setSaving(true);
     try {
       await api.post("/adocoes", {
+        animal_id: animal?.id ?? null,
         especie_adocao: especieAdocao || null,
         nome_adotante: nomeAdotante.trim(),
         rg: rg.trim() || null,
@@ -448,6 +468,8 @@ export function Adocao() {
               </div>
             </div>
           </article>
+
+          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
 
           {/* Seção 2 - Dados do Animal */}
           <article className="flex h-full flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
