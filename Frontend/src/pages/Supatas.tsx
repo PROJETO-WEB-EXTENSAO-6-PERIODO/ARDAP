@@ -251,6 +251,8 @@ export function Supatas() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
+
           {/* Seção 1 – Dados do Órgão Solicitante */}
           <article className="flex h-full flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between">
@@ -348,8 +350,6 @@ export function Supatas() {
               </div>
             </div>
           </article>
-
-          <SeletorAnimal animal={animal} onChange={vincularAnimal} />
 
           {/* Seção 2 – Dados do Animal Encaminhado */}
           <article className="flex h-full flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">

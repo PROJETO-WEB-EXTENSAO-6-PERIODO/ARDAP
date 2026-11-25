@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { Link } from "react-router-dom";
 import { FotoAnimal } from "./FotoAnimal";
 import { api } from "../services/api";
@@ -38,21 +45,25 @@ function nomeExibido(animal: AnimalVinculado) {
   return animal.nome || "Animal sem nome";
 }
 
-function Foto({ animal }: { animal: AnimalVinculado }) {
+function Miniatura({ animal }: { animal: AnimalVinculado }) {
   const emoji = (
-    <span aria-hidden="true" className="text-4xl">
+    <span aria-hidden="true" className="text-lg leading-none">
       {EMOJIS[animal.especie] ?? "🐾"}
     </span>
   );
-  return animal.tem_foto ? (
-    <FotoAnimal
-      id={animal.id}
-      alt=""
-      className="h-full w-full object-cover"
-      fallback={emoji}
-    />
-  ) : (
-    emoji
+  return (
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-gray-100">
+      {animal.tem_foto ? (
+        <FotoAnimal
+          id={animal.id}
+          alt=""
+          className="h-full w-full object-cover"
+          fallback={emoji}
+        />
+      ) : (
+        emoji
+      )}
+    </span>
   );
 }
 
@@ -66,6 +77,11 @@ export function SeletorAnimal({
   const [animais, setAnimais] = useState<AnimalVinculado[] | null>(null);
   const [erro, setErro] = useState(false);
   const [busca, setBusca] = useState("");
+  const [aberto, setAberto] = useState(false);
+  const [ativo, setAtivo] = useState(0);
+  const raiz = useRef<HTMLDivElement>(null);
+  const gatilho = useRef<HTMLButtonElement>(null);
+  const idBase = useId();
 
   const carregar = useCallback(async () => {
     setErro(false);
@@ -81,152 +97,215 @@ export function SeletorAnimal({
     void carregar();
   }, [carregar]);
 
+  // Fecha ao clicar ou levar o foco para fora do seletor.
+  useEffect(() => {
+    if (!aberto) return;
+    function aoSair(e: Event) {
+      if (!raiz.current?.contains(e.target as Node)) setAberto(false);
+    }
+    document.addEventListener("mousedown", aoSair);
+    document.addEventListener("focusin", aoSair);
+    return () => {
+      document.removeEventListener("mousedown", aoSair);
+      document.removeEventListener("focusin", aoSair);
+    };
+  }, [aberto]);
+
+  // Mantém a opção destacada visível ao navegar com as setas.
+  useEffect(() => {
+    if (aberto) {
+      document
+        .getElementById(`${idBase}-${ativo}`)
+        ?.scrollIntoView({ block: "nearest" });
+    }
+  }, [aberto, ativo, idBase]);
+
   const termo = normalizar(busca.trim());
   const encontrados = (animais ?? []).filter((a) =>
     normalizar(nomeExibido(a)).includes(termo),
   );
   const visiveis = encontrados.slice(0, MAX_VISIVEIS);
 
-  return (
-    <article className="flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-[22px] text-gray-600">
-            <i aria-hidden="true" className="bi bi-link-45deg"></i>
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-[#1A1A1A]">Vincular animal cadastrado</h2>
-            <p className="text-xs text-gray-500 md:text-sm">
-              Escolha pela foto ou busque pelo nome. Os dados do animal são preenchidos
-              automaticamente.
-            </p>
-          </div>
-        </div>
-        <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-          Opcional
-        </span>
-      </div>
+  function abrir() {
+    setBusca("");
+    setAtivo(0);
+    setAberto(true);
+  }
 
-      {animal ? (
-        <div className="flex flex-col gap-4 rounded-xl border-2 border-[#FFD900] bg-[#FFF9DB] p-4 sm:flex-row sm:items-center">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
-            <Foto animal={animal} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-green-800">
-              <i aria-hidden="true" className="bi bi-check-circle-fill"></i>
-              Animal vinculado
-            </p>
-            <p className="break-words text-lg font-bold text-[#1A1A1A]">{nomeExibido(animal)}</p>
-            <p className="text-sm text-gray-600">
-              Nº {animal.id} • {rotuloEspecie(animal.especie)} •{" "}
-              {animal.sexo === "macho" ? "Macho" : "Fêmea"}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+  function fechar() {
+    setAberto(false);
+    gatilho.current?.focus();
+  }
+
+  function escolher(a: AnimalVinculado) {
+    if (a.id !== animal?.id) onChange(a);
+    fechar();
+  }
+
+  function aoTeclar(e: KeyboardEvent) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setAtivo((i) => Math.max(0, Math.min(i + 1, visiveis.length - 1)));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setAtivo((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      // Enter escolhe o animal em vez de enviar o formulário.
+      e.preventDefault();
+      if (visiveis[ativo]) escolher(visiveis[ativo]);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      fechar();
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span id={`${idBase}-rotulo`} className="text-sm font-semibold text-[#1A1A1A]">
+        Vincular animal cadastrado{" "}
+        <span className="text-xs font-normal text-gray-500">(opcional)</span>
+      </span>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div ref={raiz} className="relative w-full max-w-xs">
+          <button
+            ref={gatilho}
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded={aberto}
+            aria-labelledby={`${idBase}-rotulo ${idBase}-valor`}
+            onClick={() => (aberto ? setAberto(false) : abrir())}
+            className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3 text-left text-sm focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900]"
+          >
+            {animal && <Miniatura animal={animal} />}
+            <span
+              id={`${idBase}-valor`}
+              className={`min-w-0 flex-1 truncate ${
+                animal ? "font-semibold text-[#1A1A1A]" : "text-gray-500"
+              }`}
+            >
+              {animal ? nomeExibido(animal) : "Selecione um animal"}
+            </span>
+            <i
+              aria-hidden="true"
+              className={`bi bi-chevron-down text-gray-400 transition-transform ${
+                aberto ? "rotate-180" : ""
+              }`}
+            ></i>
+          </button>
+
+          {aberto && (
+            <div className="absolute left-0 top-full z-20 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+              <div className="relative p-2.5">
+                <input
+                  autoFocus
+                  type="text"
+                  role="combobox"
+                  aria-expanded
+                  aria-controls={`${idBase}-lista`}
+                  aria-activedescendant={
+                    visiveis[ativo] ? `${idBase}-${ativo}` : undefined
+                  }
+                  aria-label="Buscar animal pelo nome"
+                  autoComplete="off"
+                  value={busca}
+                  onChange={(e) => {
+                    setBusca(e.target.value);
+                    setAtivo(0);
+                  }}
+                  onKeyDown={aoTeclar}
+                  placeholder="Buscar pelo nome..."
+                  className="w-full rounded-md border border-gray-200 py-2 pl-3 pr-9 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none"
+                />
+                <i
+                  aria-hidden="true"
+                  className="bi bi-search pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-sm text-gray-400"
+                ></i>
+              </div>
+
+              {erro && (
+                <p role="alert" className="px-3 pb-3 text-sm text-[#DC2626]">
+                  Não foi possível carregar.{" "}
+                  <button
+                    type="button"
+                    onClick={() => void carregar()}
+                    className="cursor-pointer font-bold underline"
+                  >
+                    Tentar novamente
+                  </button>
+                </p>
+              )}
+
+              {!erro && visiveis.length === 0 && (
+                <p role="status" className="px-3 pb-3 text-sm text-gray-500">
+                  {!animais
+                    ? "Carregando animais..."
+                    : animais.length === 0
+                      ? "Nenhum animal cadastrado ainda."
+                      : "Nenhum animal encontrado."}
+                </p>
+              )}
+
+              <ul
+                id={`${idBase}-lista`}
+                role="listbox"
+                aria-label="Animais cadastrados"
+                className="max-h-64 overflow-y-auto"
+              >
+                {visiveis.map((a, indice) => (
+                  <li
+                    key={a.id}
+                    id={`${idBase}-${indice}`}
+                    role="option"
+                    aria-selected={a.id === animal?.id}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseEnter={() => setAtivo(indice)}
+                    onClick={() => escolher(a)}
+                    className={`flex cursor-pointer items-center gap-2.5 px-3 py-1.5 text-sm text-[#1A1A1A] ${
+                      indice === ativo ? "bg-gray-100" : ""
+                    }`}
+                  >
+                    <Miniatura animal={a} />
+                    <span className="min-w-0 flex-1 truncate font-medium">
+                      {nomeExibido(a)}
+                    </span>
+                    <span className="shrink-0 text-xs text-gray-500">Nº {a.id}</span>
+                    {a.id === animal?.id && (
+                      <i aria-hidden="true" className="bi bi-check-lg"></i>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              {encontrados.length > MAX_VISIVEIS && (
+                <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">
+                  Mostrando {MAX_VISIVEIS} de {encontrados.length}. Digite para
+                  refinar.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {animal && (
+          <div className="flex gap-4 text-xs font-semibold">
             <Link
               to={`/animais/${animal.id}`}
               target="_blank"
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-[#1A1A1A] hover:bg-gray-50"
+              className="text-[#1A1A1A] hover:underline"
             >
               Ver ficha
             </Link>
             <button
               type="button"
               onClick={() => onChange(null)}
-              className="cursor-pointer rounded-lg bg-[#1A1A1A] px-4 py-2 text-sm font-semibold text-white active:scale-95"
+              className="cursor-pointer text-[#DC2626] hover:underline"
             >
-              Trocar ou remover
+              Remover vínculo
             </button>
           </div>
-        </div>
-      ) : (
-        <>
-          <div className="relative">
-            <i
-              aria-hidden="true"
-              className="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400"
-            ></i>
-            <input
-              type="search"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              onKeyDown={(e) => {
-                // Enter na busca não deve enviar o formulário.
-                if (e.key === "Enter") e.preventDefault();
-              }}
-              aria-label="Buscar animal pelo nome"
-              placeholder="Buscar pelo nome do animal..."
-              className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-3.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900]"
-            />
-          </div>
-
-          {erro && (
-            <div
-              role="alert"
-              className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-red-50 p-3 text-sm text-[#DC2626]"
-            >
-              Não foi possível carregar os animais.
-              <button
-                type="button"
-                onClick={() => void carregar()}
-                className="cursor-pointer font-bold underline"
-              >
-                Tentar novamente
-              </button>
-            </div>
-          )}
-
-          {!animais && !erro && (
-            <p role="status" className="text-sm text-gray-500">
-              Carregando animais...
-            </p>
-          )}
-
-          {animais && encontrados.length === 0 && (
-            <p role="status" className="py-4 text-center text-sm text-gray-500">
-              {animais.length === 0
-                ? "Nenhum animal cadastrado ainda."
-                : "Nenhum animal encontrado com esse nome."}
-            </p>
-          )}
-
-          {visiveis.length > 0 && (
-            <ul className="grid max-h-96 grid-cols-2 gap-3 overflow-y-auto p-1 sm:grid-cols-3 lg:grid-cols-6">
-              {visiveis.map((a) => (
-                <li key={a.id}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setBusca("");
-                      onChange(a);
-                    }}
-                    className="flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left transition-all hover:border-[#1A1A1A] hover:shadow-md focus-visible:outline-2 focus-visible:outline-[#1A1A1A]"
-                  >
-                    <span className="flex aspect-square w-full items-center justify-center overflow-hidden bg-gray-100">
-                      <Foto animal={a} />
-                    </span>
-                    <span className="block w-full p-2.5">
-                      <span className="block truncate text-sm font-bold text-[#1A1A1A]">
-                        {nomeExibido(a)}
-                      </span>
-                      <span className="block truncate text-xs text-gray-500">
-                        Nº {a.id} • {rotuloEspecie(a.especie)}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {encontrados.length > MAX_VISIVEIS && (
-            <p className="text-xs text-gray-500">
-              Mostrando {MAX_VISIVEIS} de {encontrados.length}. Digite o nome para refinar.
-            </p>
-          )}
-        </>
-      )}
-    </article>
+        )}
+      </div>
+    </div>
   );
 }
