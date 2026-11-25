@@ -45,6 +45,13 @@ export function Header() {
           )}
 
           <button
+            onClick={() => navigate("/modulos")}
+            className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            Módulos
+          </button>
+
+          <button
             onClick={() => navigate("/")}
             className="cursor-pointer text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
           >

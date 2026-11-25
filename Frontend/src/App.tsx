@@ -9,7 +9,7 @@ import { Eutanasia } from "./pages/Eutanasia";
 import { Hipossuficiencia } from "./pages/Hipossuficiencia";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
-import { Relatorios } from "./pages/Relatorios";
+import { Modulos } from "./pages/Modulos";
 import { NovoUsuario } from "./pages/NovoUsuario";
 import { Supatas } from "./pages/Supatas";
 import { Adocao } from "./pages/Adocao";
@@ -69,13 +69,14 @@ export default function App() {
             }
           />
           <Route
-            path="/relatorios"
+            path="/modulos"
             element={
               <ProtectedRoute>
-                <Relatorios />
+                <Modulos />
               </ProtectedRoute>
             }
           />
+          <Route path="/relatorios" element={<Navigate to="/home" replace />} />
           <Route
             path="/eutanasias"
             element={

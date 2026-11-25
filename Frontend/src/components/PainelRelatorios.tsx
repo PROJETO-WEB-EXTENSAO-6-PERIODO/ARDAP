@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Header } from "../components/Header";
 import { api } from "../services/api";
 
 interface Modulo {
@@ -743,7 +742,7 @@ function DestaqueCard({ titulo, valor, detalhe, tom }: Destaque) {
   );
 }
 
-export function Relatorios() {
+export function PainelRelatorios() {
   const [dados, setDados] = useState<Resumo | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
@@ -805,43 +804,37 @@ export function Relatorios() {
 
   if (carregando) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#F3F2ED]">
-        <Header />
-        <main className="mx-auto flex w-full max-w-7xl flex-grow items-center justify-center px-4 py-6">
-          <div className="flex items-center gap-3 text-gray-500">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#1A1A1A]"></div>
-            <span>Carregando relatórios...</span>
-          </div>
-        </main>
+      <div className="flex flex-grow items-center justify-center py-16">
+        <div className="flex items-center gap-3 text-gray-500">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#1A1A1A]"></div>
+          <span>Carregando relatórios...</span>
+        </div>
       </div>
     );
   }
 
   if (erro || !dados) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#F3F2ED]">
-        <Header />
-        <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-6 px-4 py-6 md:px-8 md:py-8">
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-red-200 bg-red-50 p-10 text-center">
-            <i className="bi bi-exclamation-triangle text-3xl text-[#DC2626]"></i>
-            <div>
-              <p className="text-sm font-bold text-[#DC2626]">
-                {erro || "Sem dados disponíveis."}
-              </p>
-              <p className="mt-1 text-xs text-gray-600">
-                Verifique a conexão com o servidor e tente novamente.
-              </p>
-            </div>
-            <button
-              onClick={() => void carregar()}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all active:scale-95"
-            >
-              <i className="bi bi-arrow-clockwise"></i>
-              <span>Tentar novamente</span>
-            </button>
+      <>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-red-200 bg-red-50 p-10 text-center">
+          <i className="bi bi-exclamation-triangle text-3xl text-[#DC2626]"></i>
+          <div>
+            <p className="text-sm font-bold text-[#DC2626]">
+              {erro || "Sem dados disponíveis."}
+            </p>
+            <p className="mt-1 text-xs text-gray-600">
+              Verifique a conexão com o servidor e tente novamente.
+            </p>
           </div>
-        </main>
-      </div>
+          <button
+            onClick={() => void carregar()}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1A1A1A] px-5 py-2.5 text-sm font-semibold text-white transition-all active:scale-95"
+          >
+            <i className="bi bi-arrow-clockwise"></i>
+            <span>Tentar novamente</span>
+          </button>
+        </div>
+      </>
     );
   }
 
@@ -866,290 +859,287 @@ export function Relatorios() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F3F2ED]">
-      <Header />
-      <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-6 px-4 py-6 md:px-8 md:py-8">
-        <section className="relative overflow-hidden rounded-3xl bg-[#1A1A1A] p-6 shadow-xl md:p-8">
-          <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <div className="min-w-0">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFD900] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A]">
-                <i className="bi bi-graph-up-arrow text-[11px]"></i>
-                Painel analítico
-              </span>
-              <h1 className="mt-3 text-2xl font-bold leading-tight tracking-tight text-white md:text-3xl">
-                Central de Relatórios ARDAP
-              </h1>
-              <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-gray-400">
-                Visão consolidada de todos os módulos: animais, resgates SUPATAS, adoções,
-                castrações, cirurgias, hipossuficiência e eutanásia.
+    <>
+      <section className="relative overflow-hidden rounded-3xl bg-[#1A1A1A] p-6 shadow-xl md:p-8">
+        <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFD900] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A]">
+              <i className="bi bi-graph-up-arrow text-[11px]"></i>
+              Painel analítico
+            </span>
+            <h1 className="mt-3 text-2xl font-bold leading-tight tracking-tight text-white md:text-3xl">
+              Central de Relatórios ARDAP
+            </h1>
+            <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-gray-400">
+              Visão consolidada de todos os módulos: animais, resgates SUPATAS, adoções,
+              castrações, cirurgias, hipossuficiência e eutanásia.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between gap-5 md:justify-end">
+            <div className="text-right">
+              <p className="text-4xl font-bold leading-none text-[#FFD900] md:text-5xl">
+                {numero(totalGeral)}
+              </p>
+              <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                Registros no total
               </p>
             </div>
+            <button
+              onClick={() => void carregar(true)}
+              disabled={atualizando}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#FFD900] px-4 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+            >
+              <i className={`bi bi-arrow-clockwise ${atualizando ? "animate-spin" : ""}`}></i>
+              <span>{atualizando ? "Atualizando..." : "Atualizar"}</span>
+            </button>
+          </div>
+        </div>
 
-            <div className="flex items-center justify-between gap-5 md:justify-end">
-              <div className="text-right">
-                <p className="text-4xl font-bold leading-none text-[#FFD900] md:text-5xl">
-                  {numero(totalGeral)}
-                </p>
-                <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-gray-400">
-                  Registros no total
-                </p>
-              </div>
-              <button
-                onClick={() => void carregar(true)}
-                disabled={atualizando}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#FFD900] px-4 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
-              >
-                <i className={`bi bi-arrow-clockwise ${atualizando ? "animate-spin" : ""}`}></i>
-                <span>{atualizando ? "Atualizando..." : "Atualizar"}</span>
-              </button>
+        <div className="relative mt-7 flex flex-wrap gap-y-4 border-t border-white/10 pt-5">
+          {resumoHero.map((item, indice) => (
+            <div
+              key={item.rotulo}
+              className={`min-w-[130px] flex-1 ${
+                indice > 0 ? "sm:border-l sm:border-white/10 sm:pl-5" : ""
+              }`}
+            >
+              <p className="text-xl font-bold text-white">{item.valor}</p>
+              <p className="mt-0.5 text-[10px] uppercase tracking-wide text-gray-400">
+                {item.rotulo}
+              </p>
             </div>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="relative mt-7 flex flex-wrap gap-y-4 border-t border-white/10 pt-5">
-            {resumoHero.map((item, indice) => (
-              <div
-                key={item.rotulo}
-                className={`min-w-[130px] flex-1 ${
-                  indice > 0 ? "sm:border-l sm:border-white/10 sm:pl-5" : ""
-                }`}
-              >
-                <p className="text-xl font-bold text-white">{item.valor}</p>
-                <p className="mt-0.5 text-[10px] uppercase tracking-wide text-gray-400">
-                  {item.rotulo}
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-clipboard2-pulse"
+          title="Indicadores de saúde animal"
+          subtitle="Verde = meta atingida · âmbar abaixo de 70% · vermelho abaixo de 40%"
+          tom="verde"
+        />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <Gauge
+            label="Castrados"
+            valor={animais.taxaCastracao}
+            detalhe={`${numero(animais.castrados["Sim"] ?? 0)} de ${numero(animais.total)}`}
+          />
+          <Gauge
+            label="Vacinados"
+            valor={animais.taxaVacinacao}
+            detalhe={`${numero(animais.vacinados["Sim"] ?? 0)} de ${numero(animais.total)}`}
+          />
+          <Gauge
+            label="Vermifugados"
+            valor={animais.taxaVermifugacao}
+            detalhe={`${numero(animais.vermifugados["Sim"] ?? 0)} de ${numero(animais.total)}`}
+          />
+          <Gauge
+            label="Adotados castrados"
+            valor={adocoes.taxaCastracao}
+            detalhe={`${numero(adocoes.castrados["Sim"] ?? 0)} de ${numero(adocoes.total)}`}
+          />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-bar-chart-line"
+          title="Movimentação mensal"
+          subtitle="Registros de todos os módulos, cada um com sua cor fixa"
+          tom="azul"
+        />
+        <EvolucaoMensal dados={serieMensal} />
+      </section>
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {destaques.map((item) => (
+          <DestaqueCard key={item.titulo} {...item} />
+        ))}
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-paw"
+          title="Perfil dos animais"
+          subtitle={`${numero(animais.total)} animais cadastrados no sistema`}
+          tom="azul"
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <DonutCard
+            title="Espécie"
+            dados={animais.porEspecie}
+            centro="animais"
+            cores={AZUL}
+          />
+          <DonutCard title="Sexo" dados={animais.porSexo} centro="animais" cores={AZUL} />
+          <BarCard title="Porte" dados={animais.porPorte} cores={AZUL} />
+          <BarCard title="Temperamento" dados={animais.porTemperamento} cores={AZUL} />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-heart-pulse"
+          title="Resgates SUPATAS"
+          subtitle={`${numero(supatas.total)} encaminhamentos registrados`}
+          tom="amarelo"
+        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <BarCard title="Situação do animal" dados={supatas.porSituacao} cores={VERMELHO} />
+          <DonutCard
+            title="Espécie resgatada"
+            dados={supatas.porEspecie}
+            centro="resgates"
+            cores={AMBAR}
+          />
+          <BarCard title="Sexo" dados={supatas.porSexo} cores={MARROM} />
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-heart"
+          title="Adoções"
+          subtitle={rotuloQuantidade(adocoes.total, "termo registrado", "termos registrados")}
+          tom="verde"
+        />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <StatCard tom="verde" valor={numero(adocoes.total)} rotulo="Termos registrados" />
+          <StatCard
+            tom="verde"
+            valor={numero(adocoes.cidadesDistintas)}
+            rotulo="Cidades atendidas"
+          />
+          <StatCard
+            tom="verde"
+            valor={numero(adocoes.adotantesUnicos)}
+            rotulo="Adotantes únicos"
+          />
+          <StatCard
+            tom="verde"
+            valor={adocoes.mediaPorMes.toLocaleString("pt-BR", {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            })}
+            rotulo="Média por mês"
+          />
+        </div>
+        <Distribuicoes
+          itens={[
+            { rotulo: "Espécie adotada", dados: adocoes.porEspecie, cores: VERDE },
+            { rotulo: "Sexo", dados: adocoes.porSexo, cores: VERDE },
+            { rotulo: "Vermifugação (3 meses)", dados: adocoes.vermifugados, cores: VERDE },
+          ]}
+        />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-scissors"
+          title="Castração e Cirurgias"
+          subtitle={`${rotuloQuantidade(procedimentos.total, "procedimento registrado", "procedimentos registrados")} no total`}
+          tom="vermelho"
+        />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
+          <StatCard valor={numero(procedimentos.total)} rotulo="Total" />
+          <StatCard tom="rosa" valor={numero(procedimentos.castracoes)} rotulo="Castrações" />
+          <StatCard tom="ciano" valor={numero(procedimentos.cirurgias)} rotulo="Cirurgias" />
+          <StatCard valor={numero(procedimentos.tutoresUnicos)} rotulo="Tutores únicos" />
+          <StatCard valor={numero(procedimentos.bairrosDistintos)} rotulo="Bairros atendidos" />
+          <StatCard
+            valor={numero(procedimentos.animaisVinculados)}
+            rotulo="Animais vinculados"
+          />
+        </div>
+        <TabelaProcedimentos dados={procedimentos.ultimos} />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-file-earmark-text"
+          title="Hipossuficiência"
+          subtitle={rotuloQuantidade(
+            hipossuficiencia.total,
+            "declaração registrada",
+            "declarações registradas",
+          )}
+          tom="violeta"
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard
+            tom="violeta"
+            valor={numero(hipossuficiencia.total)}
+            rotulo="Declarações"
+          />
+          <StatCard valor={numero(hipossuficiencia.comAnexos)} rotulo="Com anexos" />
+        </div>
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-0 md:divide-x md:divide-gray-100">
+            <div className="md:pr-7">
+              <div className="mb-4">
+                <h3 className="text-xs font-bold text-[#1A1A1A]">Motivos declarados</h3>
+                <p className="mt-0.5 text-[10px] text-gray-400">
+                  Critérios de renda e trabalho
                 </p>
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-clipboard2-pulse"
-            title="Indicadores de saúde animal"
-            subtitle="Verde = meta atingida · âmbar abaixo de 70% · vermelho abaixo de 40%"
-            tom="verde"
-          />
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <Gauge
-              label="Castrados"
-              valor={animais.taxaCastracao}
-              detalhe={`${numero(animais.castrados["Sim"] ?? 0)} de ${numero(animais.total)}`}
-            />
-            <Gauge
-              label="Vacinados"
-              valor={animais.taxaVacinacao}
-              detalhe={`${numero(animais.vacinados["Sim"] ?? 0)} de ${numero(animais.total)}`}
-            />
-            <Gauge
-              label="Vermifugados"
-              valor={animais.taxaVermifugacao}
-              detalhe={`${numero(animais.vermifugados["Sim"] ?? 0)} de ${numero(animais.total)}`}
-            />
-            <Gauge
-              label="Adotados castrados"
-              valor={adocoes.taxaCastracao}
-              detalhe={`${numero(adocoes.castrados["Sim"] ?? 0)} de ${numero(adocoes.total)}`}
-            />
-          </div>
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-bar-chart-line"
-            title="Movimentação mensal"
-            subtitle="Registros de todos os módulos, cada um com sua cor fixa"
-            tom="azul"
-          />
-          <EvolucaoMensal dados={serieMensal} />
-        </section>
-
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {destaques.map((item) => (
-            <DestaqueCard key={item.titulo} {...item} />
-          ))}
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-paw"
-            title="Perfil dos animais"
-            subtitle={`${numero(animais.total)} animais cadastrados no sistema`}
-            tom="azul"
-          />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-            <DonutCard
-              title="Espécie"
-              dados={animais.porEspecie}
-              centro="animais"
-              cores={AZUL}
-            />
-            <DonutCard title="Sexo" dados={animais.porSexo} centro="animais" cores={AZUL} />
-            <BarCard title="Porte" dados={animais.porPorte} cores={AZUL} />
-            <BarCard title="Temperamento" dados={animais.porTemperamento} cores={AZUL} />
-          </div>
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-heart-pulse"
-            title="Resgates SUPATAS"
-            subtitle={`${numero(supatas.total)} encaminhamentos registrados`}
-            tom="amarelo"
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <BarCard title="Situação do animal" dados={supatas.porSituacao} cores={VERMELHO} />
-            <DonutCard
-              title="Espécie resgatada"
-              dados={supatas.porEspecie}
-              centro="resgates"
-              cores={AMBAR}
-            />
-            <BarCard title="Sexo" dados={supatas.porSexo} cores={MARROM} />
-          </div>
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-heart"
-            title="Adoções"
-            subtitle={rotuloQuantidade(adocoes.total, "termo registrado", "termos registrados")}
-            tom="verde"
-          />
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <StatCard tom="verde" valor={numero(adocoes.total)} rotulo="Termos registrados" />
-            <StatCard
-              tom="verde"
-              valor={numero(adocoes.cidadesDistintas)}
-              rotulo="Cidades atendidas"
-            />
-            <StatCard
-              tom="verde"
-              valor={numero(adocoes.adotantesUnicos)}
-              rotulo="Adotantes únicos"
-            />
-            <StatCard
-              tom="verde"
-              valor={adocoes.mediaPorMes.toLocaleString("pt-BR", {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              })}
-              rotulo="Média por mês"
-            />
-          </div>
-          <Distribuicoes
-            itens={[
-              { rotulo: "Espécie adotada", dados: adocoes.porEspecie, cores: VERDE },
-              { rotulo: "Sexo", dados: adocoes.porSexo, cores: VERDE },
-              { rotulo: "Vermifugação (3 meses)", dados: adocoes.vermifugados, cores: VERDE },
-            ]}
-          />
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-scissors"
-            title="Castração e Cirurgias"
-            subtitle={`${rotuloQuantidade(procedimentos.total, "procedimento registrado", "procedimentos registrados")} no total`}
-            tom="vermelho"
-          />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
-            <StatCard valor={numero(procedimentos.total)} rotulo="Total" />
-            <StatCard tom="rosa" valor={numero(procedimentos.castracoes)} rotulo="Castrações" />
-            <StatCard tom="ciano" valor={numero(procedimentos.cirurgias)} rotulo="Cirurgias" />
-            <StatCard valor={numero(procedimentos.tutoresUnicos)} rotulo="Tutores únicos" />
-            <StatCard valor={numero(procedimentos.bairrosDistintos)} rotulo="Bairros atendidos" />
-            <StatCard
-              valor={numero(procedimentos.animaisVinculados)}
-              rotulo="Animais vinculados"
-            />
-          </div>
-          <TabelaProcedimentos dados={procedimentos.ultimos} />
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-file-earmark-text"
-            title="Hipossuficiência"
-            subtitle={rotuloQuantidade(
-              hipossuficiencia.total,
-              "declaração registrada",
-              "declarações registradas",
-            )}
-            tom="violeta"
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard
-              tom="violeta"
-              valor={numero(hipossuficiencia.total)}
-              rotulo="Declarações"
-            />
-            <StatCard valor={numero(hipossuficiencia.comAnexos)} rotulo="Com anexos" />
-          </div>
-          <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-0 md:divide-x md:divide-gray-100">
-              <div className="md:pr-7">
-                <div className="mb-4">
-                  <h3 className="text-xs font-bold text-[#1A1A1A]">Motivos declarados</h3>
-                  <p className="mt-0.5 text-[10px] text-gray-400">
-                    Critérios de renda e trabalho
-                  </p>
-                </div>
-                <BarrasLista
-                  dados={hipossuficiencia.motivos}
+              <BarrasLista
+                dados={hipossuficiencia.motivos}
+                cores={VIOLETA}
+                empilhado
+              />
+            </div>
+            <div className="flex flex-col md:pl-7">
+              <div className="mb-4">
+                <h3 className="text-xs font-bold text-[#1A1A1A]">Tipo de documento</h3>
+                <p className="mt-0.5 text-[10px] text-gray-400">
+                  Documento apresentado pelo representante
+                </p>
+              </div>
+              <div className="flex flex-1 items-center">
+                <DonutVertical
+                  dados={hipossuficiencia.porTipoDocumento}
                   cores={VIOLETA}
-                  empilhado
+                  centro="declarações"
                 />
               </div>
-              <div className="flex flex-col md:pl-7">
-                <div className="mb-4">
-                  <h3 className="text-xs font-bold text-[#1A1A1A]">Tipo de documento</h3>
-                  <p className="mt-0.5 text-[10px] text-gray-400">
-                    Documento apresentado pelo representante
-                  </p>
-                </div>
-                <div className="flex flex-1 items-center">
-                  <DonutVertical
-                    dados={hipossuficiencia.porTipoDocumento}
-                    cores={VIOLETA}
-                    centro="declarações"
-                  />
-                </div>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon="bi-shield-plus"
-            title="Eutanásia"
-            subtitle={rotuloQuantidade(eutanasia.total, "termo registrado", "termos registrados")}
-            tom="azul"
-          />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <StatCard valor={numero(eutanasia.total)} rotulo="Termos" />
-            <StatCard valor={numero(eutanasia.comAceite)} rotulo="Com aceite" />
-            <StatCard valor={numero(eutanasia.cidadesDistintas)} rotulo="Cidades atendidas" />
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-            <BarCard title="Espécie" dados={eutanasia.porEspecie} cores={SLATE} />
-            <BarCard title="Sexo" dados={eutanasia.porSexo} cores={SLATE} />
-            <BarCard title="Cidades" dados={eutanasia.porCidade} cores={SLATE} limite={5} />
-            <BarCard title="Bairros" dados={eutanasia.porBairro} cores={SLATE} limite={5} />
-          </div>
-        </section>
+      <section className="flex flex-col gap-4">
+        <SectionTitle
+          icon="bi-shield-plus"
+          title="Eutanásia"
+          subtitle={rotuloQuantidade(eutanasia.total, "termo registrado", "termos registrados")}
+          tom="azul"
+        />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <StatCard valor={numero(eutanasia.total)} rotulo="Termos" />
+          <StatCard valor={numero(eutanasia.comAceite)} rotulo="Com aceite" />
+          <StatCard valor={numero(eutanasia.cidadesDistintas)} rotulo="Cidades atendidas" />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+          <BarCard title="Espécie" dados={eutanasia.porEspecie} cores={SLATE} />
+          <BarCard title="Sexo" dados={eutanasia.porSexo} cores={SLATE} />
+          <BarCard title="Cidades" dados={eutanasia.porCidade} cores={SLATE} limite={5} />
+          <BarCard title="Bairros" dados={eutanasia.porBairro} cores={SLATE} limite={5} />
+        </div>
+      </section>
 
-        <footer className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-gray-100 bg-white px-5 py-4 text-xs text-gray-500 shadow-sm">
-          <span className="flex items-center gap-2">
-            <i className="bi bi-clock-history text-[14px]"></i>
-            Relatório gerado em {new Date(dados.geradoEm).toLocaleString("pt-BR")}
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-600"></span>
-            Dados extraídos diretamente do banco ARDAP
-          </span>
-        </footer>
-      </main>
-    </div>
+      <footer className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-gray-100 bg-white px-5 py-4 text-xs text-gray-500 shadow-sm">
+        <span className="flex items-center gap-2">
+          <i className="bi bi-clock-history text-[14px]"></i>
+          Relatório gerado em {new Date(dados.geradoEm).toLocaleString("pt-BR")}
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-green-600"></span>
+          Dados extraídos diretamente do banco ARDAP
+        </span>
+      </footer>
+    </>
   );
 }
