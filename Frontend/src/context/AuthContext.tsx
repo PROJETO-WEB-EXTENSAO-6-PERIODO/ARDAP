@@ -1,10 +1,11 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
   type ReactNode,
 } from "react";
-import { api } from "../services/api";
+import { api, EVENTO_SESSAO_EXPIRADA } from "../services/api";
 
 export interface SessionUser {
   email: string;
@@ -14,6 +15,7 @@ export interface SessionUser {
 
 interface AuthContextValue {
   user: SessionUser | null;
+  sessaoExpirada: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   recarregarUsuario: () => Promise<void>;
@@ -32,11 +34,22 @@ function loadUser(): SessionUser | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(loadUser);
+  const [sessaoExpirada, setSessaoExpirada] = useState(false);
+
+  useEffect(() => {
+    function encerrar() {
+      logout();
+      setSessaoExpirada(true);
+    }
+    window.addEventListener(EVENTO_SESSAO_EXPIRADA, encerrar);
+    return () => window.removeEventListener(EVENTO_SESSAO_EXPIRADA, encerrar);
+  }, []);
 
   async function login(email: string, password: string) {
     const { data } = await api.post("/auth/login", { email, password });
     localStorage.setItem("ardap_token", data.access_token);
     await recarregarUsuario();
+    setSessaoExpirada(false);
   }
 
   async function recarregarUsuario() {
@@ -57,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, recarregarUsuario }}>
+    <AuthContext.Provider value={{ user, sessaoExpirada, login, logout, recarregarUsuario }}>
       {children}
     </AuthContext.Provider>
   );
