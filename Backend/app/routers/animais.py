@@ -17,7 +17,7 @@ from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.animal import Animal
 from app.models.user import User
-from app.schemas.animal import AnimalIn, AnimalOut
+from app.schemas.animal import AnimalIn, AnimalOut, AnimalUpdateIn
 from app.schemas.user import AutorOut
 
 router = APIRouter(tags=["animais"])
@@ -70,6 +70,10 @@ def _to_out(a: Animal) -> AnimalOut:
         funcionario=(
             AutorOut.model_validate(a.funcionario) if a.funcionario else None
         ),
+        alterado_por=(
+            AutorOut.model_validate(a.alterado_por) if a.alterado_por else None
+        ),
+        updated_at=a.updated_at,
     )
 
 
@@ -166,4 +170,41 @@ def get_foto(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Foto não encontrada.",
         )
-    return FileResponse(arquivo)
+    # revalida sempre: a foto pode ser trocada na edicao
+    return FileResponse(arquivo, headers={"Cache-Control": "private, no-cache"})
+
+
+@router.put("/animais/{animal_id}", response_model=AnimalOut)
+def update_animal(
+    animal_id: int,
+    data: AnimalUpdateIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    animal = db.get(Animal, animal_id)
+    if animal is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Animal não encontrado.",
+        )
+    campos = data.model_dump(exclude={"foto"})
+    campos["nome"] = data.nome or None
+    campos["temperamento"] = data.temperamento or "desconhecido"
+    foto_antiga = animal.foto_path
+    foto_nova = _salvar_foto(data.foto) if data.foto else None
+    if foto_nova:
+        campos["foto_path"] = foto_nova
+    try:
+        for campo, valor in campos.items():
+            setattr(animal, campo, valor)
+        animal.alterado_por_id = user.id
+        db.commit()
+    except Exception:
+        if foto_nova:
+            (UPLOADS_DIR / foto_nova).unlink(missing_ok=True)
+        raise
+    # so apaga a antiga depois que a troca esta garantida no banco
+    if foto_nova and foto_antiga:
+        (UPLOADS_DIR / foto_antiga).unlink(missing_ok=True)
+    db.refresh(animal)
+    return _to_out(animal)

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { Autoria, type Autor } from "../components/Autoria";
+import { Autorias, type Autor } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -28,6 +28,8 @@ interface Animal {
   tem_foto: boolean;
   created_at: string | null;
   funcionario: Autor | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
 }
 
 const LABELS: Record<string, string> = {
@@ -134,11 +136,18 @@ function Detalhes({ animal }: { animal: Animal }) {
           <p className="text-sm text-gray-500 md:text-base">
             Registro nº {animal.id}
           </p>
-          <Autoria autor={animal.funcionario} data={animal.created_at} />
+          <Autorias registro={animal} />
         </div>
         <span className="inline-flex shrink-0 items-center self-start rounded-full bg-[#FFD900] px-3 py-1.5 text-xs font-medium text-[#1A1A1A] sm:self-auto">
           {rotulo(animal.especie)} • {rotulo(animal.sexo)}
         </span>
+        <Link
+          to={`/animais/${animal.id}/editar`}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#FFD900] px-5 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:opacity-90 active:scale-95"
+        >
+          <i aria-hidden="true" className="bi bi-pencil"></i>
+          Editar
+        </Link>
       </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

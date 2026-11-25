@@ -41,3 +41,26 @@ export function Autoria({
     </p>
   );
 }
+
+export interface ComAutoria {
+  funcionario: Autor | null;
+  created_at: string | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
+}
+
+// Quem cadastrou e, se houve edição, quem alterou por último.
+export function Autorias({ registro }: { registro: ComAutoria }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <Autoria autor={registro.funcionario} data={registro.created_at} />
+      {registro.alterado_por && (
+        <Autoria
+          acao="Alterado"
+          autor={registro.alterado_por}
+          data={registro.updated_at}
+        />
+      )}
+    </div>
+  );
+}

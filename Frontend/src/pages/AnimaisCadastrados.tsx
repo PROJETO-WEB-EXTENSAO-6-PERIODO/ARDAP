@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Autoria, type Autor } from "../components/Autoria";
+import { Autorias, type Autor } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -26,6 +26,8 @@ interface Animal {
   tem_foto: boolean;
   created_at: string | null;
   funcionario: Autor | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
 }
 
 const LABELS: Record<string, string> = {
@@ -210,7 +212,7 @@ function AnimalCard({ animal }: { animal: Animal }) {
           </p>
         )}
 
-        <Autoria autor={animal.funcionario} data={animal.created_at} />
+        <Autorias registro={animal} />
 
         <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-100 pt-4 text-xs">
           <span className="text-gray-500">

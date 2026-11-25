@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.edicao import editar_registro
 from app.models.castracao import Castracao
 from app.models.user import User
 from app.schemas.castracao import CastracaoIn, CastracaoOut
@@ -73,3 +74,13 @@ def get_castracao(
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Termo de castracao nao encontrado.")
     return castracao
+
+
+@router.put("/castracoes/{castracao_id}", response_model=CastracaoOut)
+def update_castracao(
+    castracao_id: int,
+    data: CastracaoIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return editar_registro(db, get_castracao(castracao_id, db, user), data, user)

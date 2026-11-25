@@ -7,6 +7,8 @@ export type Registro = {
   animal?: AnimalAdotado | null;
   created_at: string | null;
   funcionario: Autor | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
 } & Record<string, unknown>;
 
 export type Item =

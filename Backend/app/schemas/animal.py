@@ -33,6 +33,11 @@ class AnimalIn(BaseModel):
     foto: Base64Bytes = Field(min_length=1)
 
 
+class AnimalUpdateIn(AnimalIn):
+    # sem foto nova, a atual e mantida
+    foto: Base64Bytes | None = Field(default=None, min_length=1)
+
+
 class AnimalOut(BaseModel):
     id: int
     nome: str | None
@@ -55,6 +60,8 @@ class AnimalOut(BaseModel):
     tem_foto: bool
     created_at: datetime | None
     funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
 
 
 class AnimalResumoOut(BaseModel):

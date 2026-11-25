@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
-import { api } from "../services/api";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -85,6 +86,7 @@ export function Hipossuficiencia() {
   const [localDeclaracao, setLocalDeclaracao] = useState("");
   const [dataDeclaracao, setDataDeclaracao] = useState("");
   const [assinatura, setAssinatura] = useState("");
+  const [anexosSalvos, setAnexosSalvos] = useState("");
   const [anexoFiles, setAnexoFiles] = useState<File[]>([]);
 
   const [formError, setFormError] = useState("");
@@ -113,10 +115,35 @@ export function Hipossuficiencia() {
     setLocalDeclaracao("Paulo Afonso");
     setDataDeclaracao(todayISO());
     setAssinatura("");
+    setAnexosSalvos("");
     setAnexoFiles([]);
     setTriedSubmit(false);
     setFormError("");
   }
+
+  function preencher(d: DadosRegistro) {
+    setNomeRepresentante(d.nome_representante ?? "");
+    setDocumentoRepresentante(d.documento_representante ?? "");
+    setTipoDocumentoRepresentante(d.tipo_documento_representante ?? "");
+    setEmailRepresentante(d.email_representante ?? "");
+    setNomeImigrante(d.nome_imigrante ?? "");
+    setDocumentoImigrante(d.documento_imigrante ?? "");
+    setTipoDocumentoImigrante(d.tipo_documento_imigrante ?? "");
+    setEmailImigrante(d.email_imigrante ?? "");
+    setNaoTrabalho(d.nao_possui_trabalho_remunerado === true);
+    setNaoRenda(d.nao_possui_renda === true);
+    setRendaMeioSalario(d.renda_ate_meio_salario_per_capita === true);
+    setOutroMotivo(d.outro_motivo ?? "");
+    setLocalDeclaracao(d.local_declaracao ?? "");
+    setDataDeclaracao(d.data_declaracao ?? "");
+    setAssinatura(d.assinatura_representante ?? "");
+    setAnexosSalvos(d.anexo_documentos ?? "");
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "hipossuficiencias",
+    preencher,
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -143,7 +170,7 @@ export function Hipossuficiencia() {
 
     setSaving(true);
     try {
-      await api.post("/hipossuficiencias", {
+      const editado = await salvar({
         nome_representante: nomeRepresentante.trim(),
         documento_representante: documentoRepresentante.trim() || null,
         tipo_documento_representante: tipoDocumentoRepresentante || null,
@@ -159,8 +186,9 @@ export function Hipossuficiencia() {
         local_declaracao: localDeclaracao.trim() || null,
         data_declaracao: dataDeclaracao || null,
         assinatura_representante: assinatura.trim() || null,
-        anexo_documentos: anexoFiles.length > 0 ? anexoFiles.map((f) => f.name).join(", ") : null,
+        anexo_documentos: anexoFiles.length > 0 ? anexoFiles.map((f) => f.name).join(", ") : anexosSalvos || null,
       });
+      if (editado) return;
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -174,6 +202,10 @@ export function Hipossuficiencia() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -194,6 +226,11 @@ export function Hipossuficiencia() {
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
               Declaração de Hipossuficiência Econômica
             </h1>
+            {editando && (
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">
+                Editando o registro nº {idEdicao}
+              </p>
+            )}
             <p className="mt-1 text-sm text-[#6f5d00] font-semibold">
               ARDAP – Associação Recanto dos Animais em Perigo
             </p>
@@ -396,6 +433,11 @@ export function Hipossuficiencia() {
                   onChange={(e) => setAnexoFiles(Array.from(e.target.files || []))}
                   className="w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] file:mr-3 file:rounded-md file:border-0 file:bg-[#1A1A1A] file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white hover:file:bg-[#333]"
                 />
+                {anexosSalvos && anexoFiles.length === 0 && (
+                  <p className="text-xs text-gray-600">
+                    Anexos atuais: {anexosSalvos}. Escolher novos substitui a lista.
+                  </p>
+                )}
                 {anexoFiles.length > 0 && (
                   <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-gray-600">
                     {anexoFiles.map((f, i) => (
@@ -412,7 +454,7 @@ export function Hipossuficiencia() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -422,7 +464,7 @@ export function Hipossuficiencia() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar Declaração"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar Declaração"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

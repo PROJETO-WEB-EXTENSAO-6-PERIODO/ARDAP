@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.edicao import editar_registro
 from app.models.hipossuficiencia import Hipossuficiencia
 from app.models.user import User
 from app.schemas.hipossuficiencia import (
@@ -71,3 +72,13 @@ def get_hipossuficiencia(
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Declaracao de hipossuficiencia nao encontrada.")
     return h
+
+
+@router.put("/hipossuficiencias/{hipossuficiencia_id}", response_model=HipossuficienciaOut)
+def update_hipossuficiencia(
+    hipossuficiencia_id: int,
+    data: HipossuficienciaIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return editar_registro(db, get_hipossuficiencia(hipossuficiencia_id, db, user), data, user)

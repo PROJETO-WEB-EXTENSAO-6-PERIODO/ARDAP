@@ -25,6 +25,12 @@ export interface AnimalVinculado {
   tem_foto: boolean;
 }
 
+// O suficiente para exibir o animal vinculado.
+export type AnimalResumo = Pick<
+  AnimalVinculado,
+  "id" | "nome" | "especie" | "sexo" | "tem_foto"
+>;
+
 const ESPECIES: Record<string, string> = { cao: "Cão", gato: "Gato", outro: "Outro" };
 const EMOJIS: Record<string, string> = { cao: "🐶", gato: "🐱" };
 const MAX_VISIVEIS = 24;
@@ -41,11 +47,11 @@ function normalizar(texto: string) {
     .toLowerCase();
 }
 
-function nomeExibido(animal: AnimalVinculado) {
+function nomeExibido(animal: AnimalResumo) {
   return animal.nome || "Animal sem nome";
 }
 
-function Miniatura({ animal }: { animal: AnimalVinculado }) {
+function Miniatura({ animal }: { animal: AnimalResumo }) {
   const emoji = (
     <span aria-hidden="true" className="text-lg leading-none">
       {EMOJIS[animal.especie] ?? "🐾"}
@@ -73,7 +79,7 @@ export function SeletorAnimal({
   obrigatorio = false,
   invalido = false,
 }: {
-  animal: AnimalVinculado | null;
+  animal: AnimalResumo | null;
   onChange: (animal: AnimalVinculado | null) => void;
   obrigatorio?: boolean;
   invalido?: boolean;

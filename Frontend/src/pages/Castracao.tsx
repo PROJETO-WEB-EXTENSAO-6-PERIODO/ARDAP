@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
-import { SeletorAnimal, rotuloEspecie, type AnimalVinculado } from "../components/SeletorAnimal";
-import { api } from "../services/api";
+import { SeletorAnimal, rotuloEspecie, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -86,7 +87,7 @@ export function Castracao() {
   const [telefones, setTelefones] = useState("");
   const [email, setEmail] = useState("");
 
-  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
+  const [animal, setAnimal] = useState<AnimalResumo | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [idadeReal, setIdadeReal] = useState("");
   const [especie, setEspecie] = useState("");
@@ -146,6 +147,34 @@ export function Castracao() {
     setFormError("");
   }
 
+  function preencher(d: DadosRegistro) {
+    setAnimal(d.animal);
+    setProprietario(d.proprietario_responsavel ?? "");
+    setCpfCnpj(maskCPF(d.cpf_cnpj ?? ""));
+    setEndereco(d.endereco ?? "");
+    setNumero(d.numero ?? "");
+    setComplemento(d.complemento ?? "");
+    setBairro(d.bairro ?? "");
+    setTelefones(d.ba_telefones ?? "");
+    setEmail(d.email ?? "");
+    setNomeAnimal(d.nome_animal ?? "");
+    setIdadeReal(d.idade_real ?? "");
+    setEspecie(d.especie ?? "");
+    setRaca(d.raca ?? "");
+    setPelagem(d.pelagem ?? "");
+    setSexo(d.sexo ?? "");
+    setProcedimento(d.procedimento ?? "");
+    setAceite(true);
+    setAssinatura(d.assinatura_responsavel ?? "");
+    setLocalAssinatura(d.local_assinatura ?? "");
+    setDataAssinatura(d.data_assinatura ?? "");
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "castracoes",
+    preencher,
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -167,7 +196,7 @@ export function Castracao() {
 
     setSaving(true);
     try {
-      await api.post("/castracoes", {
+      const editado = await salvar({
         animal_id: animal?.id ?? null,
         proprietario_responsavel: proprietario.trim(),
         cpf_cnpj: cpfCnpj.replace(/\D/g, "") || null,
@@ -188,6 +217,7 @@ export function Castracao() {
         local_assinatura: localAssinatura.trim() || null,
         data_assinatura: dataAssinatura || null,
       });
+      if (editado) return;
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -201,6 +231,10 @@ export function Castracao() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -221,6 +255,11 @@ export function Castracao() {
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
               Termo de Consentimento e Autorização
             </h1>
+            {editando && (
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">
+                Editando o registro nº {idEdicao}
+              </p>
+            )}
             <p className="mt-1 text-sm text-[#6f5d00] font-semibold">
               ARDAP – Associação Recanto dos Animais em Perigo
             </p>
@@ -567,7 +606,7 @@ export function Castracao() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -577,7 +616,7 @@ export function Castracao() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar Termo de Castração"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar Termo de Castração"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "react-router-dom";
-import { Autoria } from "../components/Autoria";
+import { Autorias } from "../components/Autoria";
 import { FotoRegistro } from "../components/FotoRegistro";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -66,9 +66,16 @@ function Detalhes({ modulo, registro }: { modulo: ModuloRegistro; registro: Regi
             <p className="text-sm text-gray-600">{pessoa.label}</p>
           )}
           <div className="mt-2">
-            <Autoria autor={registro.funcionario} data={registro.created_at} />
+            <Autorias registro={registro} />
           </div>
         </div>
+        <Link
+          to={`/${modulo.rota}/${registro.id}/editar`}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#FFD900] px-5 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:opacity-90 active:scale-95"
+        >
+          <i aria-hidden="true" className="bi bi-pencil"></i>
+          Editar
+        </Link>
         {registro.animal && (
           <Link
             to={`/animais/${registro.animal.id}`}

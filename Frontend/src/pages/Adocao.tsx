@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
-import { SeletorAnimal, type AnimalVinculado } from "../components/SeletorAnimal";
-import { api } from "../services/api";
+import { SeletorAnimal, type AnimalResumo } from "../components/SeletorAnimal";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 
 const inputCls =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FFD900] transition-colors";
@@ -63,7 +64,7 @@ export function Adocao() {
   const [especieAdocao, setEspecieAdocao] = useState("");
 
   // Animal vinculado
-  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
+  const [animal, setAnimal] = useState<AnimalResumo | null>(null);
   const [maisAnimaisCasa, setMaisAnimaisCasa] = useState(false);
   const [quantosMaisAnimais, setQuantosMaisAnimais] = useState("");
 
@@ -190,6 +191,47 @@ export function Adocao() {
     return n;
   }
 
+  function preencher(d: DadosRegistro) {
+    setAnimal(d.animal);
+    setNomeAdotante(d.nome_adotante ?? "");
+    setRg(d.rg ?? "");
+    setCpf(maskCPF(d.cpf ?? ""));
+    setEnderecoResidencial(d.endereco_residencial ?? "");
+    setBairro(d.bairro ?? "");
+    setCidade(d.cidade ?? "");
+    setCep(maskCEP(d.cep ?? ""));
+    setTelefone(d.telefone ?? "");
+    setInstagram(d.instagram ?? "");
+    setEspecieAdocao(d.especie_adocao ?? "");
+    setMaisAnimaisCasa(d.mais_animais_em_casa === true);
+    setQuantosMaisAnimais(d.quantos_mais_animais == null ? "" : String(d.quantos_mais_animais));
+    setEspacoCasa(d.espaco_casa === true);
+    setCasaMurada(d.casa_murada === true);
+    setEspacoCoberto(d.espaco_coberto_quintal === true);
+    setMoraAluguel(d.mora_aluguel === true);
+    setProprietarioPermite(d.proprietario_permite_animais);
+    setViajarQuem(d.viajar_quem_cuidara ?? "");
+    setFamiliaSabe(d.familia_sabe_adocao === true);
+    setAlguemAlergia(d.alguem_alergia === true);
+    setAlimentacao(d.alimentacao ?? "");
+    setAcessoRua(d.acesso_rua === true);
+    setCienciaVacinacao(d.ciencia_vacinacao === true);
+    setEnderecoFicara(d.endereco_ficara_animal ?? "");
+    setEnderecoFicaraOutro(d.endereco_ficara_animal_outro ?? "");
+    setLocalNaCasa(d.local_na_casa ?? "");
+    setAceiteDeclaracao(d.aceite_declaracao === true);
+    setAceiteTermo(d.aceite_termo === true);
+    setAssinaturaAdotante(d.assinatura_adotante ?? "");
+    setAssinaturaArdap(d.assinatura_ardap ?? "");
+    setLocalAssinatura(d.local_assinatura ?? "");
+    setDataAssinatura(d.data_assinatura ?? "");
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "adocoes",
+    preencher,
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -223,7 +265,7 @@ export function Adocao() {
 
     setSaving(true);
     try {
-      await api.post("/adocoes", {
+      const editado = await salvar({
         animal_id: animal.id,
         especie_adocao: especieAdocao || null,
         nome_adotante: nomeAdotante.trim(),
@@ -260,6 +302,7 @@ export function Adocao() {
         local_assinatura: localAssinatura.trim() || null,
         data_assinatura: dataAssinatura || null,
       });
+      if (editado) return;
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -273,6 +316,10 @@ export function Adocao() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -294,6 +341,11 @@ export function Adocao() {
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
               Termo de Adoção Responsável
             </h1>
+            {editando && (
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">
+                Editando o registro nº {idEdicao}
+              </p>
+            )}
             <p className="mt-1 text-sm text-[#6f5d00] font-semibold">
               ARDAP – Associação Recanto dos Animais em Perigo
             </p>
@@ -628,7 +680,7 @@ export function Adocao() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -638,7 +690,7 @@ export function Adocao() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar Termo de Adoção"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar Termo de Adoção"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

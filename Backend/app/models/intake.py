@@ -30,6 +30,12 @@ class SupatasIntake(Base):
         viewonly=True,
         lazy="joined",
     )
+    alterado_por_id: Mapped[int | None] = mapped_column(nullable=True)
+    alterado_por: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(SupatasIntake.alterado_por_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
     orgao_solicitante: Mapped[str | None] = mapped_column(
         String(150), nullable=True
     )
@@ -79,3 +85,6 @@ class SupatasIntake(Base):
         Text, nullable=True
     )
     created_at = mapped_column(DateTime, server_default=func.now())
+    updated_at = mapped_column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )

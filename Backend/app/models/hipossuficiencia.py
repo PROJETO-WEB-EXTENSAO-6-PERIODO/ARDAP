@@ -64,6 +64,12 @@ class Hipossuficiencia(Base):
         viewonly=True,
         lazy="joined",
     )
+    alterado_por_id: Mapped[int | None] = mapped_column(nullable=True)
+    alterado_por: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Hipossuficiencia.alterado_por_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     created_at = mapped_column(DateTime, server_default=func.now())
     updated_at = mapped_column(

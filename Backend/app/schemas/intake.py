@@ -40,6 +40,8 @@ class SupatasIntakeOut(BaseModel):
     animal_id: int | None
     animal: AnimalResumoOut | None
     funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
     created_at: datetime | None
     orgao_solicitante: str | None
     nome_responsavel_encaminhamento: str | None

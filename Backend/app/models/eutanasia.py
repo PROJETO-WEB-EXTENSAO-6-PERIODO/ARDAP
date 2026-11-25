@@ -30,6 +30,12 @@ class Eutanasia(Base):
         viewonly=True,
         lazy="joined",
     )
+    alterado_por_id: Mapped[int | None] = mapped_column(nullable=True)
+    alterado_por: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Eutanasia.alterado_por_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     nome_animal: Mapped[str | None] = mapped_column(String(100), nullable=True)
     especie: Mapped[str | None] = mapped_column(String(50), nullable=True)

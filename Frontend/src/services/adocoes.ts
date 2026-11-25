@@ -46,6 +46,8 @@ export interface TermoAdocao {
   data_assinatura: string | null;
   created_at: string | null;
   funcionario: Autor | null;
+  alterado_por: Autor | null;
+  updated_at: string | null;
 }
 
 const ROTULOS: Record<string, string> = {

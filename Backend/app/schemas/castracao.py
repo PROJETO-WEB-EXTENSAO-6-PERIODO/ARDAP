@@ -40,6 +40,8 @@ class CastracaoOut(BaseModel):
     animal_id: int | None
     animal: AnimalResumoOut | None
     funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
     created_at: datetime | None
     proprietario_responsavel: str
     cpf_cnpj: str | None

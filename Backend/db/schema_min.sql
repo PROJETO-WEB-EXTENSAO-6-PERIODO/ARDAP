@@ -37,15 +37,18 @@ CREATE TABLE IF NOT EXISTS animais (
     observacoes TEXT,
     foto_path VARCHAR(255),
     funcionario_id INT,
+    alterado_por_id INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS supatas_intake (
     id INT AUTO_INCREMENT PRIMARY KEY,
     animal_id INT,
     funcionario_id INT,
+    alterado_por_id INT,
     orgao_solicitante VARCHAR(150),
     nome_responsavel_encaminhamento VARCHAR(150),
     data_encaminhamento DATE,
@@ -64,6 +67,8 @@ CREATE TABLE IF NOT EXISTS supatas_intake (
     assinatura_responsavel_supatas TEXT,
     assinatura_recebimento_ardap TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (animal_id) REFERENCES animais(id),
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );

@@ -56,6 +56,8 @@ class AdocaoOut(BaseModel):
     animal_id: int | None
     animal: AnimalResumoOut | None
     funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
     created_at: datetime | None
     especie_adocao: str | None
     nome_adotante: str

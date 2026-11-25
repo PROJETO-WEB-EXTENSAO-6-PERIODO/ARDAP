@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS cirurgia (
 
     animal_id INT,
     funcionario_id INT,
+    alterado_por_id INT,
 
     proprietario_responsavel VARCHAR(150) NOT NULL,
     cpf_cnpj VARCHAR(20),
@@ -32,5 +33,6 @@ CREATE TABLE IF NOT EXISTS cirurgia (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (animal_id) REFERENCES animais(id),
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );

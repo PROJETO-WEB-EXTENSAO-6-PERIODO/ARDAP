@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS termo_adocao (
     -- Vinculos
     animal_id INT,  -- dados do animal ficam em animais
     funcionario_id INT,
+    alterado_por_id INT,
 
     -- Dados do adotante (Termo, p.2 + Questionario, p.1)
     nome_adotante VARCHAR(150) NOT NULL,
@@ -61,5 +62,6 @@ CREATE TABLE IF NOT EXISTS termo_adocao (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (animal_id) REFERENCES animais(id),
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );

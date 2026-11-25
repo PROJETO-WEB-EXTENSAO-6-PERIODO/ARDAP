@@ -40,7 +40,7 @@ export default function App() {
             path="/animais"
             element={
               <ProtectedRoute>
-                <Animais />
+                <Animais key="novo" />
               </ProtectedRoute>
             }
           />
@@ -64,7 +64,7 @@ export default function App() {
             path="/castracoes"
             element={
               <ProtectedRoute>
-                <Castracao />
+                <Castracao key="novo" />
               </ProtectedRoute>
             }
           />
@@ -72,7 +72,7 @@ export default function App() {
             path="/cirurgias"
             element={
               <ProtectedRoute>
-                <Cirurgia />
+                <Cirurgia key="novo" />
               </ProtectedRoute>
             }
           />
@@ -80,7 +80,7 @@ export default function App() {
             path="/hipossuficiencias"
             element={
               <ProtectedRoute>
-                <Hipossuficiencia />
+                <Hipossuficiencia key="novo" />
               </ProtectedRoute>
             }
           />
@@ -97,7 +97,7 @@ export default function App() {
             path="/eutanasias"
             element={
               <ProtectedRoute>
-                <Eutanasia />
+                <Eutanasia key="novo" />
               </ProtectedRoute>
             }
           />
@@ -129,7 +129,7 @@ export default function App() {
             path="/supatas"
             element={
               <ProtectedRoute>
-                <Supatas />
+                <Supatas key="novo" />
               </ProtectedRoute>
             }
           />
@@ -137,7 +137,7 @@ export default function App() {
             path="/adocoes"
             element={
               <ProtectedRoute>
-                <Adocao />
+                <Adocao key="novo" />
               </ProtectedRoute>
             }
           />
@@ -177,6 +177,62 @@ export default function App() {
               />
             </Fragment>
           ))}
+          <Route
+            path="/animais/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Animais key="editar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supatas/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Supatas key="editar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/castracoes/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Castracao key="editar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cirurgias/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Cirurgia key="editar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/adocoes/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Adocao key="editar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hipossuficiencias/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Hipossuficiencia key="editar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/eutanasias/:id/editar"
+            element={
+              <ProtectedRoute>
+                <Eutanasia key="editar" />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>

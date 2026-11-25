@@ -39,6 +39,8 @@ class EutanasiaOut(BaseModel):
     animal_id: int | None
     animal: AnimalResumoOut | None
     funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
     created_at: datetime | None
     nome_animal: str | None
     especie: str | None

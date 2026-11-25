@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "react-router-dom";
-import { Autoria } from "../components/Autoria";
+import { Autorias } from "../components/Autoria";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import {
@@ -104,9 +104,16 @@ function Detalhes({ adocao }: { adocao: TermoAdocao }) {
             Adotante: <strong>{adocao.nome_adotante}</strong>
           </p>
           <div className="mt-2">
-            <Autoria autor={adocao.funcionario} data={adocao.created_at} />
+            <Autorias registro={adocao} />
           </div>
         </div>
+        <Link
+          to={`/adocoes/${adocao.id}/editar`}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#FFD900] px-5 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:opacity-90 active:scale-95"
+        >
+          <i aria-hidden="true" className="bi bi-pencil"></i>
+          Editar
+        </Link>
         {animal && (
           <Link
             to={`/animais/${animal.id}`}

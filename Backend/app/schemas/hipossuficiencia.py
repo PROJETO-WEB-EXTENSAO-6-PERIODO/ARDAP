@@ -34,6 +34,8 @@ class HipossuficienciaOut(BaseModel):
     id: int
     created_at: datetime | None
     funcionario: AutorOut | None
+    alterado_por: AutorOut | None
+    updated_at: datetime | None
     nome_representante: str
     documento_representante: str | None
     tipo_documento_representante: str | None

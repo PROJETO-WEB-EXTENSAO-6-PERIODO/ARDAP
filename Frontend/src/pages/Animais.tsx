@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
+import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 import { api } from "../services/api";
 
 const ESPECIES = [
@@ -155,6 +158,7 @@ export function Animais() {
 
   const [foto, setFoto] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [temFoto, setTemFoto] = useState(false);
   const [fotoErro, setFotoErro] = useState("");
   const fotoInput = useRef<HTMLInputElement>(null);
 
@@ -190,17 +194,47 @@ export function Animais() {
   const [saving, setSaving] = useState(false);
   const [triedSubmit, setTriedSubmit] = useState(false);
 
+  function preencher(d: DadosRegistro) {
+    setNome(d.nome ?? "");
+    setEspecie(d.especie ?? "");
+    setRaca(d.raca ?? "");
+    setSexo(d.sexo ?? "");
+    setNascimento(d.data_nascimento_estimada ?? "");
+    setIdade(d.idade_estimada == null ? "" : String(d.idade_estimada));
+    setPorte(d.porte ?? "");
+    setCor(d.cor_pelo ?? "");
+    setPeso(d.peso == null ? "" : String(d.peso));
+    setCastrado(d.castrado === true);
+    setVermifugado(d.vermifugado === true);
+    setVacinado(d.vacinado === true);
+    setMedicacao(d.medicacao_necessaria === true);
+    setMedicacaoDesc(d.medicacao_desc ?? "");
+    setOrigem(d.origem_resgate ?? "");
+    setTemperamento(d.temperamento === "desconhecido" ? "" : d.temperamento);
+    setObservacoes(d.observacoes ?? "");
+    setTemFoto(d.tem_foto === true);
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "animais",
+    preencher,
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
     setTriedSubmit(true);
-    if (!foto || !especie || !sexo) {
-      setFormError("Preencha os campos obrigatórios (Foto, Espécie e Sexo).");
+    // Na edição, sem foto nova a atual é mantida.
+    if ((!foto && !editando) || !especie || !sexo) {
+      setFormError(editando
+          ? "Preencha os campos obrigatórios (Espécie e Sexo)."
+          : "Preencha os campos obrigatórios (Foto, Espécie e Sexo).",
+     );
       return;
     }
     setSaving(true);
     try {
-      const { data } = await api.post<{ id: number }>("/animais", {
+      const dados = {
         nome: nome.trim() || null,
         especie,
         raca: raca.trim() || null,
@@ -216,8 +250,13 @@ export function Animais() {
         medicacao_desc: medicacaoDesc.trim() || null,
         origem_resgate: origem.trim() || null,
         observacoes: observacoes.trim() || null,
-        foto: await lerBase64(foto),
-      });
+        foto: foto ? await lerBase64(foto) : null,
+      };
+      if (editando) {
+        await salvar(dados);
+        return;
+      }
+      const { data } = await api.post<{ id: number }>("/animais", dados);
       // replace: o botão voltar não reabre o formulário já enviado
       navigate(`/animais/${data.id}`, {
         replace: true,
@@ -233,6 +272,10 @@ export function Animais() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -256,12 +299,14 @@ export function Animais() {
             Animais
           </Link>
           <span className="font-normal text-gray-400">&gt;</span>
-          <span className="font-medium text-[#1A1A1A]">Novo animal</span>
+          <span className="font-medium text-[#1A1A1A]">
+            {editando ? "Editar animal" : "Novo animal"}
+          </span>
         </nav>
 
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
-            Cadastro de Animal
+            {editando ? `Editar Animal nº ${idEdicao}` : "Cadastro de Animal"}
           </h1>
           <p className="text-sm text-gray-500 md:text-base">
             Preencha os dados do animal acolhido. Campos com * são
@@ -304,7 +349,7 @@ export function Animais() {
                     htmlFor="animal_photo"
                   >
                     Foto do animal{" "}
-                    <span className="font-bold text-[#DC2626]">*</span>
+                    {!editando && <span className="font-bold text-[#DC2626]">*</span>}
                   </label>
                 </div>
                 <div className="flex items-center gap-4 rounded-xl border border-dashed border-gray-300 p-4">
@@ -315,6 +360,13 @@ export function Animais() {
                         alt="Prévia da foto do animal"
                         className="h-full w-full object-cover"
                       />
+                    ) : editando && temFoto ? (
+                      <FotoAnimal
+                        id={Number(idEdicao)}
+                        alt="Foto atual do animal"
+                        className="h-full w-full object-cover"
+                        fallback={<i aria-hidden="true" className="bi bi-camera"></i>}
+                      />
                     ) : (
                       <i aria-hidden="true" className="bi bi-camera"></i>
                     )}
@@ -324,7 +376,7 @@ export function Animais() {
                       ref={fotoInput}
                       id="animal_photo"
                       type="file"
-                      required
+                      required={!editando}
                       accept={FOTO_TIPOS.join(",")}
                       onChange={(e) => escolherFoto(e.target.files?.[0])}
                       aria-describedby="animal_photo_help"
@@ -332,6 +384,7 @@ export function Animais() {
                     />
                     <p id="animal_photo_help" className="text-xs text-gray-500">
                       JPG, PNG ou WebP, até 5 MB.
+                      {editando && " Sem escolher uma nova, a atual é mantida."}
                     </p>
                     {fotoErro && (
                       <p role="alert" className="text-xs font-medium text-[#DC2626]">
@@ -425,12 +478,17 @@ export function Animais() {
                       {especie && (
                         <>
                           <option value="SRD">SRD (sem raça definida)</option>
-                          {RACAS[especie].map((r) => (
+                          {(RACAS[especie] ?? []).map((r) => (
                             <option key={r} value={r}>
                               {r}
                             </option>
                           ))}
                           <option value="Outra">Outra</option>
+                          {/* Raça antiga, fora da lista: mantém como opção. */}
+                          {raca &&
+                            !["SRD", "Outra", ...(RACAS[especie] ?? [])].includes(raca) && (
+                              <option value={raca}>{raca}</option>
+                            )}
                         </>
                       )}
                     </select>
@@ -763,7 +821,7 @@ export function Animais() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -773,7 +831,7 @@ export function Animais() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Cadastrar Animal"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar Animal"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

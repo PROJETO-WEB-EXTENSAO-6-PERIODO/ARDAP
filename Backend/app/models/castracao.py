@@ -30,6 +30,12 @@ class Castracao(Base):
         viewonly=True,
         lazy="joined",
     )
+    alterado_por_id: Mapped[int | None] = mapped_column(nullable=True)
+    alterado_por: Mapped[User | None] = relationship(
+        primaryjoin=lambda: foreign(Castracao.alterado_por_id) == User.id,
+        viewonly=True,
+        lazy="joined",
+    )
 
     proprietario_responsavel: Mapped[str] = mapped_column(
         String(150), nullable=False

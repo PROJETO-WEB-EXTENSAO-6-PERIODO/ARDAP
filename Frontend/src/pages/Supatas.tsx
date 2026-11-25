@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { Link } from "react-router-dom";
+import { CarregandoFormulario } from "../components/CarregandoFormulario";
 import { Header } from "../components/Header";
-import { SeletorAnimal, type AnimalVinculado } from "../components/SeletorAnimal";
-import { api } from "../services/api";
+import { SeletorAnimal, type AnimalResumo, type AnimalVinculado } from "../components/SeletorAnimal";
+import { useEdicao, type DadosRegistro } from "../hooks/useEdicao";
 
 const SITUACOES = [
   { value: "acidentado", label: "Acidentado", icon: "bi-emoji-angry" },
@@ -30,7 +31,7 @@ export function Supatas() {
   const [especie, setEspecie] = useState("");
   const [especieOutro, setEspecieOutro] = useState("");
   const [sexo, setSexo] = useState("");
-  const [animal, setAnimal] = useState<AnimalVinculado | null>(null);
+  const [animal, setAnimal] = useState<AnimalResumo | null>(null);
   const [nomeAnimal, setNomeAnimal] = useState("");
   const [situacao, setSituacao] = useState("");
   const [situacaoOutros, setSituacaoOutros] = useState("");
@@ -111,6 +112,31 @@ export function Supatas() {
     return n;
   }
 
+  function preencher(d: DadosRegistro) {
+    setAnimal(d.animal);
+    setResponsavel(d.nome_responsavel_encaminhamento ?? "");
+    setDataEncaminhamento(d.data_encaminhamento ?? "");
+    setEspecie(d.especie ?? "");
+    setEspecieOutro(d.especie_outro ?? "");
+    setSexo(d.sexo ?? "");
+    setNomeAnimal(d.nome_animal ?? "");
+    setSituacao(d.situacao_animal ?? "");
+    setSituacaoOutros(d.situacao_animal_outros_desc ?? "");
+    setLocalRecolhimento(d.local_recolhimento ?? "");
+    setNomeResgatista(d.nome_resgatista ?? "");
+    setRelatorio(d.relatorio ?? "");
+    setRecebidoPor(d.recebido_por ?? "");
+    setDataRecebimento(d.data_recebimento ?? "");
+    setCpfResponsavel(d.cpf_responsavel_supatas ?? "");
+    setAssinaturaSupatas(d.assinatura_responsavel_supatas ?? "");
+    setAssinaturaArdap(d.assinatura_recebimento_ardap ?? "");
+  }
+
+  const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
+    "supatas",
+    preencher,
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -160,7 +186,7 @@ export function Supatas() {
 
     setSaving(true);
     try {
-      await api.post("/supatas", {
+      const editado = await salvar({
         animal_id: animal?.id ?? null,
         orgao_solicitante: orgaoSolicitante,
         nome_responsavel_encaminhamento: responsavel.trim(),
@@ -183,6 +209,7 @@ export function Supatas() {
         assinatura_responsavel_supatas: assinaturaSupatas.trim() || null,
         assinatura_recebimento_ardap: assinaturaArdap.trim() || null,
       });
+      if (editado) return;
       setSuccess(true);
       resetForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -196,6 +223,10 @@ export function Supatas() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!carregado) {
+    return <CarregandoFormulario erro={erroCarga} voltarPara={cancelarPara} />;
   }
 
   return (
@@ -224,6 +255,11 @@ export function Supatas() {
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
               Solicitação de Atendimento
             </h1>
+            {editando && (
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">
+                Editando o registro nº {idEdicao}
+              </p>
+            )}
             <p className="mt-1 text-sm text-[#6f5d00] font-semibold">
               SUPATAS – Superintendência de Proteção e Bem-Estar Animal
             </p>
@@ -800,7 +836,7 @@ export function Supatas() {
 
           <div className="grid w-full grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:grid-cols-2">
             <Link
-              to="/home"
+              to={cancelarPara}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-white px-6 py-3 text-center text-sm font-medium text-[#1A1A1A] transition-all hover:bg-gray-50 active:scale-95"
             >
               Cancelar
@@ -810,7 +846,7 @@ export function Supatas() {
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A1A] bg-[#FFD900] px-6 py-3 text-center text-sm font-bold text-[#1A1A1A] shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
             >
-              <span>{saving ? "Salvando..." : "Salvar Solicitação"}</span>
+              <span>{saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar Solicitação"}</span>
               {!saving && (
                 <i className="bi bi-arrow-right text-[18px] text-[#1A1A1A]"></i>
               )}

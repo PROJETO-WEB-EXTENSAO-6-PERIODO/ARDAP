@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS eutanasia (
 
     animal_id INT,
     funcionario_id INT,
+    alterado_por_id INT,
 
     nome_animal VARCHAR(100),
     especie VARCHAR(50),
@@ -31,5 +32,6 @@ CREATE TABLE IF NOT EXISTS eutanasia (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (animal_id) REFERENCES animais(id),
-    FOREIGN KEY (funcionario_id) REFERENCES users(id)
+    FOREIGN KEY (funcionario_id) REFERENCES users(id),
+    FOREIGN KEY (alterado_por_id) REFERENCES users(id)
 );

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.animal_vinculo import validar_animal
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.edicao import editar_registro
 from app.models.adocao import Adocao
 from app.models.user import User
 from app.schemas.adocao import AdocaoIn, AdocaoOut, ContagemOut
@@ -98,3 +99,13 @@ def get_adocao(
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Termo de adocao nao encontrado.")
     return adocao
+
+
+@router.put("/adocoes/{adocao_id}", response_model=AdocaoOut)
+def update_adocao(
+    adocao_id: int,
+    data: AdocaoIn,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return editar_registro(db, get_adocao(adocao_id, db, user), data, user)
