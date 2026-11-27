@@ -84,13 +84,11 @@ ser adotado em até 30 dias e usa essa estimativa em três lugares:
 
 ### 2. Equipe
 
-| Integrante | GitHub |
-|---|---|
-| Guilherme Matheus Silva Oliveira | [@guilherme07O](https://github.com/guilherme07O) |
-| Pedro Victor Correia de Souza Santos | _a preencher_ |
-| Erivelton Brasil Batista | _a preencher_ |
-| Victor Hugo Sousa Oliveira | _a preencher_ |
-| Rubriel Luan Marques de Lima | _a preencher_ |
+- Guilherme Matheus Silva Oliveira ([@guilherme07O](https://github.com/guilherme07O))
+- Pedro Victor Correia de Souza Santos
+- Erivelton Brasil Batista
+- Victor Hugo Sousa Oliveira
+- Rubriel Luan Marques de Lima
 
 ### 3. Problema
 
