@@ -68,7 +68,7 @@ Este sistema substitui o papel por uma aplicação web usada pela equipe interna
 ## Inteligência Artificial
 
 > Etapa de IA do Projeto Integrador. Relatório técnico completo em
-> [`Docs/relatorio-ia.pdf`](Docs/relatorio-ia.pdf); detalhes do modelo em
+> [`Docs/relatorio-ardap.pdf`](Docs/relatorio-ardap.pdf); detalhes do modelo em
 > [`ai-model/README.md`](ai-model/README.md).
 
 ### 1. Recurso agregado e onde aparece
