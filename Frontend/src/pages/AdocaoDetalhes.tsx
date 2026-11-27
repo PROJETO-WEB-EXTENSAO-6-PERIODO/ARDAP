@@ -77,7 +77,7 @@ function Detalhes({ adocao }: { adocao: TermoAdocao }) {
         <div className="flex h-36 w-36 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-green-50 text-6xl">
           {animal?.tem_foto ? (
             <FotoAnimal
-              id={animal.id}
+              src={animal.foto_mini_url}
               alt={`Foto de ${nomeDoAnimal(animal)}`}
               className="h-full w-full object-cover"
               fallback={emoji}

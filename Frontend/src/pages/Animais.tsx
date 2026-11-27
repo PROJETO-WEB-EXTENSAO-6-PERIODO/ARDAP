@@ -149,7 +149,7 @@ export function Animais() {
 
   const [foto, setFoto] = useState<File | null>(null);
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
-  const [temFoto, setTemFoto] = useState(false);
+  const [fotoAtual, setFotoAtual] = useState<string | null>(null);
   const [fotoErro, setFotoErro] = useState("");
   const fotoInput = useRef<HTMLInputElement>(null);
 
@@ -206,7 +206,7 @@ export function Animais() {
     setOrigem(d.origem_resgate ?? "");
     setTemperamento(d.temperamento === "desconhecido" ? "" : d.temperamento);
     setObservacoes(d.observacoes ?? "");
-    setTemFoto(d.tem_foto === true);
+    setFotoAtual(d.foto_url ?? null);
   }
 
   const { idEdicao, editando, carregado, erroCarga, salvar, cancelarPara } = useEdicao(
@@ -353,9 +353,9 @@ export function Animais() {
                         alt="Prévia da foto do animal"
                         className="h-full w-full object-cover"
                       />
-                    ) : editando && temFoto ? (
+                    ) : editando && fotoAtual ? (
                       <FotoAnimal
-                        id={Number(idEdicao)}
+                        src={fotoAtual}
                         alt="Foto atual do animal"
                         className="h-full w-full object-cover"
                         fallback={<i aria-hidden="true" className="bi bi-camera"></i>}

@@ -229,11 +229,9 @@ def url_assinada(chave: str) -> str:
         try:
             url = _r2().generate_presigned_url(
                 "get_object",
-                Params={
-                    "Bucket": settings.R2_BUCKET,
-                    "Key": chave,
-                    "ResponseCacheControl": CACHE_IMUTAVEL,
-                },
+                # o cabecalho de cache vem do proprio objeto (gravado com
+                # CACHE_IMUTAVEL em salvar_foto/salvar_variantes)
+                Params={"Bucket": settings.R2_BUCKET, "Key": chave},
                 ExpiresIn=VALIDADE_URL,
             )
         except (BotoCoreError, ClientError) as erro:

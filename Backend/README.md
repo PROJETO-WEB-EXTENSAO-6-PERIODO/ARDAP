@@ -60,3 +60,13 @@ python -m app.scripts.restaurar ultimo --banco ardap_restaurado --arquivos pasta
 
 Arquivos apagados no sistema continuam no backup. Se alguem pedir a exclusao
 dos dados (LGPD), apague tambem no bucket de backup.
+
+## Fotos dos animais
+
+- Ao salvar uma foto, a API grava o original e duas versões reduzidas em WebP:
+  `_mini` (320 px, listas e cartões) e `_media` (1024 px, perfil).
+- O navegador baixa as versões reduzidas **direto do bucket R2**, por links
+  pré-assinados válidos por 1 hora. O bucket continua privado e a API não
+  transmite a imagem.
+- Fotos antigas, sem as versões reduzidas, são processadas sozinhas em segundo
+  plano quando a API inicia. Para rodar à mão: `python -m app.scripts.gerar_miniaturas`.

@@ -17,7 +17,7 @@ export function FotoRegistro({
   const emoji = <span aria-hidden="true">{EMOJIS[grupoEspecie(registro)]}</span>;
   return registro.animal?.tem_foto ? (
     <FotoAnimal
-      id={registro.animal.id}
+      src={registro.animal.foto_mini_url}
       alt=""
       className="h-full w-full object-cover"
       fallback={emoji}

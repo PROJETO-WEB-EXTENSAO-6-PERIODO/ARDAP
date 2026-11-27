@@ -71,7 +71,7 @@ function AdocaoCard({ adocao }: { adocao: TermoAdocao }) {
         >
           {animal?.tem_foto ? (
             <FotoAnimal
-              id={animal.id}
+              src={animal.foto_mini_url}
               alt=""
               className="h-full w-full object-cover"
               fallback={emoji}

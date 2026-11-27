@@ -23,12 +23,13 @@ export interface AnimalVinculado {
   castrado: boolean;
   origem_resgate: string | null;
   tem_foto: boolean;
+  foto_mini_url?: string | null;
 }
 
 // O suficiente para exibir o animal vinculado.
 export type AnimalResumo = Pick<
   AnimalVinculado,
-  "id" | "nome" | "especie" | "sexo" | "tem_foto"
+  "id" | "nome" | "especie" | "sexo" | "tem_foto" | "foto_mini_url"
 >;
 
 const ESPECIES: Record<string, string> = { cao: "Cão", gato: "Gato", outro: "Outro" };
@@ -61,7 +62,7 @@ function Miniatura({ animal }: { animal: AnimalResumo }) {
     <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-gray-100">
       {animal.tem_foto ? (
         <FotoAnimal
-          id={animal.id}
+          src={animal.foto_mini_url}
           alt=""
           className="h-full w-full object-cover"
           fallback={emoji}

@@ -74,7 +74,7 @@ function Linha({ item, posicao }: { item: ItemPrioridade; posicao: number }) {
         >
           {item.tem_foto ? (
             <FotoAnimal
-              id={item.animal_id}
+              src={item.foto_mini_url}
               alt=""
               className="h-full w-full object-cover"
               fallback={EMOJI[grupo]}

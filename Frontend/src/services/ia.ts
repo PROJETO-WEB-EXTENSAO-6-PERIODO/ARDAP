@@ -30,6 +30,7 @@ export interface ItemPrioridade {
   sexo: string;
   idade_estimada: number | null;
   tem_foto: boolean;
+  foto_mini_url: string | null;
   dias_no_abrigo: number;
   probabilidade: number;
   faixa: Faixa;
