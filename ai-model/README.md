@@ -3,8 +3,9 @@
 Etapa de IA do Projeto Integrador (ARDAP). O modelo estima a **probabilidade de um
 animal ser adotado em até 30 dias** para apoiar a decisão de quem divulgar primeiro.
 
-Status: **Checkpoint 2** — modelo treinado e avaliado. A integração com o backend e
-o frontend entra na próxima etapa.
+Status: **Checkpoint 3** — modelo treinado, avaliado e integrado ao sistema
+(tela **Divulgação**, cartão no perfil do animal e página **Sobre o modelo**). O uso
+pela API está em `Backend/app/ia/` e as rotas em `Backend/app/routers/ia.py`.
 
 ## Problema e usuário
 
@@ -148,9 +149,46 @@ Métricas em formato de máquina: [`relatorios/metricas.json`](relatorios/metric
 - O modelo **apoia** a decisão de divulgação; não decide sozinho e não deve ser usado
   para negar cuidado a nenhum animal.
 
+## Avaliação das faixas (Checkpoint 3)
+
+`python ai-model/scripts/avaliar_faixas.py` reaplica a mesma divisão do treino e mede,
+no conjunto de teste, a taxa real de adoção em cada faixa exibida na interface:
+
+| Faixa (pontuação) | Animais | Adotados em 30 dias (real) | Pontuação média |
+|---|---|---|---|
+| Baixa (< 0,40) | 10.995 (42%) | 8,4% | 0,155 |
+| Média (0,40 a 0,60) | 5.317 (20%) | 33,4% | 0,512 |
+| Alta (≥ 0,60) | 9.690 (37%) | 58,4% | 0,736 |
+
+- As faixas separam bem: a taxa real cresce de 8% para 58%.
+- Entre os 10% com menor pontuação, 99,9% não foram adotados em 30 dias (lift de
+  1,47 sobre a taxa base de 67,8%): a lista de prioridade põe no topo quem de fato
+  precisa de ajuda.
+- A pontuação **não está calibrada**: o `class_weight="balanced"` a empurra para
+  cima (0,74 de média na faixa alta contra 58% real). Brier score 0,180, contra 0,218
+  de prever sempre a taxa base. Por isso a interface mostra a faixa e a taxa real, e
+  não "74% de chance".
+
+Saídas: `relatorios/faixas.json` e `relatorios/figuras/09_faixas_calibracao.png`.
+
+## Integração
+
+| Rota | Uso |
+|---|---|
+| `POST /ia/adocao/{animal_id}` | Previsão de um animal cadastrado (cartão no perfil) |
+| `POST /ia/adocao/simular` | Previsão de um perfil digitado (simulador) |
+| `GET /ia/prioridade` | Lista de prioridade de divulgação |
+| `GET /ia/modelo` | Métricas para a página "Sobre o modelo" |
+
+O cadastro do ARDAP é traduzido para o vocabulário da base de Austin em
+`Backend/app/ia/traducao.py`. Os fatores de cada previsão são calculados trocando um
+atributo por vez pelo de um animal de referência (1 ano, SRD, resgatado na rua,
+saudável) e medindo a variação da pontuação.
+
 ## Próximos passos
 
-1. `POST /api/ia/adocao/{animal_id}` no backend, carregando o `.joblib` uma vez.
-2. Cartão no perfil do animal + tela de prioridade.
-3. Página "Sobre o modelo".
-4. Re-treino com o histórico do ARDAP quando houver volume suficiente.
+1. Re-treino com o histórico do ARDAP quando houver volume suficiente, incluindo
+   porte, peso, temperamento e vacinação.
+2. Calibrar a probabilidade (`CalibratedClassifierCV`) para poder mostrá-la como
+   porcentagem.
+3. Registrar as divulgações feitas para medir se a priorização reduz o tempo no abrigo.
