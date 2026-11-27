@@ -70,7 +70,10 @@ def main() -> None:
         except BaseException:
             # sem registro no banco, os arquivos ficariam orfaos
             for chave in arquivos:
-                armazenamento.apagar(chave)
+                if chave.startswith("animais/"):
+                    armazenamento.apagar_foto(chave)
+                else:
+                    armazenamento.apagar(chave)
             raise
     for tabela, total in totais.items():
         print(f"  {tabela}: {total}")

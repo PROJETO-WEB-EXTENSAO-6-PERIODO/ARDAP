@@ -14,3 +14,5 @@ openpyxl==3.1.5
 scikit-learn==1.9.1
 pandas==3.1.1
 joblib==1.6.0
+# fotos: versoes reduzidas em WebP
+Pillow==12.3.0

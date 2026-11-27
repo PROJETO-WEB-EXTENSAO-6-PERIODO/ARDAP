@@ -53,6 +53,7 @@ class PrioridadeItemOut(BaseModel):
     sexo: str
     idade_estimada: int | None
     tem_foto: bool
+    foto_mini_url: str | None = None
     dias_no_abrigo: int
     probabilidade: float
     faixa: Faixa

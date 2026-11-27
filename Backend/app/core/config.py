@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     IA_MODELO_PATH: str = ""
     IA_METRICAS_PATH: str = ""
 
+    # gera, em segundo plano, as versoes reduzidas das fotos antigas
+    FOTOS_VARIANTES_AO_INICIAR: bool = True
+
     @property
     def em_producao(self) -> bool:
         return self.AMBIENTE == "producao"

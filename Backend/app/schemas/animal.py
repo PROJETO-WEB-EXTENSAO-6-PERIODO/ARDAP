@@ -56,6 +56,9 @@ class AnimalOut(BaseModel):
     origem_resgate: str | None
     observacoes: str | None
     tem_foto: bool
+    # links temporarios das versoes reduzidas (mini: listas; media: perfil)
+    foto_url: str | None = None
+    foto_mini_url: str | None = None
     created_at: datetime | None
     funcionario: AutorOut | None
     alterado_por: AutorOut | None
@@ -69,6 +72,7 @@ class AnimalResumoOut(BaseModel):
     raca: str | None
     sexo: str
     tem_foto: bool
+    foto_mini_url: str | None = None
 
     class Config:
         from_attributes = True

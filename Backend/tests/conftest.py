@@ -8,6 +8,8 @@ import os
 from datetime import date, datetime
 
 os.environ.setdefault("SECRET_KEY", "teste-" + "0" * 40)
+os.environ["FOTOS_VARIANTES_AO_INICIAR"] = "false"
+os.environ["R2_BUCKET"] = ""
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

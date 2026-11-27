@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import DateTime
 
+from app.core import armazenamento
 from app.core.database import Base
 from app.models.user import User
 
@@ -66,3 +67,12 @@ class Animal(Base):
     @property
     def tem_foto(self) -> bool:
         return self.foto_path is not None
+
+    # Links temporarios das versoes reduzidas, baixadas direto do bucket.
+    @property
+    def foto_mini_url(self) -> str | None:
+        return armazenamento.url_foto(self.foto_path, "mini")
+
+    @property
+    def foto_url(self) -> str | None:
+        return armazenamento.url_foto(self.foto_path, "media")

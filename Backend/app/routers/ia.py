@@ -210,6 +210,7 @@ def prioridade(
                 sexo=animal.sexo,
                 idade_estimada=animal.idade_estimada,
                 tem_foto=animal.foto_path is not None,
+                foto_mini_url=animal.foto_mini_url,
                 dias_no_abrigo=dias,
                 probabilidade=round(prob, 4),
                 faixa=faixa,
