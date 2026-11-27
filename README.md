@@ -68,7 +68,7 @@ Este sistema substitui o papel por uma aplicação web usada pela equipe interna
 ## Inteligência Artificial
 
 > Etapa de IA do Projeto Integrador. Relatório técnico completo em
-> [`Docs/relatorio-ardap.pdf`](Docs/relatorio-ardap.pdf); detalhes do modelo em
+> [`docs/relatorio.pdf`](docs/relatorio.pdf); detalhes do modelo em
 > [`ai-model/README.md`](ai-model/README.md).
 
 ### 1. Recurso agregado e onde aparece
@@ -253,26 +253,26 @@ O merge na `main` publica o site (Cloudflare) e a API (Render), como descrito em
 
 **Prioridade de divulgação**
 
-![Prioridade de divulgação](Docs/imagens/ia/01_prioridade.png)
+![Prioridade de divulgação](docs/imagens/ia/01_prioridade.png)
 
 **Cartão no perfil do animal (chance baixa e alta)**
 
-![Cartão com chance baixa](Docs/imagens/ia/02b_cartao_baixa_detalhe.png)
-![Cartão com chance alta](Docs/imagens/ia/03b_cartao_alta_detalhe.png)
+![Cartão com chance baixa](docs/imagens/ia/02b_cartao_baixa_detalhe.png)
+![Cartão com chance alta](docs/imagens/ia/03b_cartao_alta_detalhe.png)
 
 **Erros tratados: campos vazios e animal já adotado**
 
-![Simulador com campos vazios](Docs/imagens/ia/05_simulador_erro.png)
-![Animal já adotado](Docs/imagens/ia/08_cartao_animal_adotado.png)
+![Simulador com campos vazios](docs/imagens/ia/05_simulador_erro.png)
+![Animal já adotado](docs/imagens/ia/08_cartao_animal_adotado.png)
 
 **Simulador**
 
-![Resultado do simulador](Docs/imagens/ia/07_simulador_resultado.png)
+![Resultado do simulador](docs/imagens/ia/07_simulador_resultado.png)
 
 <details>
 <summary>Página "Sobre o modelo" inteira</summary>
 
-![Sobre o modelo](Docs/imagens/ia/04_sobre_o_modelo.png)
+![Sobre o modelo](docs/imagens/ia/04_sobre_o_modelo.png)
 
 </details>
 
@@ -322,7 +322,11 @@ ARDAP/
 │   ├── relatorios/     métricas, figuras e relatórios gerados pelo treino
 │   └── scripts/        download dos dados, treino e avaliação reprodutíveis
 ├── datasets/           instruções de download e amostra dos dados
-└── Docs/               documentação, relatório e capturas de tela
+├── docs/               documentação, relatório (relatorio.pdf) e capturas de tela
+├── tests/              evidências de testes (automatizados em Backend/tests)
+├── requirements.txt    dependências Python (API + IA)
+├── .env.example        variáveis de ambiente, sem valores reais
+└── LICENSE             licença MIT
 ```
 
 ## Como rodar

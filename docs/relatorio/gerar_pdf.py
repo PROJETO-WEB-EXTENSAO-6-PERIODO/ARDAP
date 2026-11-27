@@ -1,8 +1,8 @@
-"""Gera Docs/relatorio-ardap.pdf a partir de relatorio-ardap.html.
+"""Gera docs/relatorio.pdf a partir de relatorio-ardap.html.
 
 Dependencias (fora do requirements do projeto): pip install playwright pypdf
 Usa o Chrome instalado na maquina. Da raiz do repositorio:
-    python Docs/relatorio/gerar_pdf.py
+    python docs/relatorio/gerar_pdf.py
 """
 
 import json
@@ -15,7 +15,7 @@ from pypdf import PdfReader
 
 PASTA = Path(__file__).resolve().parent
 html = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else PASTA / "relatorio-ardap.html"
-saida = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else PASTA.parent / "relatorio-ardap.pdf"
+saida = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else PASTA.parent / "relatorio.pdf"
 
 
 def render(paginas: dict) -> None:
