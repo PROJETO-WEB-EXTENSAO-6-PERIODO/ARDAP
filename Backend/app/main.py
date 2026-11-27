@@ -41,7 +41,8 @@ app.add_middleware(
 )
 
 
-@app.get("/health")
+# HEAD: monitores como o UptimeRobot checam com HEAD e mantem a API acordada
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     """Saude da API — use para testar se o servidor esta no ar."""
     return {"status": "ok"}
