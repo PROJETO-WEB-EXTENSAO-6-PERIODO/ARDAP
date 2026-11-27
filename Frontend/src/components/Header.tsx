@@ -74,6 +74,14 @@ export function Header() {
               Usuários
             </button>
           )}
+
+          <button
+            onClick={() => navigate("/ia/prioridade")}
+            className="inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            <i aria-hidden="true" className="bi bi-stars"></i>
+            Divulgação
+          </button>
         </div>
 
         <div className="flex items-center gap-4 w-1/10">

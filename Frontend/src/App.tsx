@@ -22,6 +22,8 @@ import { MODULOS_REGISTRO } from "./services/registros";
 import { Adocao } from "./pages/Adocao";
 import { AdocaoDetalhes } from "./pages/AdocaoDetalhes";
 import { AdocoesRegistradas } from "./pages/AdocoesRegistradas";
+import { PrioridadeDivulgacao } from "./pages/PrioridadeDivulgacao";
+import { SobreModelo } from "./pages/SobreModelo";
 
 export default function App() {
   return (
@@ -82,6 +84,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Hipossuficiencia key="novo" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ia/prioridade"
+            element={
+              <ProtectedRoute>
+                <PrioridadeDivulgacao />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ia/sobre"
+            element={
+              <ProtectedRoute>
+                <SobreModelo />
               </ProtectedRoute>
             }
           />

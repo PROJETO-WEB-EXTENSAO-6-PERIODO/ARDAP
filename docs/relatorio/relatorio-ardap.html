@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório técnico — IA aplicada ao ARDAP</title>
+<!--
+  Fonte do relatório técnico da etapa de IA. Para gerar o PDF:
+  abra este arquivo no Chrome, Ctrl+P, destino "Salvar como PDF",
+  margens "Padrão" e "Gráficos de plano de fundo" marcado.
+  O sumário tem os números de página preenchidos no PDF entregue.
+-->
+<style>
+  @page {
+    size: A4;
+    margin: 3cm 2cm 2cm 3cm;
+    @top-right { content: counter(page); font: 10pt Arial, sans-serif; }
+  }
+  @page pre { @top-right { content: none; } }
+  .pre { page: pre; }
+
+  * { box-sizing: border-box; }
+  html { font: 12pt/1.5 Arial, Helvetica, sans-serif; color: #000; }
+  body { margin: 0; }
+  p { text-align: justify; margin: 0 0 0.35em; text-indent: 1.25cm; }
+  p.sem-recuo, li p, td p, .legenda, .fonte { text-indent: 0; }
+  h1, h2, h3 { font-weight: bold; line-height: 1.3; break-after: avoid; }
+  h1 { font-size: 12pt; text-transform: uppercase; margin: 0 0 1em; }
+  h2 { font-size: 12pt; margin: 0.9em 0 0.4em; }
+  h3 { font-size: 12pt; font-weight: normal; font-style: italic; margin: 1em 0 0.5em; }
+  .secao { margin-top: 1.2em; }
+  #s1, #sref { break-before: page; margin-top: 0; }
+  .secao-continua { margin-top: 1.2em; }
+  ul, ol { margin: 0 0 0.6em; padding-left: 1.6cm; text-align: justify; }
+  li { margin-bottom: 0.2em; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; line-height: 1.3; margin: 0.3em 0; break-inside: avoid; }
+  th, td { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 6px; text-align: left; vertical-align: top; }
+  th { font-weight: bold; }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  tr.destaque td { font-weight: bold; }
+
+  figure { margin: 0.5em 0 0.7em; text-align: center; break-inside: avoid; }
+  figure img { max-width: 100%; max-height: 9.5cm; }
+  figure img.tela { border: 1px solid #999; }
+  .legenda { font-size: 10pt; text-align: center; margin: 0 0 0.3em; }
+  .fonte { font-size: 10pt; text-align: center; margin-top: 0.2em; }
+  .tabela.livre { break-inside: auto; }
+  .tabela { break-inside: avoid; margin: 0.5em 0 0.7em; }
+  .tabela .legenda { text-align: left; }
+  .tabela .fonte { text-align: left; }
+
+  pre { font: 9pt/1.35 Consolas, "Courier New", monospace; background: #f3f3f3; border: 1px solid #ccc; padding: 8px 10px; white-space: pre-wrap; break-inside: avoid; margin: 0.5em 0 1em; }
+  code { font: 10pt Consolas, "Courier New", monospace; }
+
+  /* Capa e folha de rosto */
+  .capa, .rosto { height: 24.6cm; display: flex; flex-direction: column; justify-content: space-between; text-align: center; text-transform: uppercase; font-weight: bold; break-after: page; }
+  .capa p, .rosto p { text-align: center; text-indent: 0; margin: 0; }
+  .rosto .natureza { text-transform: none; font-weight: normal; margin-left: 50%; text-align: justify; font-size: 11pt; line-height: 1.3; }
+  .titulo-trabalho { font-size: 14pt; }
+
+  .resumo { break-after: page; }
+  .resumo p { text-indent: 0; }
+  .sumario { break-after: page; }
+  .sumario ol { list-style: none; padding: 0; margin: 0; }
+  .sumario li { display: flex; gap: 6px; margin: 0; line-height: 1.35; font-size: 11pt; }
+  .sumario li .t { flex: none; }
+  .sumario li .pontos { flex: 1; border-bottom: 1px dotted #000; margin-bottom: 0.35em; }
+  .sumario li .pg { flex: none; }
+  .sumario li.sub { padding-left: 1cm; }
+
+  .refs p { text-indent: 0; text-align: left; margin-bottom: 0.7em; line-height: 1.15; font-size: 11pt; }
+  .diagrama { width: 100%; }
+</style>
+</head>
+<body>
+
+<!-- CAPA -->
+<section class="capa pre">
+  <div>
+    <p>Centro Universitário UNIRIOS</p>
+    <p>Bacharelado em Sistemas de Informação</p>
+  </div>
+  <div>
+    <p>Guilherme Matheus Silva Oliveira</p>
+    <p>Pedro Victor Correia de Souza Santos</p>
+    <p>Erivelton Brasil Batista</p>
+    <p>Victor Hugo Sousa Oliveira</p>
+    <p>Rubriel Luan Marques de Lima</p>
+  </div>
+  <div>
+    <p class="titulo-trabalho">Priorização de divulgação para adoção com aprendizado de máquina no sistema ARDAP</p>
+  </div>
+  <div>
+    <p>Paulo Afonso</p>
+    <p>2026</p>
+  </div>
+</section>
+
+<!-- FOLHA DE ROSTO -->
+<section class="rosto pre">
+  <div>
+    <p>Guilherme Matheus Silva Oliveira</p>
+    <p>Pedro Victor Correia de Souza Santos</p>
+    <p>Erivelton Brasil Batista</p>
+    <p>Victor Hugo Sousa Oliveira</p>
+    <p>Rubriel Luan Marques de Lima</p>
+  </div>
+  <div>
+    <p class="titulo-trabalho">Priorização de divulgação para adoção com aprendizado de máquina no sistema ARDAP</p>
+  </div>
+  <div>
+    <p class="natureza">Relatório técnico da etapa de Inteligência Artificial do Projeto Integrador, apresentado à disciplina de Inteligência Artificial do 6º período do Bacharelado em Sistemas de Informação do Centro Universitário UNIRIOS.</p>
+    <p class="natureza" style="margin-top:1em">Professor: Ronierison Maciel</p>
+  </div>
+  <div>
+    <p>Paulo Afonso</p>
+    <p>2026</p>
+  </div>
+</section>
+
+<!-- RESUMO -->
+<section class="resumo pre">
+  <h1 style="text-align:center">Resumo</h1>
+  <p>A Associação Recanto dos Animais em Perigo (ARDAP), de Paulo Afonso/BA, resgata mais animais do que consegue divulgar, e a escolha de quem divulgar primeiro é feita por intuição. Este relatório descreve o recurso de Inteligência Artificial agregado ao sistema web da ONG: um modelo de classificação que estima a chance de cada animal ser adotado em até 30 dias e ordena os animais disponíveis em uma lista de prioridade de divulgação. O modelo foi treinado com 173.341 entradas da base pública do Austin Animal Center (EUA). Foram comparados quatro modelos, e o Gradient Boosting foi escolhido pelo maior F1 macro na validação. No conjunto de teste, obteve F1 macro de 0,697 e ROC-AUC de 0,815, contra 0,404 e 0,500 de uma referência que sempre prevê a classe majoritária. As faixas de pontuação exibidas na interface separam animais com taxas reais de adoção de 8%, 33% e 58%, e entre os 10% de menor pontuação 99,9% não foram adotados no período. O modelo foi integrado à API FastAPI e à interface React do sistema, com cartão no perfil do animal, tela de prioridade, página “Sobre o modelo” e 46 testes automatizados. As principais limitações são a origem estrangeira dos dados e a falta de calibração das probabilidades, tratadas na interface com faixas e taxas reais.</p>
+  <p style="margin-top:1em"><strong>Palavras-chave:</strong> aprendizado de máquina; adoção de animais; gradient boosting; priorização; sistemas web.</p>
+</section>
+
+<!-- SUMÁRIO -->
+<section class="sumario pre">
+  <h1 style="text-align:center">Sumário</h1>
+  <ol id="sumario"></ol>
+</section>
+
+<!-- 1 -->
+<section class="secao" id="s1">
+  <h1>1 Introdução e contextualização</h1>
+  <p>A ARDAP resgata, trata e encaminha animais para adoção em Paulo Afonso/BA. Durante o Projeto Integrador, a equipe desenvolveu um sistema web que substitui os formulários em papel da ONG: cadastro de animais com foto, registros de resgate encaminhados pela prefeitura (SUPATAS), termos de adoção, castração, cirurgia e eutanásia, declarações de hipossuficiência e relatórios de prestação de contas. O sistema é composto por uma interface em React e TypeScript, uma API em Python com FastAPI e SQLAlchemy e um banco MySQL.</p>
+  <p>Com o histórico de cada animal centralizado, surgiu a oportunidade de usar esses dados para apoiar uma decisão que hoje não tem apoio nenhum: <strong>quais animais divulgar primeiro</strong>. Nesta etapa, a equipe agregou ao sistema um recurso de Machine Learning que estima a chance de cada animal ser adotado em até 30 dias e organiza os animais disponíveis em uma lista de prioridade de divulgação.</p>
+  <p>O recurso aparece em três pontos do sistema: (a) uma nova tela, “Divulgação”, acessível pelo menu principal; (b) um cartão no perfil de cada animal, com a faixa de chance, os dias no abrigo e os fatores que mais pesaram; e (c) uma página “Sobre o modelo”, que explica em linguagem simples o que a IA faz, com quais dados, com que desempenho e com quais limites. O eixo principal é o de Machine Learning (classificação supervisionada), com análise exploratória de dados no notebook de treino.</p>
+  <p>O restante deste relatório descreve o problema (Seção 2), a fundamentação da técnica (Seção 3), a metodologia (Seção 4), a arquitetura e a implementação (Seções 5 e 6), os experimentos e resultados (Seções 7 a 9), as limitações (Seção 10), a declaração de uso de IA generativa (Seção 11) e a contribuição dos integrantes (Seção 12).</p>
+
+  <div class="secao-continua" id="s2">
+  <h1>2 Descrição do problema</h1>
+  <p>A ONG recebe mais animais do que consegue divulgar. A divulgação depende de ações com custo de tempo e de pessoas: levar animais a feiras de adoção, produzir fotos e textos para as redes sociais e entrar em contato com possíveis adotantes. Como os voluntários são poucos, a cada semana é preciso escolher alguns animais.</p>
+  <p><strong>Como é resolvido hoje.</strong> A escolha é feita por intuição de quem está no abrigo. Animais filhotes e de aparência mais procurada tendem a ser adotados sozinhos, enquanto animais idosos, doentes ou resgatados em más condições permanecem por meses sem que a equipe perceba que estão ficando para trás. No banco de demonstração do sistema, 6 dos 9 animais disponíveis estão há mais de 30 dias no abrigo e têm chance baixa de adoção segundo o modelo.</p>
+  <p><strong>Usuário.</strong> Funcionário ou administrador do sistema responsável pela divulgação.</p>
+  <p><strong>Decisão apoiada.</strong> Quais animais divulgar primeiro nesta semana.</p>
+  <p><strong>Por que IA.</strong> A chance de adoção depende da combinação de vários atributos (idade, espécie, origem, condição de saúde, raça, cor), com interações não lineares: um filhote resgatado na rua tem perfil diferente de um adulto entregue pelo tutor. Regras fixas escritas à mão não capturam essas combinações, enquanto um modelo supervisionado aprende com milhares de desfechos reais. O recurso não substitui a decisão da equipe: ordena os animais e explica a ordem, para que a equipe decida com mais informação.</p>
+  <p><strong>O que melhora.</strong> A equipe passa a ter, em uma única tela, todos os animais disponíveis ordenados pela necessidade de divulgação, com alerta para quem está há mais de 30 dias no abrigo com chance baixa.</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="secao" id="s3">
+  <h1>3 Fundamentação teórica</h1>
+  <h2>3.1 Classificação binária supervisionada</h2>
+  <p>Na aprendizagem supervisionada, um modelo aprende uma função que relaciona atributos de entrada a um rótulo conhecido, a partir de exemplos (FACELI et al., 2021; GÉRON, 2019). Aqui o rótulo é binário: o animal foi ou não adotado em até 30 dias após a entrada no abrigo. O modelo devolve uma pontuação entre 0 e 1, e um limiar transforma a pontuação em decisão.</p>
+  <h2>3.2 Modelos comparados</h2>
+  <p><strong>Regressão Logística</strong> combina linearmente os atributos e aplica a função logística, sendo simples e interpretável, mas incapaz de capturar interações sem que elas sejam criadas manualmente. <strong>Random Forest</strong> (BREIMAN, 2001) treina muitas árvores de decisão em amostras diferentes dos dados e combina seus votos, o que reduz a variância e captura relações não lineares. <strong>Gradient Boosting</strong> (FRIEDMAN, 2001) também combina árvores, mas de forma sequencial: cada nova árvore corrige os erros das anteriores, seguindo o gradiente da função de perda. A implementação usada, <code>HistGradientBoostingClassifier</code> do scikit-learn (PEDREGOSA et al., 2011), agrupa os valores numéricos em faixas (histogramas), técnica popularizada pelo LightGBM (KE et al., 2017), o que torna o treino rápido em bases com centenas de milhares de linhas.</p>
+  <p>Como referência mínima (<em>baseline</em>), usou-se um classificador que sempre prevê a classe mais frequente (“não adotado”). Qualquer modelo útil precisa superá-lo.</p>
+  <h2>3.3 Métricas</h2>
+  <p>Com classes desbalanceadas (32% de adotados), a acurácia engana: o baseline acerta 68% sem aprender nada. Por isso a escolha do modelo usou o <strong>F1 macro</strong>, média do F1 das duas classes, e a avaliação incluiu precisão, recall, ROC-AUC e PR-AUC. A ROC-AUC mede a probabilidade de o modelo dar pontuação maior a um animal adotado do que a um não adotado; a PR-AUC é mais informativa em bases desbalanceadas (SAITO; REHMSMEIER, 2015). Como a interface ordena animais pela pontuação, também foi avaliada a <strong>calibração</strong>: se, entre os animais com pontuação 0,7, cerca de 70% de fato são adotados. Modelos treinados com pesos de classe tendem a distorcer as probabilidades (NICULESCU-MIZIL; CARUANA, 2005). A calibração foi medida pela curva de confiabilidade e pelo Brier score (BRIER, 1950).</p>
+  <h2>3.4 Interpretação</h2>
+  <p>A importância global dos atributos foi medida por <em>permutation importance</em>: embaralha-se uma coluna e mede-se quanto a ROC-AUC cai (BREIMAN, 2001; FISHER; RUDIN; DOMINICI, 2019). Para explicar cada previsão individual na tela, usou-se uma análise contrafactual simples, descrita na Seção 6.3.</p>
+  <h2>3.5 Alternativas consideradas</h2>
+  <div class="tabela">
+  <p class="legenda">Tabela 1 — Alternativas avaliadas para o recurso</p>
+  <table>
+    <tr><th>Alternativa</th><th>Por que não foi a escolhida</th></tr>
+    <tr><td>Regras manuais (ex.: “idosos primeiro”)</td><td>Não capturam combinações de atributos e não têm como ser avaliadas com métricas.</td></tr>
+    <tr><td>Regressão de tempo até a adoção</td><td>Muitos animais nunca são adotados (transferência, retorno ao tutor, óbito), o que exige modelos de sobrevivência; a classificação em janela fixa é mais simples de explicar e de avaliar.</td></tr>
+    <tr><td>Redes neurais</td><td>Dados tabulares de tamanho médio, em que modelos de árvores costumam ser tão bons ou melhores, com treino mais rápido e mais fácil de interpretar.</td></tr>
+    <tr><td>API externa de IA generativa</td><td>O problema não é de linguagem, o resultado não seria avaliável com métricas e a atividade exige componente próprio.</td></tr>
+  </table>
+  <p class="fonte">Fonte: elaborada pelos autores.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="secao" id="s4">
+  <h1>4 Metodologia</h1>
+  <h2>4.1 Dados</h2>
+  <p>A ONG ainda não tem histórico digital suficiente para treinar um modelo (os registros estavam em papel até a implantação do sistema). Por isso foi usada a base pública do <strong>Austin Animal Center</strong>, maior abrigo municipal de Austin, Texas (EUA), disponível no portal de dados abertos da cidade (CITY OF AUSTIN, 2025a; 2025b), com licença de domínio público e acesso pela API Socrata, sem autenticação. A base tem dois conjuntos: entradas (<em>intakes</em>) e desfechos (<em>outcomes</em>) de cada animal. O download é reprodutível pelo script <code>ai-model/scripts/baixar_dados.py</code>; os arquivos brutos (~50 MB) ficam fora do Git, e uma amostra tratada de 3.000 linhas está em <code>datasets/amostra.csv</code>.</p>
+  <p>Nenhum dado pessoal é usado: apenas atributos dos animais. Os dados do sistema da ONG não foram usados no treino, apenas na inferência.</p>
+  <h2>4.2 Construção do alvo</h2>
+  <p>Cada entrada foi ligada ao primeiro desfecho posterior do mesmo animal. O alvo vale 1 se esse desfecho foi uma adoção em até 30 dias, e 0 para qualquer outro desfecho, para adoções posteriores a 30 dias e para animais que permaneceram no abrigo além da janela. Entradas sem desfecho e ainda dentro da janela de 30 dias no fim da base foram removidas, pois seu rótulo é desconhecido (censura à direita), assim como registros com datas inconsistentes. Restaram <strong>173.341 entradas</strong>, de outubro de 2013 a maio de 2025, com <strong>32,2% de positivos</strong>.</p>
+  <figure>
+    <img src="../../ai-model/relatorios/figuras/03_taxa_por_idade.png" style="max-height:4.8cm" alt="Taxa de adoção em 30 dias por faixa de idade">
+    <p class="legenda">Figura 1 — Taxa de adoção em 30 dias por faixa de idade (análise exploratória)</p>
+    <p class="fonte">Fonte: elaborada pelos autores a partir de City of Austin (2025a; 2025b).</p>
+  </figure>
+  <p>A análise exploratória confirmou padrões esperados do domínio: animais com até um ano têm taxa de adoção em 30 dias entre 34% e 40%, contra 17% dos animais com 7 anos ou mais (Figura 1). Filhotes com menos de 3 meses têm taxa um pouco menor que os de 3 a 12 meses porque muitos ainda não podem ser adotados ao chegar (precisam de idade mínima ou de lar temporário).</p>
+  <h2>4.3 Atributos e mapeamento para o ARDAP</h2>
+  <p>Foram usados apenas atributos que o cadastro do ARDAP também possui, para que o modelo pudesse ser aplicado aos animais da ONG:</p>
+  <div class="tabela">
+  <p class="legenda">Tabela 2 — Atributos do modelo e campos correspondentes no ARDAP</p>
+  <table>
+    <tr><th>Atributo do modelo</th><th>Base de Austin</th><th>Cadastro do ARDAP</th></tr>
+    <tr><td>espécie</td><td><code>animal_type</code></td><td><code>especie</code> (cão, gato, outro)</td></tr>
+    <tr><td>sexo, esterilizado</td><td><code>sex_upon_intake</code></td><td><code>sexo</code> e <code>castrado</code></td></tr>
+    <tr><td>idade em dias, idade ausente</td><td><code>age_upon_intake</code></td><td><code>idade_estimada</code> (anos)</td></tr>
+    <tr><td>raça principal, misto</td><td><code>breed</code></td><td><code>raca</code></td></tr>
+    <tr><td>cor principal</td><td><code>color</code></td><td><code>cor_pelo</code> (texto livre)</td></tr>
+    <tr><td>tipo de entrada</td><td><code>intake_type</code></td><td><code>origem_resgate</code> e vínculo com SUPATAS</td></tr>
+    <tr><td>condição de entrada</td><td><code>intake_condition</code></td><td>situação no SUPATAS e <code>medicacao_necessaria</code></td></tr>
+    <tr><td>mês de entrada</td><td>data da entrada</td><td>data de recebimento ou de cadastro</td></tr>
+  </table>
+  <p class="fonte">Fonte: elaborada pelos autores.</p>
+  </div>
+  <h2>4.4 Pré-processamento e divisão</h2>
+  <p>Atributos numéricos receberam imputação pela mediana e padronização; categóricos, codificação <em>one-hot</em> com agrupamento de categorias com menos de 25 ocorrências e descarte de categorias desconhecidas na inferência; binários foram mantidos. Todo o pré-processamento faz parte do mesmo <code>Pipeline</code> do scikit-learn salvo com o modelo, o que evita diferenças entre treino e uso. Os dados foram divididos de forma estratificada em treino (70%, 121.338), validação (15%, 26.001) e teste (15%, 26.002), com semente fixa 42.</p>
+  <h2>4.5 Critérios de avaliação</h2>
+  <p>Os modelos foram comparados na validação pelo F1 macro. No modelo vencedor, o limiar de decisão foi ajustado na validação para maximizar o F1 da classe “adotado”. O conjunto de teste foi usado <strong>uma única vez</strong>, ao final, para as métricas reportadas. Depois da integração, o mesmo teste foi reutilizado apenas para medir as faixas e a calibração, sem alterar o modelo.</p>
+</section>
+
+<!-- 5 -->
+<section class="secao" id="s5">
+  <h1>5 Arquitetura da solução</h1>
+  <p>O recurso segue a arquitetura proposta para a atividade: o modelo é treinado por scripts reprodutíveis, salvo em arquivo e carregado pela API ao iniciar. O navegador nunca acessa o modelo; ele envia o pedido e exibe o resultado.</p>
+  <figure>
+    <svg class="diagrama" style="max-height:8cm" viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" font-family="Arial" font-size="12">
+      <defs><marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+      <text x="10" y="18" font-weight="bold" font-size="11">EM EXECUÇÃO (APLICAÇÃO WEB)</text>
+      <rect x="10" y="28" width="200" height="110" rx="6" fill="#fff" stroke="#000"/>
+      <text x="22" y="50" font-weight="bold">Frontend (React)</text>
+      <text x="22" y="70">Tela “Divulgação”</text>
+      <text x="22" y="88">Cartão no perfil do animal</text>
+      <text x="22" y="106">Página “Sobre o modelo”</text>
+      <text x="22" y="124">Validação dos campos</text>
+      <rect x="280" y="28" width="210" height="110" rx="6" fill="#fff" stroke="#000"/>
+      <text x="292" y="50" font-weight="bold">API (FastAPI)</text>
+      <text x="292" y="70">routers/ia.py: 4 rotas /ia</text>
+      <text x="292" y="88">Login (JWT) e validação</text>
+      <text x="292" y="106">Erros 401, 404, 409, 422, 503</text>
+      <text x="292" y="124">Lê animal + SUPATAS</text>
+      <rect x="560" y="28" width="190" height="110" rx="6" fill="#f0f0f0" stroke="#000" stroke-width="2"/>
+      <text x="572" y="50" font-weight="bold">Módulo de IA (app/ia)</text>
+      <text x="572" y="70">traducao.py: cadastro</text>
+      <text x="572" y="86">→ atributos do modelo</text>
+      <text x="572" y="106">modelo.py: pontuação,</text>
+      <text x="572" y="122">faixa e fatores</text>
+      <rect x="280" y="170" width="210" height="50" rx="6" fill="#fff" stroke="#000"/>
+      <text x="292" y="192" font-weight="bold">MySQL</text>
+      <text x="292" y="210">animais, SUPATAS, adoções...</text>
+      <line x1="210" y1="70" x2="278" y2="70" stroke="#000" marker-end="url(#seta)"/>
+      <text x="214" y="64" font-size="10">requisição</text>
+      <line x1="280" y1="100" x2="212" y2="100" stroke="#000" marker-end="url(#seta)"/>
+      <text x="220" y="116" font-size="10">JSON</text>
+      <line x1="490" y1="70" x2="558" y2="70" stroke="#000" marker-end="url(#seta)"/>
+      <line x1="560" y1="100" x2="492" y2="100" stroke="#000" marker-end="url(#seta)"/>
+      <line x1="385" y1="138" x2="385" y2="168" stroke="#000" marker-end="url(#seta)"/>
+      <text x="10" y="252" font-weight="bold" font-size="11">PREPARAÇÃO (SCRIPTS E NOTEBOOK)</text>
+      <rect x="10" y="262" width="200" height="60" rx="6" fill="#fff" stroke="#000"/>
+      <text x="22" y="284" font-weight="bold">Dataset</text>
+      <text x="22" y="302">Austin Animal Center</text>
+      <rect x="280" y="262" width="210" height="60" rx="6" fill="#fff" stroke="#000"/>
+      <text x="292" y="284" font-weight="bold">Treino e avaliação</text>
+      <text x="292" y="302">treinar.py, avaliar_faixas.py</text>
+      <rect x="560" y="262" width="190" height="60" rx="6" fill="#fff" stroke="#000"/>
+      <text x="572" y="284" font-weight="bold">Modelo salvo</text>
+      <text x="572" y="302">modelo.joblib + métricas</text>
+      <line x1="210" y1="292" x2="278" y2="292" stroke="#000" marker-end="url(#seta)"/>
+      <line x1="490" y1="292" x2="558" y2="292" stroke="#000" marker-end="url(#seta)"/>
+      <line x1="655" y1="262" x2="655" y2="140" stroke="#000" stroke-dasharray="4 3" marker-end="url(#seta)"/>
+      <text x="662" y="200" font-size="10">carregado uma vez</text>
+      <text x="662" y="213" font-size="10">ao iniciar a API</text>
+    </svg>
+    <p class="legenda">Figura 2 — Arquitetura do recurso de IA no sistema ARDAP</p>
+    <p class="fonte">Fonte: elaborada pelos autores.</p>
+  </figure>
+  <div class="tabela">
+  <p class="legenda">Tabela 3 — Responsabilidade de cada componente</p>
+  <table>
+    <tr><th>Componente</th><th>Responsabilidade</th></tr>
+    <tr><td><code>ai-model/scripts/</code> <code>baixar_dados.py</code>, <code>treinar.py</code></td><td>Baixam os dados, montam o alvo, treinam e comparam 4 modelos e salvam modelo, métricas e figuras.</td></tr>
+    <tr><td><code>ai-model/scripts/avaliar_faixas.py</code></td><td>Mede a taxa real de adoção por faixa, a ordenação e a calibração no conjunto de teste.</td></tr>
+    <tr><td><code>Backend/app/ia/traducao.py</code></td><td>Converte o cadastro do ARDAP para o vocabulário da base de treino.</td></tr>
+    <tr><td><code>Backend/app/ia/modelo.py</code></td><td>Carrega o modelo uma vez, calcula pontuação, faixa e fatores e resume as métricas.</td></tr>
+    <tr><td><code>Backend/app/routers/ia.py</code></td><td>Rotas <code>/ia</code>, autenticação, validação de entrada e tratamento de erros.</td></tr>
+    <tr><td><code>Frontend/src/components/CartaoIA.tsx</code></td><td>Cartão “Chance de adoção em 30 dias” no perfil do animal.</td></tr>
+    <tr><td><code>Frontend/src/pages/PrioridadeDivulgacao.tsx</code></td><td>Lista de prioridade com filtros, ordenação e alertas.</td></tr>
+    <tr><td><code>Frontend/src/pages/SobreModelo.tsx</code></td><td>Página “Sobre o modelo” (RF05) com métricas, limites e simulador.</td></tr>
+  </table>
+  <p class="fonte">Fonte: elaborada pelos autores.</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="secao" id="s6">
+  <h1>6 Implementação</h1>
+  <h2>6.1 Rotas da API</h2>
+  <p>Foram criadas quatro rotas, todas protegidas pelo mesmo login (JWT) do resto do sistema:</p>
+  <div class="tabela">
+  <p class="legenda">Tabela 4 — Rotas do recurso de IA</p>
+  <table>
+    <tr><th>Rota</th><th>Uso</th><th>Erros tratados</th></tr>
+    <tr><td><code>POST /ia/adocao/{animal_id}</code></td><td>Previsão de um animal cadastrado</td><td>404 (não existe), 409 (adotado ou eutanasiado), 503</td></tr>
+    <tr><td><code>POST /ia/adocao/simular</code></td><td>Previsão de um perfil digitado</td><td>422 com mensagens em português, 503</td></tr>
+    <tr><td><code>GET /ia/prioridade</code></td><td>Animais disponíveis ordenados pela chance</td><td>503</td></tr>
+    <tr><td><code>GET /ia/modelo</code></td><td>Métricas para a página “Sobre o modelo”</td><td>503</td></tr>
+  </table>
+  <p class="fonte">Fonte: elaborada pelos autores.</p>
+  </div>
+  <p>O modelo é carregado uma única vez, no início da API, e mantido em memória (<code>functools.lru_cache</code>). Se o arquivo não existir, a API inicia normalmente e só as rotas <code>/ia</code> respondem 503 com uma mensagem clara, sem derrubar o restante do sistema.</p>
+  <h2>6.2 Tradução do cadastro</h2>
+  <p>O ponto mais delicado da integração foi aplicar a animais de Paulo Afonso um modelo treinado com valores em inglês. O módulo <code>traducao.py</code> converte cada campo, por exemplo: espécie <code>cao</code> → <code>Dog</code>; cor “Marrom tigrado” de gato → <code>Brown Tabby</code>; raça “Pastor Alemão” → <code>German Shepherd</code>; gato SRD → <code>Domestic Shorthair</code> (como Austin registra gatos sem raça); origem “Entregue pelo antigo tutor” → <code>Owner Surrender</code>; situação “acidentado” no SUPATAS → <code>Injured</code>; idade 0 (“menos de 1 ano”) → 120 dias. Valores sem equivalente viram categorias desconhecidas, que o codificador do modelo ignora.</p>
+  <pre># Backend/app/ia/traducao.py (trecho)
+def tipo_entrada(origem: str | None, veio_do_supatas: bool) -&gt; str:
+    if veio_do_supatas:
+        return "Stray"
+    texto = normalizar(origem)
+    if any(p in texto for p in ("tutor", "entregue", "devolvid")):
+        return "Owner Surrender"
+    if "abandon" in texto:
+        return "Abandoned"
+    return "Stray"</pre>
+  <h2>6.3 Explicação de cada previsão</h2>
+  <p>Para mostrar “o que mais pesou” no perfil do animal, cada atributo (idade, castração, origem, saúde, raça e cor) é trocado, um de cada vez, pelo valor de um animal de referência (1 ano, não castrado, sem raça definida, resgatado na rua e saudável), e mede-se a variação da pontuação. Todas as variações são calculadas em uma só chamada ao modelo. Efeitos menores que 2 pontos percentuais não são exibidos.</p>
+  <pre># Backend/app/ia/modelo.py (trecho)
+for nome, colunas in GRUPOS_FATOR.items():
+    if all(linha[c] == REFERENCIA[c] for c in colunas):
+        continue
+    alterada = dict(linha)
+    for coluna in colunas:
+        alterada[coluna] = REFERENCIA[coluna]
+    variacoes.append((nome, alterada))
+probs = _probabilidades(modelo, [v for _, v in variacoes])  # uma chamada só</pre>
+  <h2>6.4 Interface</h2>
+  <p>As telas seguem o mesmo visual do sistema (cabeçalho, cartões brancos, amarelo da identidade da ONG e ícones Bootstrap). A pontuação é sempre acompanhada da faixa (baixa, média, alta) e da taxa real de adoção daquela faixa no teste, nunca como “X% de chance”, pela falta de calibração discutida na Seção 9. Os formulários validam os campos no navegador e a API valida de novo, devolvendo mensagens em português. A Figura 3 mostra a tela de prioridade com os dados de demonstração do sistema.</p>
+  <figure>
+    <img class="tela" src="../imagens/ia/01_prioridade.png" style="max-height:9.5cm" alt="Tela Prioridade de divulgação">
+    <p class="legenda">Figura 3 — Tela “Prioridade de divulgação”</p>
+    <p class="fonte">Fonte: captura do sistema ARDAP com dados fictícios de demonstração.</p>
+  </figure>
+  <figure>
+    <img class="tela" src="../imagens/ia/02b_cartao_baixa_detalhe.png" style="width:72%" alt="Cartão de chance baixa">
+    <img class="tela" src="../imagens/ia/03b_cartao_alta_detalhe.png" alt="Cartão de chance alta" style="width:72%; margin-top:4px">
+    <p class="legenda">Figura 4 — Cartão no perfil do animal: chance baixa (cão de 8 anos) e alta (gata filhote)</p>
+    <p class="fonte">Fonte: captura do sistema ARDAP com dados fictícios de demonstração.</p>
+  </figure>
+</section>
+
+<!-- 7 -->
+<section class="secao" id="s7">
+  <h1>7 Experimentos realizados</h1>
+  <h2>7.1 Comparação de modelos e ajuste do limiar</h2>
+  <p>O experimento principal comparou os quatro modelos da Seção 3.2 com o mesmo pré-processamento. A Regressão Logística usou <code>class_weight="balanced"</code>; o Random Forest, 300 árvores e no mínimo 5 amostras por folha; o Gradient Boosting, 300 iterações e taxa de aprendizado 0,08, ambos com pesos de classe balanceados. O limiar do vencedor foi varrido de 0,05 a 0,95 na validação; o melhor F1 da classe “adotado” ocorreu em 0,49, próximo ao padrão de 0,50.</p>
+  <h2>7.2 Avaliação das faixas e da ordenação</h2>
+  <p>Depois da integração, a interface passou a mostrar faixas (baixa &lt; 0,40 ≤ média &lt; 0,60 ≤ alta) e a ordenar os animais pela pontuação. Para justificar essas escolhas com dados, o script <code>avaliar_faixas.py</code> reaplicou a mesma divisão (semente 42) e mediu no teste a taxa real de adoção em cada faixa, a proporção de não adotados entre os 10% e 20% de menor pontuação e a curva de calibração.</p>
+  <h2>7.3 O que não funcionou</h2>
+  <ul>
+    <li><strong>Junção com <code>merge_asof</code>.</strong> A primeira versão ligava entradas a desfechos com <code>pandas.merge_asof</code> agrupado por animal, que produziu pares errados em animais com várias entradas. Foi substituída por uma junção completa por animal, filtrando o primeiro desfecho posterior à entrada.</li>
+    <li><strong>Cenário “se castrado”.</strong> Foi implementada uma sugestão que mostrava quanto a chance subiria se o animal fosse castrado. Nos testes com perfis do sistema, a castração <em>reduzia</em> a pontuação de filhotes (de 0,77 para 0,66). Em Austin, filhotes chegam sem castrar e são adotados rápido, então o modelo associa “não castrado” a filhote. Como é uma associação e não uma causa, a sugestão induziria a equipe ao erro e foi removida; a interface passou a avisar que os fatores “são padrões dos dados, não causas”.</li>
+    <li><strong>Exibir a pontuação como porcentagem.</strong> A ideia inicial era mostrar “74% de chance”. A avaliação de calibração mostrou que a pontuação superestima a chance real (Seção 8.3), então a interface passou a mostrar a faixa e a taxa real observada.</li>
+  </ul>
+  <h2>7.4 Testes da aplicação</h2>
+  <p>Foram escritos 46 testes automatizados com pytest, que rodam sem MySQL (banco SQLite em memória e login simulado), e realizados testes manuais no sistema com o banco de demonstração:</p>
+  <div class="tabela">
+  <p class="legenda">Tabela 5 — Testes automatizados e manuais</p>
+  <table>
+    <tr><th>Grupo</th><th class="n">Testes</th><th>O que verifica</th></tr>
+    <tr><td><code>test_ia_traducao.py</code></td><td class="n">27</td><td>Cores, raças, idade, origem e condição traduzidas corretamente; todas as colunas do treino presentes.</td></tr>
+    <tr><td><code>test_ia_modelo.py</code></td><td class="n">7</td><td>Modelo carrega uma vez; formato da saída; limites das faixas; filhote com mais chance que idoso; tutor com mais chance que rua.</td></tr>
+    <tr><td><code>test_ia_rotas.py</code></td><td class="n">12</td><td>Simulação válida; campos vazios e idade fora do limite (422); sem login (401); animal inexistente (404); adotado ou eutanasiado (409); prioridade ordena e exclui adotados; modelo ausente (503).</td></tr>
+    <tr><td>Manuais (navegador)</td><td class="n">7</td><td>Lista de prioridade, cartões de chance baixa e alta, animal adotado, simulador com campos vazios, com idade inválida e com resultado (Figuras 3 a 6).</td></tr>
+  </table>
+  <p class="fonte">Fonte: elaborada pelos autores. Os 46 testes automatizados passaram (<code>python -m pytest tests</code>, pasta <code>Backend</code>).</p>
+  </div>
+  <figure>
+    <img class="tela" src="../imagens/ia/05_simulador_erro.png" style="width:62%" alt="Simulador com campos vazios">
+    <img class="tela" src="../imagens/ia/08_cartao_animal_adotado.png" style="width:62%; margin-top:4px" alt="Animal adotado">
+    <p class="legenda">Figura 5 — Erros tratados: simulador enviado vazio e cartão de animal já adotado</p>
+    <p class="fonte">Fonte: captura do sistema ARDAP.</p>
+  </figure>
+</section>
+
+<!-- 8 -->
+<section class="secao" id="s8">
+  <h1>8 Resultados obtidos</h1>
+  <h2>8.1 Validação</h2>
+  <div class="tabela">
+  <p class="legenda">Tabela 6 — Comparação dos modelos no conjunto de validação (26.001 entradas)</p>
+  <table>
+    <tr><th>Modelo</th><th class="n">F1 (adotado)</th><th class="n">F1 macro</th><th class="n">ROC-AUC</th><th class="n">PR-AUC</th><th class="n">Precisão</th><th class="n">Recall</th></tr>
+    <tr><td>Baseline (classe majoritária)</td><td class="n">0,000</td><td class="n">0,404</td><td class="n">0,500</td><td class="n">0,322</td><td class="n">0,000</td><td class="n">0,000</td></tr>
+    <tr><td>Regressão Logística</td><td class="n">0,578</td><td class="n">0,642</td><td class="n">0,744</td><td class="n">0,527</td><td class="n">0,475</td><td class="n">0,740</td></tr>
+    <tr><td>Random Forest</td><td class="n">0,639</td><td class="n">0,694</td><td class="n">0,804</td><td class="n">0,627</td><td class="n">0,526</td><td class="n">0,812</td></tr>
+    <tr class="destaque"><td>Gradient Boosting</td><td class="n">0,645</td><td class="n">0,701</td><td class="n">0,815</td><td class="n">0,642</td><td class="n">0,534</td><td class="n">0,814</td></tr>
+  </table>
+  <p class="fonte">Fonte: <code>ai-model/relatorios/metricas.json</code>.</p>
+  </div>
+  <h2>8.2 Teste</h2>
+  <div class="tabela">
+  <p class="legenda">Tabela 7 — Gradient Boosting (limiar 0,49) no conjunto de teste (26.002 entradas)</p>
+  <table>
+    <tr><th>Métrica</th><th class="n">Gradient Boosting</th><th class="n">Baseline</th></tr>
+    <tr><td>F1 macro</td><td class="n">0,697</td><td class="n">0,404</td></tr>
+    <tr><td>F1 da classe “adotado”</td><td class="n">0,643</td><td class="n">0,000</td></tr>
+    <tr><td>ROC-AUC</td><td class="n">0,815</td><td class="n">0,500</td></tr>
+    <tr><td>PR-AUC</td><td class="n">0,648</td><td class="n">0,322</td></tr>
+    <tr><td>Precisão / Recall</td><td class="n">0,528 / 0,825</td><td class="n">0,000 / 0,000</td></tr>
+    <tr><td>Acurácia</td><td class="n">0,706</td><td class="n">0,678</td></tr>
+  </table>
+  <p class="fonte">Fonte: <code>ai-model/relatorios/metricas.json</code>.</p>
+  </div>
+  <figure>
+    <img src="../../ai-model/relatorios/figuras/05_curva_roc.png" style="width:49%; max-height:none" alt="Curva ROC">
+    <img src="../../ai-model/relatorios/figuras/06_matriz_confusao.png" style="width:42%; max-height:none" alt="Matriz de confusão">
+    <p class="legenda">Figura 6 — Curva ROC dos quatro modelos e matriz de confusão do Gradient Boosting (teste)</p>
+    <p class="fonte">Fonte: elaborada pelos autores (<code>treinar.py</code>).</p>
+  </figure>
+  <p>Na matriz de confusão (linhas = real), dos 8.363 animais adotados em 30 dias, 6.896 foram reconhecidos (recall de 82,5%) e 1.467 não; dos 17.639 não adotados, 11.464 foram classificados corretamente e 6.175 receberam previsão de adoção.</p>
+  <h2>8.3 Faixas, ordenação e calibração</h2>
+  <div class="tabela">
+  <p class="legenda">Tabela 8 — Taxa real de adoção em 30 dias por faixa exibida na interface (teste)</p>
+  <table>
+    <tr><th>Faixa (pontuação)</th><th class="n">Animais</th><th class="n">Participação</th><th class="n">Adotados (real)</th><th class="n">Pontuação média</th></tr>
+    <tr><td>Baixa (&lt; 0,40)</td><td class="n">10.995</td><td class="n">42,3%</td><td class="n">8,4%</td><td class="n">0,155</td></tr>
+    <tr><td>Média (0,40 a 0,60)</td><td class="n">5.317</td><td class="n">20,4%</td><td class="n">33,4%</td><td class="n">0,512</td></tr>
+    <tr><td>Alta (≥ 0,60)</td><td class="n">9.690</td><td class="n">37,3%</td><td class="n">58,4%</td><td class="n">0,736</td></tr>
+  </table>
+  <p class="fonte">Fonte: <code>ai-model/relatorios/faixas.json</code>.</p>
+  </div>
+  <figure>
+    <img src="../../ai-model/relatorios/figuras/09_faixas_calibracao.png" style="max-height:5.6cm" alt="Faixas e calibração">
+    <p class="legenda">Figura 7 — Taxa real por faixa e curva de calibração (teste)</p>
+    <p class="fonte">Fonte: elaborada pelos autores (<code>avaliar_faixas.py</code>).</p>
+  </figure>
+  <p>Entre os 10% de animais com menor pontuação (2.600), 99,9% não foram adotados em 30 dias; entre os 20% de menor pontuação, 98,5%. Na base toda, a taxa de não adotados é 67,8%, o que dá um <em>lift</em> de 1,47. O Brier score do modelo foi 0,180, contra 0,218 de prever sempre a taxa base.</p>
+  <h2>8.4 Fatores mais relevantes</h2>
+  <div class="tabela">
+  <p class="legenda">Tabela 9 — Permutation importance (queda média na ROC-AUC ao embaralhar o atributo)</p>
+  <table>
+    <tr><th>Atributo</th><th class="n">Importância</th><th>Leitura</th></tr>
+    <tr><td>idade em dias</td><td class="n">0,159</td><td>Filhotes e jovens são adotados mais rápido; idosos, mais devagar.</td></tr>
+    <tr><td>tipo de entrada</td><td class="n">0,050</td><td>Entregues pelo tutor chegam socializados e com histórico; resgates de rua demoram mais.</td></tr>
+    <tr><td>sexo</td><td class="n">0,034</td><td>Peso vem sobretudo da categoria “desconhecido”, comum em animais silvestres e recém-chegados.</td></tr>
+    <tr><td>raça principal</td><td class="n">0,030</td><td>Algumas raças têm procura maior ou menor.</td></tr>
+    <tr><td>condição de entrada</td><td class="n">0,029</td><td>Animais feridos ou doentes passam por tratamento antes de ficarem disponíveis.</td></tr>
+  </table>
+  <p class="fonte">Fonte: <code>ai-model/relatorios/importancia_features.csv</code>.</p>
+  </div>
+  <h2>8.5 Exemplos de entrada e saída no sistema</h2>
+  <div class="tabela">
+  <p class="legenda">Tabela 10 — Previsões para animais do banco de demonstração</p>
+  <table>
+    <tr><th>Animal (cadastro)</th><th class="n">Pontuação</th><th>Faixa</th><th>Fatores exibidos</th></tr>
+    <tr><td>Sombra — cão SRD, macho, 8 anos, castrado, registrado como acidentado no SUPATAS, 350 dias no abrigo</td><td class="n">0,18</td><td>Baixa (atenção)</td><td>saúde −15 p.p.; idade −13 p.p.</td></tr>
+    <tr><td>Juju — gata SRD, filhote, marrom tigrado, resgatada em garagem</td><td class="n">0,79</td><td>Alta</td><td>idade +28 p.p.; raça +7 p.p.</td></tr>
+    <tr><td>Simulação — gata filhote, entregue pelo tutor, saudável</td><td class="n">0,81</td><td>Alta</td><td>idade +21 p.p.; origem +6 p.p.</td></tr>
+    <tr><td>Simulação — campos vazios</td><td class="n">—</td><td>—</td><td>422: “Escolha a espécie. Escolha o sexo. Informe a idade estimada...”</td></tr>
+  </table>
+  <p class="fonte">Fonte: respostas da API do sistema ARDAP com dados fictícios.</p>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="secao" id="s9">
+  <h1>9 Discussão dos resultados</h1>
+  <p><strong>O modelo aprendeu.</strong> O Gradient Boosting superou o baseline em 0,293 de F1 macro e em 0,315 de ROC-AUC no teste, e os números do teste ficaram próximos aos da validação (0,697 contra 0,701 de F1 macro), o que indica que não houve sobreajuste à validação. A diferença para o Random Forest foi pequena (0,007), mas o Gradient Boosting também foi melhor em PR-AUC e treina mais rápido; a Regressão Logística ficou bem atrás (0,642), o que confirma que as interações entre atributos importam.</p>
+  <p><strong>Onde erra.</strong> A precisão da classe “adotado” é de 52,8%: quase metade dos animais previstos como adotáveis não foram adotados em 30 dias. Isso é consequência da escolha de privilegiar o recall (82,5%) e é aceitável para o uso proposto, porque o erro custa pouco: um falso positivo significa apenas que um animal com perfil favorável não foi priorizado na divulgação, e ele ainda aparece na lista. Os erros se concentram na faixa média, em que a taxa real é de 33%, próxima da taxa base, ou seja, o modelo tem pouca certeza sobre esses animais. Fatores que não estão na base, como temperamento, aparência individual e campanhas de adoção, explicam parte do que o modelo não vê.</p>
+  <p><strong>É bom o bastante para o uso proposto?</strong> Para ordenar a divulgação, sim. O uso não exige acertar cada animal, e sim pôr no topo da lista quem tem menos chance. Nisso o modelo vai muito bem: na faixa baixa, só 8% foram adotados em 30 dias, contra 58% na faixa alta; e entre os 10% de menor pontuação, praticamente nenhum foi adotado no período. Para afirmar a “probabilidade de adoção” de um animal específico, não: a curva de calibração (Figura 7) fica abaixo da diagonal, ou seja, a pontuação superestima a chance real, efeito esperado do uso de pesos de classe. Por isso a interface mostra a faixa e a taxa real da faixa, e não a pontuação como porcentagem.</p>
+  <p><strong>Transferência para Paulo Afonso.</strong> Os números acima valem para Austin. A ordem relativa dos fatores (idade, origem e saúde) é consistente com a experiência da equipe da ONG e com a análise exploratória, o que dá alguma confiança de que a ordenação se transfere; os valores absolutos, não. Essa ressalva aparece na página “Sobre o modelo” e só poderá ser verificada com o histórico da própria ONG.</p>
+</section>
+
+<!-- 10 -->
+<section class="secao" id="s10">
+  <h1>10 Limitações e trabalhos futuros</h1>
+  <h2>10.1 Limitações</h2>
+  <ul>
+    <li><strong>Base estrangeira.</strong> Perfis de adoção, raças, cores e sazonalidade de Austin diferem dos de Paulo Afonso. O hemisfério também inverte as estações, o que afeta o atributo “mês de entrada”.</li>
+    <li><strong>Atributos ausentes.</strong> Porte, peso, temperamento, vacinação e vermifugação existem no cadastro do ARDAP, mas não na base pública, e não entram no modelo.</li>
+    <li><strong>Tradução aproximada.</strong> Raças brasileiras (ex.: Fila Brasileiro) e cores sem equivalente são tratadas como desconhecidas; a idade “menos de 1 ano” é aproximada para 4 meses; “cão SRD” não tem equivalente exato em Austin.</li>
+    <li><strong>Probabilidades não calibradas.</strong> A pontuação serve para ordenar, não como probabilidade.</li>
+    <li><strong>Associação, não causa.</strong> Os fatores refletem padrões dos dados e não devem orientar intervenções no cuidado do animal.</li>
+    <li><strong>Janela fixa e censura.</strong> A definição em 30 dias muda a taxa base; animais recentes sem desfecho foram removidos do treino.</li>
+  </ul>
+  <h2>10.2 Riscos e uso responsável</h2>
+  <p>O risco principal é o uso invertido do recurso: tratar animais de chance baixa como “causa perdida”. O sistema foi desenhado para o contrário, colocando esses animais no topo da lista de divulgação, e a interface repete que a IA apoia a decisão, não decide sozinha e não deve ser usada para negar cuidado a nenhum animal. O recurso não usa dados de pessoas (adotantes, tutores, funcionários), o que afasta riscos relacionados à LGPD (BRASIL, 2018).</p>
+  <h2>10.3 Trabalhos futuros</h2>
+  <ul>
+    <li>Retreinar com o histórico do ARDAP quando houver volume suficiente, incluindo porte, temperamento e vacinação, e comparar com o modelo atual.</li>
+    <li>Calibrar a pontuação (por exemplo, com <code>CalibratedClassifierCV</code>) para poder exibi-la como probabilidade.</li>
+    <li>Registrar no sistema as divulgações realizadas, para medir se a priorização reduz o tempo médio no abrigo.</li>
+    <li>Testar modelos de sobrevivência, que estimam o tempo até a adoção sem depender de uma janela fixa.</li>
+  </ul>
+</section>
+
+<!-- 11 -->
+<section class="secao" id="s11">
+  <h1>11 Declaração de uso de IA generativa</h1>
+  <p>A equipe usou ferramentas de IA generativa como apoio, revisou todo o material entregue e é responsável por ele. O uso está declarado abaixo, no formato pedido na atividade.</p>
+  <div class="tabela">
+  <p class="legenda">Tabela 11 — Ferramentas de IA generativa utilizadas</p>
+  <table>
+    <tr><th>Ferramenta</th><th>Para que foi usada</th><th>Como o resultado foi validado</th></tr>
+    <tr><td>Claude (Anthropic), via Claude Code</td><td>Sugestões de código para a integração (módulo <code>app/ia</code>, rotas <code>/ia</code>, telas React), para os testes automatizados e para o script de avaliação das faixas; rascunho da seção de IA do README e deste relatório.</td><td>Código revisado e executado pela equipe: 46 testes automatizados passando, build e lint sem erros e testes manuais no navegador (Figuras 3 a 5). Métricas conferidas com os arquivos gerados pelos scripts; referências conferidas nas fontes originais. A revisão identificou e removeu a sugestão “se castrado” (Seção 7.3).</td></tr>
+  </table>
+  <p class="fonte">Fonte: elaborada pelos autores.</p>
+  </div>
+
+  <div class="secao-continua" id="s12" style="margin-top:0.8em">
+  <h1>12 Contribuição dos integrantes</h1>
+  <p>O recurso de IA foi desenvolvido pela equipe ARDAP, formada pelos cinco integrantes listados na capa, como parte do Projeto Integrador. As contribuições individuais estão registradas no histórico de commits e de pull requests do repositório (github.com/PROJETO-WEB-EXTENSAO-6-PERIODO/ARDAP).</p>
+  </div>
+</section>
+
+<!-- REFERÊNCIAS -->
+<section class="secao refs" id="sref">
+  <h1 style="text-align:center">Referências</h1>
+  <p>BRASIL. <strong>Lei nº 13.709, de 14 de agosto de 2018</strong>. Lei Geral de Proteção de Dados Pessoais (LGPD). Brasília, DF: Presidência da República, 2018. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm. Acesso em: 27 nov. 2026.</p>
+  <p>BREIMAN, L. Random forests. <strong>Machine Learning</strong>, v. 45, n. 1, p. 5-32, 2001.</p>
+  <p>BRIER, G. W. Verification of forecasts expressed in terms of probability. <strong>Monthly Weather Review</strong>, v. 78, n. 1, p. 1-3, 1950.</p>
+  <p>CITY OF AUSTIN. <strong>Austin Animal Center Intakes</strong>. Austin: City of Austin Open Data Portal, 2025a. Disponível em: https://data.austintexas.gov/Health-and-Community-Services/Austin-Animal-Center-Intakes/wter-evkm. Acesso em: 22 nov. 2026.</p>
+  <p>CITY OF AUSTIN. <strong>Austin Animal Center Outcomes</strong>. Austin: City of Austin Open Data Portal, 2025b. Disponível em: https://data.austintexas.gov/Health-and-Community-Services/Austin-Animal-Center-Outcomes/9t4d-g238. Acesso em: 22 nov. 2026.</p>
+  <p>FACELI, K. et al. <strong>Inteligência artificial</strong>: uma abordagem de aprendizado de máquina. 2. ed. Rio de Janeiro: LTC, 2021.</p>
+  <p>FISHER, A.; RUDIN, C.; DOMINICI, F. All models are wrong, but many are useful: learning a variable’s importance by studying an entire class of prediction models simultaneously. <strong>Journal of Machine Learning Research</strong>, v. 20, n. 177, p. 1-81, 2019.</p>
+  <p>FRIEDMAN, J. H. Greedy function approximation: a gradient boosting machine. <strong>The Annals of Statistics</strong>, v. 29, n. 5, p. 1189-1232, 2001.</p>
+  <p>GÉRON, A. <strong>Mãos à obra</strong>: aprendizado de máquina com Scikit-Learn &amp; TensorFlow. Rio de Janeiro: Alta Books, 2019.</p>
+  <p>KE, G. et al. LightGBM: a highly efficient gradient boosting decision tree. In: ADVANCES IN NEURAL INFORMATION PROCESSING SYSTEMS, 30., 2017, Long Beach. <strong>Proceedings</strong> [...]. Red Hook: Curran Associates, 2017. p. 3146-3154.</p>
+  <p>McKINNEY, W. <strong>Python para análise de dados</strong>. São Paulo: Novatec, 2018.</p>
+  <p>NICULESCU-MIZIL, A.; CARUANA, R. Predicting good probabilities with supervised learning. In: INTERNATIONAL CONFERENCE ON MACHINE LEARNING, 22., 2005, Bonn. <strong>Proceedings</strong> [...]. New York: ACM, 2005. p. 625-632.</p>
+  <p>PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. <strong>Journal of Machine Learning Research</strong>, v. 12, p. 2825-2830, 2011.</p>
+  <p>SAITO, T.; REHMSMEIER, M. The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets. <strong>PLoS ONE</strong>, v. 10, n. 3, e0118432, 2015.</p>
+  <p>SCIKIT-LEARN DEVELOPERS. <strong>scikit-learn</strong>: machine learning in Python. Versão 1.9. Disponível em: https://scikit-learn.org/stable/. Acesso em: 27 nov. 2026.</p>
+  <p>FASTAPI. <strong>FastAPI documentation</strong>. Disponível em: https://fastapi.tiangolo.com/. Acesso em: 27 nov. 2026.</p>
+</section>
+
+<script>
+  // Monta o sumário a partir dos títulos; o gerador do PDF preenche as páginas.
+  const lista = document.getElementById("sumario");
+  document.querySelectorAll("section h1, section h2").forEach((h) => {
+    if (h.closest(".pre")) return;
+    const li = document.createElement("li");
+    if (h.tagName === "H2") li.className = "sub";
+    li.innerHTML = `<span class="t">${h.textContent.toUpperCase() === h.textContent ? h.textContent : h.textContent}</span><span class="pontos"></span><span class="pg" data-titulo="${h.textContent}"></span>`;
+    if (h.tagName === "H1") li.querySelector(".t").style.textTransform = "uppercase";
+    lista.appendChild(li);
+  });
+  const paginas = window.PAGINAS || {};
+  document.querySelectorAll(".pg").forEach((s) => { s.textContent = paginas[s.dataset.titulo] || ""; });
+</script>
+</body>
+</html>

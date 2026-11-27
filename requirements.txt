@@ -1,0 +1,6 @@
+# Dependencias Python do projeto (API + componente de IA).
+# Instalar da raiz do repositorio: python -m pip install -r requirements.txt
+-r Backend/requirements.txt
+-r ai-model/requirements.txt
+pytest
+httpx

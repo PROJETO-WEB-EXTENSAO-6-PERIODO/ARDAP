@@ -6,7 +6,7 @@ USE ardap;
 -- (PDF "Rony,canino.pdf"). A tabela anterior tinha duas tabelas ligadas por
 -- questionario_adocao_id (1:1); agora e uma unica tabela, sem dependencia por ID.
 -- Campos presentes no banco mas ausentes no formulario foram removidos
--- (ver Docs/comparacao-campos-adocao.md).
+-- (ver docs/comparacao-campos-adocao.md).
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS termo_adocao (

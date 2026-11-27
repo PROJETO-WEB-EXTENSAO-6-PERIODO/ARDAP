@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { isAxiosError } from "axios";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Autorias, type Autor } from "../components/Autoria";
+import { CartaoIA } from "../components/CartaoIA";
 import { FotoAnimal } from "../components/FotoAnimal";
 import { Header } from "../components/Header";
 import { api } from "../services/api";
@@ -190,6 +191,8 @@ function Detalhes({ animal }: { animal: Animal }) {
           </dl>
         </Cartao>
       </div>
+
+      <CartaoIA animalId={animal.id} />
     </>
   );
 }

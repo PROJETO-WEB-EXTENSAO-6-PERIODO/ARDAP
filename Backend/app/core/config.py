@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     BACKUP_R2_SECRET_ACCESS_KEY: str = ""
     BACKUP_R2_BUCKET: str = ""
 
+    # Modelo de IA (vazio = ai-model/models/modelo.joblib e
+    # ai-model/relatorios/metricas.json, a partir da raiz do repositorio)
+    IA_MODELO_PATH: str = ""
+    IA_METRICAS_PATH: str = ""
+
     @property
     def em_producao(self) -> bool:
         return self.AMBIENTE == "producao"
