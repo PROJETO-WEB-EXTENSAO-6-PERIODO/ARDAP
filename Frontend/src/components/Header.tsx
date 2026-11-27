@@ -64,6 +64,14 @@ export function Header() {
             Adoções
           </button>
 
+          <button
+            onClick={() => navigate("/ia/prioridade")}
+            className="inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-[#1A1A1A] transition-colors hover:text-gray-600 "
+          >
+            <i aria-hidden="true" className="bi bi-stars"></i>
+            Divulgação
+          </button>
+
           <MenuRegistros />
 
           {user?.role === "admin" && (
