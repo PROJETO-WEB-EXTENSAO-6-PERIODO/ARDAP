@@ -1,0 +1,67 @@
+{
+  "limites": {
+    "baixa": 0.4,
+    "alta": 0.6
+  },
+  "faixas": {
+    "baixa": {
+      "animais": 10995,
+      "participacao": 0.4229,
+      "taxa_real": 0.0844,
+      "prob_media": 0.1546
+    },
+    "media": {
+      "animais": 5317,
+      "participacao": 0.2045,
+      "taxa_real": 0.3342,
+      "prob_media": 0.5121
+    },
+    "alta": {
+      "animais": 9690,
+      "participacao": 0.3727,
+      "taxa_real": 0.5839,
+      "prob_media": 0.7361
+    }
+  },
+  "taxa_base": 0.3216,
+  "ordenacao_menor_chance": {
+    "10%": {
+      "animais": 2600,
+      "nao_adotados": 0.9992,
+      "lift": 1.473
+    },
+    "20%": {
+      "animais": 5200,
+      "nao_adotados": 0.9848,
+      "lift": 1.452
+    }
+  },
+  "calibracao": {
+    "brier": 0.1797,
+    "brier_baseline": 0.2182,
+    "previsto": [
+      0.0019,
+      0.0589,
+      0.1912,
+      0.3136,
+      0.4326,
+      0.5408,
+      0.6163,
+      0.6886,
+      0.7574,
+      0.8428
+    ],
+    "real": [
+      0.0008,
+      0.0296,
+      0.0965,
+      0.1819,
+      0.2654,
+      0.3485,
+      0.4354,
+      0.5138,
+      0.6096,
+      0.7347
+    ]
+  }
+}
