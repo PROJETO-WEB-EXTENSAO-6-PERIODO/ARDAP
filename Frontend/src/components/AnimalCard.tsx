@@ -21,6 +21,8 @@ export interface Animal {
   medicacao_desc: string | null;
   origem_resgate: string | null;
   tem_foto: boolean;
+  foto_url: string | null;
+  foto_mini_url: string | null;
   created_at: string | null;
   funcionario: Autor | null;
   alterado_por: Autor | null;
@@ -117,7 +119,7 @@ export function AnimalCard({ animal }: { animal: Animal }) {
         >
           {animal.tem_foto ? (
             <FotoAnimal
-              id={animal.id}
+              src={animal.foto_mini_url}
               alt=""
               className="h-full w-full object-cover"
               fallback={visual.emoji}

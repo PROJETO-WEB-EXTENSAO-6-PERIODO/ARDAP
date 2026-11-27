@@ -38,7 +38,13 @@ def _salvar_foto(foto: bytes) -> str:
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail="A foto deve ser JPG, PNG ou WebP.",
         )
-    return armazenamento.salvar("animais", foto, extensao)
+    try:
+        return armazenamento.salvar_foto("animais", foto, extensao)
+    except armazenamento.ImagemInvalida:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Não foi possível ler a foto. Envie outra imagem JPG, PNG ou WebP.",
+        )
 
 
 def _to_out(a: Animal) -> AnimalOut:
@@ -51,6 +57,7 @@ def _to_out(a: Animal) -> AnimalOut:
         medicacao_necessaria=bool(a.medicacao_necessaria),
         medicacao_desc=a.medicacao_desc, origem_resgate=a.origem_resgate,
         observacoes=a.observacoes, tem_foto=a.foto_path is not None,
+        foto_url=a.foto_url, foto_mini_url=a.foto_mini_url,
         created_at=a.created_at,
         funcionario=(
             AutorOut.model_validate(a.funcionario) if a.funcionario else None
@@ -95,7 +102,7 @@ def create_animal(
         db.commit()
     except Exception:
         # sem registro no banco, o arquivo ficaria orfao
-        armazenamento.apagar(foto_path)
+        armazenamento.apagar_foto(foto_path)
         raise
     db.refresh(animal)
     return _to_out(animal)
@@ -197,11 +204,11 @@ def update_animal(
         db.commit()
     except Exception:
         if foto_nova:
-            armazenamento.apagar(foto_nova)
+            armazenamento.apagar_foto(foto_nova)
         raise
     # so apaga a antiga depois que a troca esta garantida no banco
     if foto_nova and foto_antiga:
-        armazenamento.apagar(foto_antiga)
+        armazenamento.apagar_foto(foto_antiga)
     db.refresh(animal)
     return _to_out(animal)
 
@@ -222,4 +229,4 @@ def delete_animal(
     excluir_animal(db, animal)
     # so apaga a foto depois que a exclusao esta garantida no banco
     if foto_path:
-        armazenamento.apagar(foto_path)
+        armazenamento.apagar_foto(foto_path)

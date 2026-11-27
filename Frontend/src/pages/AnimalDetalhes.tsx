@@ -27,6 +27,7 @@ interface Animal {
   origem_resgate: string | null;
   observacoes: string | null;
   tem_foto: boolean;
+  foto_url: string | null;
   created_at: string | null;
   funcionario: Autor | null;
   alterado_por: Autor | null;
@@ -115,7 +116,7 @@ function Detalhes({ animal }: { animal: Animal }) {
       <section className="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         {animal.tem_foto && (
           <FotoAnimal
-            id={animal.id}
+            src={animal.foto_url}
             alt={`Foto de ${animal.nome || "animal sem nome"}`}
             className="h-48 w-full shrink-0 rounded-xl object-cover sm:h-40 sm:w-40"
           />

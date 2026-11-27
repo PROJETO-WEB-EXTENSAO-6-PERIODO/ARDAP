@@ -73,7 +73,7 @@ def salvar_foto(nome: str | None) -> str | None:
     extensao = armazenamento.identificar(conteudo)
     if extensao not in armazenamento.IMAGENS:
         raise SystemExit(f"{arquivo.name} nao e JPG, PNG ou WebP.")
-    return armazenamento.salvar("animais", conteudo, extensao)
+    return armazenamento.salvar_foto("animais", conteudo, extensao)
 
 
 def semear_animais(db: Session, sorteio: Random, arquivos: list[str]) -> dict[str, Animal]:

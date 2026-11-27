@@ -6,9 +6,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core import miniaturas
 from app.core.config import settings
 from app.ia import modelo as modelo_ia
-from app.routers import adocao, animais, auth, castracao, cirurgia, contagens, eutanasia, hipossuficiencia, ia, relatorio_atividades, relatorios, supatas, users
+from app.routers import adocao, animais, arquivos, auth, castracao, cirurgia, contagens, eutanasia, hipossuficiencia, ia, relatorio_atividades, relatorios, supatas, users
 
 log = logging.getLogger(__name__)
 
@@ -20,6 +21,9 @@ async def lifespan(_: FastAPI):
         modelo_ia.carregar()
     except modelo_ia.ModeloIndisponivel as erro:
         log.warning("IA indisponivel: %s", erro)
+    # fotos enviadas antes das versoes reduzidas: gera em segundo plano
+    if settings.FOTOS_VARIANTES_AO_INICIAR:
+        miniaturas.gerar_em_segundo_plano()
     yield
 
 # a documentacao interativa so existe em desenvolvimento
@@ -61,3 +65,4 @@ app.include_router(supatas.router)
 app.include_router(animais.router)
 app.include_router(adocao.router)
 app.include_router(ia.router)
+app.include_router(arquivos.router)

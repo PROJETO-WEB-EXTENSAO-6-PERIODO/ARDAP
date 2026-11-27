@@ -7,6 +7,7 @@ export interface AnimalAdotado {
   raca: string | null;
   sexo: string;
   tem_foto: boolean;
+  foto_mini_url?: string | null;
 }
 
 export interface TermoAdocao {
